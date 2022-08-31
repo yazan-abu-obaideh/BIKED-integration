@@ -1,3 +1,4 @@
+import bs4
 from bs4 import BeautifulSoup
 
 PARAMETER_LABEL = "key"
@@ -37,7 +38,7 @@ class XmlHandler:
         return new_tree.find_all("entry")[0]
 
     def add_new_entry(self, key: str, value: str):
-        new_entry = self.template_entry
+        new_entry = self.copy_entry(self.template_entry.__str__())
         new_entry[PARAMETER_LABEL] = key
         new_entry.find(string="3").replace_with(value)
         self.xml_tree.find_all("properties")[0].append(new_entry)
@@ -62,7 +63,8 @@ class XmlHandler:
         return False
 
     def remove_entry(self, entry):
-        entry.replaceWithChildren()
+        entry: bs4.Tag
+        entry.replaceWith("")
 
     def remove_all_entries(self):
         for entry in self.get_all_entries():
