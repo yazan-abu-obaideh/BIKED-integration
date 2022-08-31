@@ -6,7 +6,8 @@ from src.xml_handler import XmlHandler
 class XmlHandlerTest(unittest.TestCase):
     def setUp(self):
         with open("../resources/test.xml", "r") as file:
-            self.xml_handler = XmlHandler(file.read())
+            self.xml_handler = XmlHandler()
+            self.xml_handler.set_xml(file.read())
 
     def test_xml_tree_contains_entries(self):
         assert self.get_entries_count() == 2
@@ -21,13 +22,76 @@ class XmlHandlerTest(unittest.TestCase):
         self.xml_handler.add_new_entry(new_key, new_value)
         # TODO: generalize this so it doesn't depend on the word entry in so many places.
         assert self.get_entries_count() == 3
-        assert self.xml_handler.get_all_entries().__str__() == \
-               f'[<entry key="ready">3</entry>, ' \
-               f'<entry key="stuff">5</entry>, ' \
+        assert self.get_all_entries_string() == \
+               '[<entry key="ready">3</entry>, <entry key="stuff">5</entry>, ' + \
                f'<entry key="{new_key}">{new_value}</entry>]'
 
     def test_can_get_specific_entry(self):
-        pass
+        stuff_entry = self.get_stuff_entry()
+        ready_entry = self.get_ready_entry()
+        none_entry = self.xml_handler.find_entry_by_key("does not exist")
+        assert ready_entry.__str__() == '<entry key="ready">3</entry>'
+        assert stuff_entry.__str__() == '<entry key="stuff">5</entry>'
+        assert none_entry is None
+
+    def test_can_update_entry(self):
+        new_stuff_key = "new_stuff"
+        new_ready_key = "new_ready"
+        self.xml_handler.update_entry_key(self.get_stuff_entry(), new_stuff_key)
+        self.xml_handler.update_entry_key(self.get_ready_entry(), new_ready_key)
+        assert self.get_all_entries_string() == \
+               f'[<entry key="{new_ready_key}">3</entry>, <entry key="{new_stuff_key}">5</entry>]'
+
+    def test_can_update_value(self):
+        new_stuff_value = "NEW VALUE"
+        self.xml_handler.update_entry_value(self.get_stuff_entry(), new_stuff_value)
+        assert self.get_all_entries_string() == \
+               f'[<entry key="ready">3</entry>, <entry key="stuff">{new_stuff_value}</entry>]'
+
+    def test_modifying_copy_does_not_modify_original(self):
+        original_entries = self.get_all_entries_string()
+        copy = self.xml_handler.copy_first_entry()
+        self.xml_handler.update_entry_value(copy, "DUMMY")
+        self.xml_handler.update_entry_key(copy, "DUMMY")
+        assert self.get_all_entries_string() == original_entries
+
+    def test_end_to_end(self):
+        expected_final_content = \
+            '<?xml version="1.0" encoding="utf-8"?>\n<!DOCTYPE properties SYSTEM ' \
+            '"http://java.sun.com/dtd/properties.dtd">\n<properties>\n<comment> Made with care! ' \
+            '</comment>\n<entry key="ready-updated-key">3</entry>\n<entry ' \
+            'key="stuff">new-stuff</entry>\n<entry ' \
+            'key="new_key">10</entry></properties>'
+        self.xml_handler.add_new_entry(key="new_key", value="10")
+        self.xml_handler.update_entry_key(self.get_ready_entry(), "ready-updated-key")
+        self.xml_handler.update_entry_value(self.get_stuff_entry(), "new-stuff")
+        assert self.xml_handler.get_content_string() == expected_final_content
+
+    def test_can_get_entries_dict(self):
+        assert self.xml_handler.get_entries_dict() == {"ready": "3", "stuff": "5"}
+
+    def test_does_entry_exist(self):
+        assert self.xml_handler.does_entry_exist("does not exist") is False
+        assert self.xml_handler.does_entry_exist("ready") is True
+
+    def test_remove_entry(self):
+        self.xml_handler.remove_entry(self.get_stuff_entry())
+        assert self.get_all_entries_string() == '[<entry key="ready">3</entry>]'
+        self.xml_handler.remove_entry(self.get_ready_entry())
+        assert self.get_entries_count() == 0
+
+    def test_remove_all_entries(self):
+        self.xml_handler.remove_all_entries()
+        assert self.get_entries_count() == 0
+
+    def get_all_entries_string(self):
+        return self.xml_handler.get_all_entries().__str__()
+
+    def get_ready_entry(self):
+        return self.xml_handler.find_entry_by_key("ready")
+
+    def get_stuff_entry(self):
+        return self.xml_handler.find_entry_by_key("stuff")
 
     def get_entries_count(self):
         return len(self.xml_handler.get_all_entries())

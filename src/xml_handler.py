@@ -1,20 +1,30 @@
 from bs4 import BeautifulSoup
 
+PARAMETER_LABEL = "key"
+
 
 class XmlHandler:
-    def __init__(self, xml: str):
+    def __init__(self):
+        self.template_entry = None
+        self.xml_tree = None
+
+    def set_xml(self, xml: str):
         self.xml_tree = self.generate_xml_tree(xml)
+        self.template_entry = self.copy_first_entry()
 
     def generate_xml_tree(self, xml: str):
         return BeautifulSoup(xml, "xml")
+
+    def get_content_string(self):
+        return self.xml_tree.__str__()
 
     def get_all_entries(self):
         return self.xml_tree.find_all("entry")
 
     def copy_first_entry(self):
         fes = self.get_first_entry_string()
-        new_tree = self.generate_xml_tree(fes)
-        entry_alone = self.strip_tree_of_needless_tags(new_tree)
+        new_tree_with_one_entry = self.generate_xml_tree(fes)
+        entry_alone = self.strip_tree_of_needless_tags(new_tree_with_one_entry)
         return entry_alone
 
     def get_first_entry_string(self):
@@ -23,9 +33,39 @@ class XmlHandler:
     def strip_tree_of_needless_tags(self, new_tree):
         return new_tree.find_all("entry")[0]
 
-    def add_new_entry(self, key, value):
-        new_entry = self.copy_first_entry()
-        new_entry["key"] = key
+    def add_new_entry(self, key: str, value: str):
+        new_entry = self.template_entry
+        new_entry[PARAMETER_LABEL] = key
         new_entry.find(string="3").replace_with(value)
         self.xml_tree.find_all("properties")[0].append(new_entry)
 
+    def find_entry_by_key(self, entry_key):
+        for entry in self.get_all_entries():
+            if entry[PARAMETER_LABEL] == entry_key:
+                return entry
+
+    def update_entry_key(self, entry, new_key):
+        entry[PARAMETER_LABEL] = new_key
+
+    def update_entry_value(self, entry, new_value):
+        entry.find(string=entry.text).replace_with(new_value)
+
+    def get_entries_dict(self):
+        return {entry[PARAMETER_LABEL]: entry.text for entry in self.get_all_entries()}
+
+    def does_entry_exist(self, entry_key):
+        if self.find_entry_by_key(entry_key):
+            return True
+        return False
+
+    def remove_entry(self, entry):
+        entry.replaceWithChildren()
+
+    def remove_all_entries(self):
+        for entry in self.get_all_entries():
+            self.remove_entry(entry)
+
+    def fill_entries_from_dict(self, entries_dict: dict):
+        self.remove_all_entries()
+        for key, value in entries_dict.items():
+            self.add_new_entry(key, value)

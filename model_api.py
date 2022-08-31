@@ -1,21 +1,18 @@
 from flask import Flask, request
 from src.predictor import Predictor
-from bs4 import BeautifulSoup
+from src.xml_handler import XmlHandler
 
 app = Flask(__name__)
+xml_handler = XmlHandler()
+p = Predictor()
 
 
 @app.route("/")
 def index():
-    request_string = request.data.decode("utf-8")
-    soup = BeautifulSoup(request_string, "xml")
-    entries = soup.find_all("entry")
-    entries_dict = {entry['key']: entry.text for entry in entries}
-    print(entries_dict)
-    p = Predictor()
-
-    model_response = p.predict(**request.json)
-    return f"{model_response}"
+    request_as_raw_xml = request.data.decode("utf-8")
+    xml_handler.set_xml(request_as_raw_xml)
+    model_response_dict = p.predict(**xml_handler.get_entries_dict())
+    return f"{model_response_dict}"
 
 
 if __name__ == "__main__":
