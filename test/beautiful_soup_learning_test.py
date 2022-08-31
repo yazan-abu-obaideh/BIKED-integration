@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 
 class XmlParsingTest(unittest.TestCase):
     def setUp(self):
-        with open("resources/test.xml", "r") as file:
-            self.soup = BeautifulSoup(file, "xml")
+        with open("../resources/test.xml", "r") as file:
+            self.soup = BeautifulSoup(file.read(), "xml")
             self.original_first_entry = self.get_first_entry()
 
     def test_find_all_entries(self):
