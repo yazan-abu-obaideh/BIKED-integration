@@ -1,4 +1,3 @@
-import bs4
 from bs4 import BeautifulSoup
 
 PARAMETER_LABEL = "key"
@@ -63,8 +62,7 @@ class XmlHandler:
         return False
 
     def remove_entry(self, entry):
-        entry: bs4.Tag
-        entry.replaceWith("")
+        entry.decompose()
 
     def remove_all_entries(self):
         for entry in self.get_all_entries():
@@ -74,3 +72,10 @@ class XmlHandler:
         self.remove_all_entries()
         for key, value in entries_dict.items():
             self.add_new_entry(key, value)
+
+    def update_entries_from_dict(self, entries_dict: dict):
+        for key, value in entries_dict.items():
+            if key in [entry["key"] for entry in self.get_all_entries()]:
+                self.update_entry_value(self.find_entry_by_key(key), value)
+            else:
+                self.add_new_entry(key, value)

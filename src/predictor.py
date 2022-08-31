@@ -1,3 +1,3 @@
 class Predictor:
     def predict(self, **model_parameters):
-        return None
+        return {"first": "first-value", "second": "second-value"}
