@@ -2,7 +2,7 @@ from time import time
 
 
 class XmlFiller:
-    TEMPLATE = "XML_TEMPLATE.txt"
+    TEMPLATE = "resources/XML_TEMPLATE.txt"
     REPLACEABLE_PORTION = "REPLACEABLE"
 
     def create_xml(self, **keyword_entries):
