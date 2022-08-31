@@ -23,7 +23,10 @@ class XmlHandler:
 
     def copy_first_entry(self):
         fes = self.get_first_entry_string()
-        new_tree_with_one_entry = self.generate_xml_tree(fes)
+        return self.copy_entry(fes)
+
+    def copy_entry(self, entry: str):
+        new_tree_with_one_entry = self.generate_xml_tree(entry)
         entry_alone = self.strip_tree_of_needless_tags(new_tree_with_one_entry)
         return entry_alone
 

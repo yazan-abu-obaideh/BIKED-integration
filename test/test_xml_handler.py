@@ -84,6 +84,10 @@ class XmlHandlerTest(unittest.TestCase):
         self.xml_handler.remove_all_entries()
         assert self.get_entries_count() == 0
 
+    # def test_fill_entries_from_dict(self):
+    #     self.xml_handler.fill_entries_from_dict({"first": "1", "second": "2"})
+    #     print(self.get_all_entries_string())
+
     def get_all_entries_string(self):
         return self.xml_handler.get_all_entries().__str__()
 
