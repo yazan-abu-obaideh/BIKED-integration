@@ -39,7 +39,7 @@ class XmlHandler:
     def add_new_entry(self, key: str, value: str):
         new_entry = self.copy_entry(self.template_entry.__str__())
         new_entry[PARAMETER_LABEL] = key
-        new_entry.find(string="3").replace_with(value)
+        new_entry.find(string=new_entry.text).replace_with(value)
         self.xml_tree.find_all("properties")[0].append(new_entry)
 
     def find_entry_by_key(self, entry_key):
