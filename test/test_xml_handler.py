@@ -85,8 +85,7 @@ class XmlHandlerTest(unittest.TestCase):
         assert self.get_entries_count() == 0
 
     def test_fill_entries_from_dict(self):
-        self.xml_handler.fill_entries_from_dict({"first": "1", "second": "2"})
-        print(self.xml_handler.get_content_string())
+        self.xml_handler.set_entries_from_dict({"first": "1", "second": "2"})
 
     def test_update_xml_from_dict(self):
         self.xml_handler.update_entries_from_dict({"ready": "ready-new", "new": "new-value"})

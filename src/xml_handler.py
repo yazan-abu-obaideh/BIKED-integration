@@ -68,14 +68,23 @@ class XmlHandler:
         for entry in self.get_all_entries():
             self.remove_entry(entry)
 
-    def fill_entries_from_dict(self, entries_dict: dict):
+    def set_entries_from_dict(self, entries_dict: dict):
         self.remove_all_entries()
         for key, value in entries_dict.items():
             self.add_new_entry(key, value)
 
     def update_entries_from_dict(self, entries_dict: dict):
         for key, value in entries_dict.items():
-            if key in [entry["key"] for entry in self.get_all_entries()]:
-                self.update_entry_value(self.find_entry_by_key(key), value)
-            else:
-                self.add_new_entry(key, value)
+            self.add_or_update(key, value)
+
+    def add_or_update(self, key, value):
+        if self.key_exists(key):
+            self.update_entry_value(self.find_entry_by_key(key), value)
+        else:
+            self.add_new_entry(key, value)
+
+    def key_exists(self, key):
+        return key in self.get_all_keys()
+
+    def get_all_keys(self):
+        return [entry["key"] for entry in self.get_all_entries()]
