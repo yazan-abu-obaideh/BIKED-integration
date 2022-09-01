@@ -2,7 +2,7 @@ import unittest
 from bs4 import BeautifulSoup
 
 
-class XmlParsingTest(unittest.TestCase):
+class BSAndLxmlLearningTest(unittest.TestCase):
     def setUp(self):
         with open("../resources/test.xml", "r") as file:
             self.soup = BeautifulSoup(file.read(), "xml")
