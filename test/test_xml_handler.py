@@ -8,12 +8,15 @@ class XmlHandlerTest(unittest.TestCase):
         with open("../resources/test.xml", "r") as file:
             self.xml_handler = XmlHandler()
             self.xml_handler.set_xml(file.read())
+        self.ENTRY_TAG = self.xml_handler.ENTRY_TAG
+        self.ENTRY_KEY = self.xml_handler.ENTRY_KEY
+        self.PARENT_TAG = self.xml_handler.PARENT_TAG
 
     def test_xml_tree_contains_entries(self):
         assert self.get_entries_count() == 2
 
     def test_can_copy(self):
-        assert self.xml_handler.copy_first_entry()['key'] == "ready"
+        assert self.xml_handler.copy_first_entry()[self.ENTRY_KEY] == "ready"
         assert self.xml_handler.copy_first_entry().text == "3"
 
     def test_can_add_new_entries(self):

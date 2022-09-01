@@ -2,9 +2,9 @@ from bs4 import BeautifulSoup
 
 
 class XmlHandler:
-    ENTRIES_TAG_NAME = "entry"
-    ENTRIES_KEY_LABEL = "key"
-    ENTRIES_PARENT_TAG = "properties"
+    ENTRY_TAG = "entry"
+    ENTRY_KEY = "key"
+    PARENT_TAG = "properties"
 
     def __init__(self):
         self.template_entry = None
@@ -21,7 +21,7 @@ class XmlHandler:
         return self.xml_tree.__str__()
 
     def get_all_entries(self):
-        return self.xml_tree.find_all(self.ENTRIES_TAG_NAME)
+        return self.xml_tree.find_all(self.ENTRY_TAG)
 
     def copy_first_entry(self):
         fes = self.get_first_entry_string()
@@ -36,27 +36,27 @@ class XmlHandler:
         return self.get_all_entries()[0].__str__()
 
     def strip_tree_of_needless_tags(self, new_tree):
-        return new_tree.find_all(self.ENTRIES_TAG_NAME)[0]
+        return new_tree.find_all(self.ENTRY_TAG)[0]
 
     def add_new_entry(self, key: str, value: str):
         new_entry = self.copy_entry(self.template_entry.__str__())
-        new_entry[self.ENTRIES_KEY_LABEL] = key
+        new_entry[self.ENTRY_KEY] = key
         new_entry.find(string=new_entry.text).replace_with(value)
-        self.xml_tree.find_all(self.ENTRIES_PARENT_TAG)[0].append(new_entry)
+        self.xml_tree.find_all(self.PARENT_TAG)[0].append(new_entry)
 
     def find_entry_by_key(self, entry_key):
         for entry in self.get_all_entries():
-            if entry[self.ENTRIES_KEY_LABEL] == entry_key:
+            if entry[self.ENTRY_KEY] == entry_key:
                 return entry
 
     def update_entry_key(self, entry, new_key):
-        entry[self.ENTRIES_KEY_LABEL] = new_key
+        entry[self.ENTRY_KEY] = new_key
 
     def update_entry_value(self, entry, new_value):
         entry.find(string=entry.text).replace_with(new_value)
 
     def get_entries_dict(self):
-        return {entry[self.ENTRIES_KEY_LABEL]: entry.text for entry in self.get_all_entries()}
+        return {entry[self.ENTRY_KEY]: entry.text for entry in self.get_all_entries()}
 
     def does_entry_exist(self, entry_key):
         if self.find_entry_by_key(entry_key):
@@ -89,4 +89,4 @@ class XmlHandler:
         return key in self.get_all_keys()
 
     def get_all_keys(self):
-        return [entry[self.ENTRIES_KEY_LABEL] for entry in self.get_all_entries()]
+        return [entry[self.ENTRY_KEY] for entry in self.get_all_entries()]
