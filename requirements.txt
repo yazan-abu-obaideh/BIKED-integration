@@ -7,3 +7,4 @@ pandas
 Resources
 tensorflow
 scikit-learn
+jupyterlab
