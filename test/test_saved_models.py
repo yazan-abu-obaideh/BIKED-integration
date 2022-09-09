@@ -9,7 +9,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from src.MultilabelPredictor import MultilabelPredictor
 
-MODEL_DIR = "../resources/Trained Models/BestNN"
+MODEL_DIR = "../resources/models/Trained Models/BestNN"
 LABELS_DIR = "../resources/labels.txt"
 
 
