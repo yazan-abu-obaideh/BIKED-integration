@@ -28,7 +28,7 @@ class AutogluonLearningTest(unittest.TestCase):
         self.predictor: MultilabelPredictor
         print(self.predictor.path)
 
-    def _test_can_predict(self):
+    def test_can_predict(self):
         x_scaled, y, _, xscaler = load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
         q = y.quantile(.95)
         for col in y.columns:

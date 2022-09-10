@@ -1,5 +1,5 @@
 autogluon
-autogluon.tabular==0.5.2
+autogluon.tabular
 beautifulsoup4
 Flask
 keras
