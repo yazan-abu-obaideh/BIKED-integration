@@ -25,28 +25,40 @@ class AutogluonLearningTest(unittest.TestCase):
                                          'Sim 3 Bottom Bracket X Rot.', 'Sim 1 Safety Factor',
                                          'Sim 3 Safety Factor', 'Model Mass']
 
-    def test_model_is_functional(self):
-        self.predictor: MultilabelPredictor
-        print(self.multi_predictor.path)
-
     def test_can_predict(self):
-        x_scaled, y, _, xscaler = load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
-        q = y.quantile(.95)
-        for col in y.columns:
-            y = y[y[col] <= q[col]]
+        x_scaled, y, _, xscaler = self.get_data()
+
+        y = self.filter_y(y)
         x_scaled = x_scaled.loc[y.index]
 
         y_scaled = self.standard_scaling(y)
 
-        x_train, x_test, y_train, y_test = train_test_split(x_scaled, y_scaled, test_size=0.2, random_state=2021)
-        predictions = self.multi_predictor.predict(x_test)
+        x_test, y_test = self.standard_split(x_scaled, y_scaled)
 
-        r2 = sklearn.metrics.r2_score(y_test, predictions)
-        mse = sklearn.metrics.mean_squared_error(y_test, predictions)
-        mae = sklearn.metrics.mean_absolute_error(y_test, predictions)
+        predictions = self.multi_predictor.predict(x_test)
+        r2, mse, mae = self.get_metrics(predictions, y_test)
         assert r2 > 0.93
         assert mse < 0.06
         assert mae < 0.11
+
+    def filter_y(self, y):
+        q = y.quantile(.95)
+        for col in y.columns:
+            y = y[y[col] <= q[col]]
+        return y
+
+    def get_data(self):
+        return load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
+
+    def standard_split(self, x_scaled, y_scaled):
+        x_train, x_test, y_train, y_test = train_test_split(x_scaled, y_scaled, test_size=0.2, random_state=2021)
+        return x_test, y_test
+
+    def get_metrics(self, predictions, y_test):
+        r2 = sklearn.metrics.r2_score(y_test, predictions)
+        mse = sklearn.metrics.mean_squared_error(y_test, predictions)
+        mae = sklearn.metrics.mean_absolute_error(y_test, predictions)
+        return r2, mse, mae
 
     def standard_scaling(self, data):
         data_scaler = StandardScaler()
