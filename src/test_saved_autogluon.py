@@ -11,6 +11,8 @@ import __main__
 
 
 class AutogluonLearningTest(unittest.TestCase):
+    """Test must be placed in src package because loading Autogluon models seems to be highly
+    dependant on package structure"""
     def setUp(self) -> None:
         __main__.MultilabelPredictor = MultilabelPredictor
         relative_path = "AutogluonModels/ag-20220911_073209"
@@ -26,20 +28,25 @@ class AutogluonLearningTest(unittest.TestCase):
                                          'Sim 3 Safety Factor', 'Model Mass']
 
     def test_can_predict(self):
-        x_scaled, y, _, xscaler = self.get_data()
-
-        y = self.filter_y(y)
-        x_scaled = x_scaled.loc[y.index]
-
-        y_scaled = self.standard_scaling(y)
-
-        x_test, y_test = self.standard_split(x_scaled, y_scaled)
+        x_test, y_test = self.prepare_x_y()
 
         predictions = self.multi_predictor.predict(x_test)
         r2, mse, mae = self.get_metrics(predictions, y_test)
         assert r2 > 0.93
         assert mse < 0.06
         assert mae < 0.11
+
+    def test_input_shape(self):
+        x, y = self.prepare_x_y()
+        assert list(x.columns.values) == self.get_input_labels()
+
+    def prepare_x_y(self):
+        x_scaled, y, _, xscaler = self.get_data()
+        y = self.filter_y(y)
+        x_scaled = x_scaled.loc[y.index]
+        y_scaled = self.standard_scaling(y)
+        x_test, y_test = self.standard_split(x_scaled, y_scaled)
+        return x_test, y_test
 
     def filter_y(self, y):
         q = y.quantile(.95)
@@ -69,4 +76,4 @@ class AutogluonLearningTest(unittest.TestCase):
 
     def get_input_labels(self):
         with open("../resources/labels.txt", "r") as file:
-            return file.readlines()
+            return [line.strip() for line in file.readlines()]
