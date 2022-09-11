@@ -13,7 +13,7 @@ import __main__
 class AutogluonLearningTest(unittest.TestCase):
     def setUp(self) -> None:
         __main__.MultilabelPredictor = MultilabelPredictor
-        relative_path = "../resources/models/Trained Models/Autogluon"
+        relative_path = "AutogluonModels/ag-20220911_073209"
         self.multi_predictor = MultilabelPredictor.load(os.path.abspath(relative_path))
 
     def test_can_get_labels(self):
@@ -29,7 +29,7 @@ class AutogluonLearningTest(unittest.TestCase):
         self.predictor: MultilabelPredictor
         print(self.multi_predictor.path)
 
-    def _test_can_predict(self):
+    def test_can_predict(self):
         x_scaled, y, _, xscaler = load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
         q = y.quantile(.95)
         for col in y.columns:
@@ -44,9 +44,9 @@ class AutogluonLearningTest(unittest.TestCase):
         r2 = sklearn.metrics.r2_score(y_test, predictions)
         mse = sklearn.metrics.mean_squared_error(y_test, predictions)
         mae = sklearn.metrics.mean_absolute_error(y_test, predictions)
-        print("R2: " + str(r2))
-        print("MSE: " + str(mse))
-        print("MAE: " + str(mae))
+        assert r2 > 0.93
+        assert mse < 0.06
+        assert mae < 0.11
 
     def standard_scaling(self, data):
         data_scaler = StandardScaler()
