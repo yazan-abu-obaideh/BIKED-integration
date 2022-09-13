@@ -1,7 +1,7 @@
 from flask import Flask, request
 from src.xml_handler import XmlHandler
-from autogluon_.autogluon_wrapper import AutogluonPredictorWrapper
-from autogluon_.test_saved_autogluon import AutogluonLearningTest
+from src.autogluon_wrapper import AutogluonPredictorWrapper
+from test.test_saved_autogluon import AutogluonLearningTest
 
 app = Flask(__name__)
 xml_handler = XmlHandler()

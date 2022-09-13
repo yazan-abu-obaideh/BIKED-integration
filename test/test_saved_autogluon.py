@@ -1,7 +1,7 @@
 import unittest
 
-import autogluon_.load_data as load_data
-from autogluon_.MultilabelPredictor import MultilabelPredictor
+import src.load_data as load_data
+from src.MultilabelPredictor import MultilabelPredictor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import sklearn.metrics
@@ -16,7 +16,8 @@ class AutogluonLearningTest(unittest.TestCase):
 
     def setUp(self) -> None:
         __main__.MultilabelPredictor = MultilabelPredictor
-        relative_path = os.path.join(os.path.dirname(__file__), "../resources/AutogluonModels/ag-20220911_073209/")
+        relative_path = os.path.join(os.path.dirname(__file__),
+                                     "../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/")
         self.multi_predictor = MultilabelPredictor.load(os.path.abspath(relative_path))
 
     def test_can_get_labels(self):

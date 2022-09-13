@@ -28,7 +28,7 @@ def OH_encode(data):
 def load_framed_dataset(c_r="c", onehot=True, scaled=True, augmented=False):
     # key: c=classification, r=regression
     if augmented:
-        prefix = os.path.join(FILE_PATH, "../resources/models")
+        prefix = os.path.join(FILE_PATH, "../resources")
         reg_data = pd.read_csv(os.path.relpath(prefix + "/all_structural_data_aug.csv"), index_col=0)
         clf_data = pd.read_csv(os.path.abspath(prefix + "/validity_aug.csv"), index_col=0)
     else:
