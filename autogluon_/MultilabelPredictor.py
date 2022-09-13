@@ -32,6 +32,7 @@ class MultilabelPredictor:
 
     def __init__(self, labels, path=None, problem_types=None, eval_metrics=None, consider_labels_correlation=True,
                  **kwargs):
+        self.model_root = None
         if len(labels) < 2:
             raise ValueError(
                 "MultilabelPredictor is only intended for predicting MULTIPLE labels (columns), use TabularPredictor "
@@ -149,13 +150,17 @@ class MultilabelPredictor:
     @classmethod
     def load(cls, path):
         """ Load MultilabelPredictor from disk `path` previously specified when creating this MultilabelPredictor. """
-        return load_pkl.load(path=os.path.join(path, cls.multi_predictor_file))
+        predictor_instance = load_pkl.load(path=os.path.join(path, cls.multi_predictor_file))
+        predictor_instance.model_root = path
+        return predictor_instance
 
     def get_predictor(self, label):
         """ Returns TabularPredictor which is used to predict this label. """
         predictor = self.predictors[label]
+        path_elements = predictor.split("/")
+        path_relative_to_root = path_elements[-2] + "/" + path_elements[-1]
         if isinstance(predictor, str):
-            return TabularPredictor.load(path=os.path.join(os.path.dirname(__file__), predictor))
+            return TabularPredictor.load(path=os.path.join(self.model_root, path_relative_to_root))
         return predictor
 
     def _get_data(self, data):
