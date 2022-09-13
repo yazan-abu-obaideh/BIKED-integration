@@ -1,6 +1,6 @@
 from src.MultilabelPredictor import MultilabelPredictor
 import os
-from predictor import Predictor
+from src.predictor import Predictor
 import __main__
 
 

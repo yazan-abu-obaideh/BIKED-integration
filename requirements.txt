@@ -1,10 +1,10 @@
-autogluon
-autogluon.tabular
+numpy
+autogluon==0.5.2
+autogluon.mxnet
 beautifulsoup4
 Flask
 keras
 pandas
-Resources
+scikit_learn
 tensorflow
-scikit-learn
 jupyterlab
