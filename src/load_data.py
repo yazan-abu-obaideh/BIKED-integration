@@ -12,6 +12,8 @@ from sklearn.preprocessing import StandardScaler
 import random
 import os
 
+FILE_PATH = os.path.dirname(__file__)
+
 
 def OH_encode(data):
     data = data.copy()
@@ -26,8 +28,9 @@ def OH_encode(data):
 def load_framed_dataset(c_r="c", onehot=True, scaled=True, augmented=False):
     # key: c=classification, r=regression
     if augmented:
-        reg_data = pd.read_csv(os.path.relpath("../resources/models/all_structural_data_aug.csv"), index_col=0)
-        clf_data = pd.read_csv(os.path.abspath("../resources/models/validity_aug.csv"), index_col=0)
+        prefix =  os.path.join(FILE_PATH, "../resources/models")
+        reg_data = pd.read_csv(os.path.relpath(prefix + "/all_structural_data_aug.csv"), index_col=0)
+        clf_data = pd.read_csv(os.path.abspath(prefix + "/validity_aug.csv"), index_col=0)
     else:
         reg_data = pd.read_csv("all_structural_data.csv", index_col=0)
         clf_data = pd.read_csv("validity.csv", index_col=0)

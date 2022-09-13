@@ -149,10 +149,7 @@ class MultilabelPredictor:
     @classmethod
     def load(cls, path):
         """ Load MultilabelPredictor from disk `path` previously specified when creating this MultilabelPredictor. """
-        path = os.path.expanduser(path)
-        if path[-1] != os.path.sep:
-            path = path + os.path.sep
-        return load_pkl.load(path=path + cls.multi_predictor_file)
+        return load_pkl.load(path=path + "/" + cls.multi_predictor_file)
 
     def get_predictor(self, label):
         """ Returns TabularPredictor which is used to predict this label. """
