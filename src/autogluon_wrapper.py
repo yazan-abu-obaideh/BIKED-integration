@@ -3,8 +3,6 @@ import os
 from predictor import Predictor
 import __main__
 
-FILE_PATH = os.path.dirname(__file__)
-
 
 class AutogluonPredictorWrapper(Predictor):
 
