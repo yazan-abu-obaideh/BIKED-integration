@@ -23,6 +23,7 @@ def index():
 def do_stuff():
     __main__.MultilabelPredictor = MultilabelPredictor
     test = AutogluonLearningTest()
+    test.setUp()
     x, y = test.prepare_x_y()
     predictions = predictor.predict(x)
     r2, mse, mae = test.get_metrics(predictions, y)

@@ -13,6 +13,7 @@ import __main__
 class AutogluonLearningTest(unittest.TestCase):
     """Test must be placed in src package because loading Autogluon models seems to be highly
     dependant on package structure"""
+
     def setUp(self) -> None:
         __main__.MultilabelPredictor = MultilabelPredictor
         relative_path = os.path.join(os.path.dirname(__file__), "AutogluonModels/ag-20220911_073209/")
