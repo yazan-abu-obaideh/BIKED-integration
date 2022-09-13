@@ -1,7 +1,7 @@
 from flask import Flask, request
 from src.xml_handler import XmlHandler
-from src.autogluon_wrapper import AutogluonPredictorWrapper
-from src.test_saved_autogluon import AutogluonLearningTest
+from autogluon_.autogluon_wrapper import AutogluonPredictorWrapper
+from autogluon_.test_saved_autogluon import AutogluonLearningTest
 
 app = Flask(__name__)
 xml_handler = XmlHandler()
@@ -26,6 +26,7 @@ def assert_model_is_functional():
     assert r2 > 0.93
     assert mse < 0.06
     assert mae < 0.11
+    print("Model functional. All systems online.")
 
 
 if __name__ == "__main__":

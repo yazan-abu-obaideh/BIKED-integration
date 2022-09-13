@@ -155,7 +155,7 @@ class MultilabelPredictor:
         """ Returns TabularPredictor which is used to predict this label. """
         predictor = self.predictors[label]
         if isinstance(predictor, str):
-            return TabularPredictor.load(path=predictor)
+            return TabularPredictor.load(path=os.path.join(os.path.dirname(__file__), predictor))
         return predictor
 
     def _get_data(self, data):

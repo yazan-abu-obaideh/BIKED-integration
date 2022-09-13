@@ -4,10 +4,10 @@ import sklearn.metrics
 from keras.engine.sequential import Sequential
 import tensorflow as tf
 import pandas as pd
-from src.load_data import load_framed_dataset
+from autogluon_.load_data import load_framed_dataset
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from src.MultilabelPredictor import MultilabelPredictor
+from autogluon_.MultilabelPredictor import MultilabelPredictor
 
 MODEL_DIR = "../resources/models/Trained Models/BestNN"
 LABELS_DIR = "../resources/labels.txt"

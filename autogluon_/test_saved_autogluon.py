@@ -1,7 +1,7 @@
 import unittest
 
-from src import load_data
-from src.MultilabelPredictor import MultilabelPredictor
+import autogluon_.load_data as load_data
+from autogluon_.MultilabelPredictor import MultilabelPredictor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import sklearn.metrics
