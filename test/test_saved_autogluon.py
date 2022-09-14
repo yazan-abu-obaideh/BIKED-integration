@@ -9,10 +9,22 @@ import pandas as pd
 import os
 import __main__
 
+LABELS_REL_PATH = "../resources/labels.txt"
+MODEL_REL_PATH = "../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
+
+
+def importable_path(path):
+    return os.path.join(os.path.dirname(__file__), path)
+
+
+LABELS_PATH, MODEL_PATH = [importable_path(path) for path in (LABELS_REL_PATH, MODEL_REL_PATH)]
+
 
 class AutogluonLearningTest(unittest.TestCase):
 
     def setUp(self) -> None:
+        __main__.MultilabelPredictor = MultilabelPredictor
+        self.multi_predictor = MultilabelPredictor.load(MODEL_PATH)
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
@@ -43,10 +55,6 @@ class AutogluonLearningTest(unittest.TestCase):
                                 'Sim 1 Safety Factor': -0.8752062320709229,
                                 'Sim 3 Safety Factor': -0.3395128548145294,
                                 'Model Mass': -0.9461116790771484}
-        __main__.MultilabelPredictor = MultilabelPredictor
-        relative_path = os.path.join(os.path.dirname(__file__),
-                                     "../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/")
-        self.multi_predictor = MultilabelPredictor.load(os.path.abspath(relative_path))
 
     def test_can_get_labels(self):
         self.multi_predictor: MultilabelPredictor
@@ -137,5 +145,5 @@ class AutogluonLearningTest(unittest.TestCase):
         return data_scaled
 
     def get_input_labels(self):
-        with open("../resources/labels.txt", "r") as file:
+        with open(LABELS_PATH, "r") as file:
             return [line.strip() for line in file.readlines()]
