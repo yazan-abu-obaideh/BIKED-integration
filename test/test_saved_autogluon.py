@@ -32,6 +32,7 @@ class AutogluonLearningTest(unittest.TestCase):
 
         predictions = self.multi_predictor.predict(x_test)
         r2, mse, mae = self.get_metrics(predictions, y_test)
+        print(r2, mse, mae)
         assert r2 > 0.93
         assert mse < 0.06
         assert mae < 0.11
@@ -39,6 +40,29 @@ class AutogluonLearningTest(unittest.TestCase):
     def test_input_shape(self):
         x, y = self.prepare_x_y()
         assert list(x.columns.values) == self.get_input_labels()
+
+    def test_can_predict_singular_input(self):
+        x, y = self.prepare_x_y()
+        prediction = self.multi_predictor.predict(self.get_first_row(x))
+        assert (self.get_result_dict(prediction)) == \
+               {'Sim 1 Dropout X Disp.': 0.09372919797897339, 'Sim 1 Dropout Y Disp.': 0.1128099337220192,
+                'Sim 1 Bottom Bracket X Disp.': 0.02232583984732628,
+                'Sim 1 Bottom Bracket Y Disp.': 0.2731778919696808,
+                'Sim 2 Bottom Bracket Z Disp.': 1.7482761144638062,
+                'Sim 3 Bottom Bracket Y Disp.': 3.2179315090179443,
+                'Sim 3 Bottom Bracket X Rot.': 2.0954513549804688,
+                'Sim 1 Safety Factor': -0.8752062320709229,
+                'Sim 3 Safety Factor': -0.3395128548145294,
+                'Model Mass': -0.9461116790771484}
+
+    def get_result_dict(self, dataframe):
+        return dataframe.loc[self.first_row_index(dataframe)].to_dict()
+
+    def first_row_index(self, dataframe):
+        return dataframe.index.values[0]
+
+    def get_first_row(self, dataframe):
+        return dataframe[dataframe.index == self.first_row_index(dataframe)]
 
     def prepare_x_y(self):
         x_scaled, y, _, xscaler = self.get_data()
@@ -58,7 +82,7 @@ class AutogluonLearningTest(unittest.TestCase):
         return load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
 
     def standard_split(self, x_scaled, y_scaled):
-        x_train, x_test, y_train, y_test = train_test_split(x_scaled, y_scaled, test_size=0.2, random_state=2021)
+        x_train, x_test, y_train, y_test = train_test_split(x_scaled, y_scaled, test_size=0.2, random_state=1950)
         return x_test, y_test
 
     def get_metrics(self, predictions, y_test):
