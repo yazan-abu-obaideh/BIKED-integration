@@ -1,6 +1,7 @@
 from src.MultilabelPredictor import MultilabelPredictor
 import os
 from src.predictor import Predictor
+import pandas as pd
 import __main__
 
 
@@ -15,3 +16,4 @@ class AutogluonPredictorWrapper(Predictor):
     def predict(self, data):
         self.multi_predictor: MultilabelPredictor
         return self.multi_predictor.predict(data)
+
