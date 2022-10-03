@@ -1,7 +1,7 @@
 from flask import Flask, request
 from production.xml_handler import XmlHandler
-from production.autogluon_wrapper import AutogluonPredictorWrapper
-from test.test_saved_autogluon import AutogluonLearningTest
+from production.autogluon.autogluon_wrapper import AutogluonPredictorWrapper
+from test.autogluon.test_saved_autogluon import AutogluonLearningTest
 import pandas as pd
 
 app = Flask(__name__)
