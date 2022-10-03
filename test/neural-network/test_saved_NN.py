@@ -4,8 +4,8 @@ import sklearn.metrics
 from keras.engine.sequential import Sequential
 import tensorflow as tf
 import pandas as pd
-from src.load_data import load_framed_dataset
-from src.MultilabelPredictor import MultilabelPredictor
+from production.load_data import load_framed_dataset
+from production.autogluon.MultilabelPredictor import MultilabelPredictor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 

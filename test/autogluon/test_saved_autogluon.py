@@ -1,7 +1,7 @@
 import unittest
 
-import src.load_data as load_data
-from src.MultilabelPredictor import MultilabelPredictor
+import production.load_data as load_data
+from production.autogluon.MultilabelPredictor import MultilabelPredictor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
@@ -9,8 +9,8 @@ import pandas as pd
 import os
 import __main__
 
-LABELS_REL_PATH = "../resources/labels.txt"
-MODEL_REL_PATH = "../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
+LABELS_REL_PATH = "../../resources/labels.txt"
+MODEL_REL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
 
 
 def importable_path(path):

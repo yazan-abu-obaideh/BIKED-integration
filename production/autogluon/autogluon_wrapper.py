@@ -1,8 +1,7 @@
-from src.MultilabelPredictor import MultilabelPredictor
-import os
-from src.predictor import Predictor
-import pandas as pd
 import __main__
+import os
+from production.autogluon.MultilabelPredictor import MultilabelPredictor
+from production.predictor import Predictor
 
 
 class AutogluonPredictorWrapper(Predictor):
