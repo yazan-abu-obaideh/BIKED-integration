@@ -56,7 +56,7 @@ class XmlHandler:
         entry.find(string=entry.text).replace_with(new_value)
 
     def get_entries_dict(self):
-        return {entry[self.ENTRY_KEY]: entry.text for entry in self.get_all_entries()}
+        return {entry[self.ENTRY_KEY].strip(): entry.text for entry in self.get_all_entries()}
 
     def does_entry_exist(self, entry_key):
         if self.find_entry_by_key(entry_key):
