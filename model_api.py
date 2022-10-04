@@ -1,38 +1,33 @@
 from flask import Flask, request
-from production.xml_handler import XmlHandler
-from production.autogluon.autogluon_wrapper import AutogluonPredictorWrapper
-from test.autogluon.test_saved_autogluon import AutogluonLearningTest
-import pandas as pd
+from production.autogluon.autogluon_service import AutogluonService
 
 app = Flask(__name__)
-xml_handler = XmlHandler()
-predictor = AutogluonPredictorWrapper()
-test = AutogluonLearningTest()
-test.setUp()
-
-
-def get_row_from_dict(model_input_dict):
-    return pd.DataFrame([list(model_input_dict.values())], columns=list(model_input_dict.keys()))
+service = AutogluonService()
 
 
 @app.route("/")
 def index():
     request_as_raw_xml = request.data.decode("utf-8")
-    xml_handler.set_xml(request_as_raw_xml)
-    response = predictor.predict(get_row_from_dict(xml_handler.get_entries_dict()))
-    return response.to_dict()
+    return service.predict(request_as_raw_xml)
 
 
-def assert_model_is_functional():
-    x, y = test.prepare_x_y()
-    predictions = predictor.predict(x)
-    r2, mse, mae = test.get_metrics(predictions, y)
-    print(f"{r2=}")
-    print(f"{mae=}")
-    print(f"{mse=}")
-    print("Model functional. All systems online.")
+def end_to_end_test():
+    def get_sample_BikeCadXml():
+        with open("resources/BikeCADXmlRequest.xml", "r") as file:
+            return file.read()
+
+    assert service.predict(get_sample_BikeCadXml()) == {'Model Mass': -0.9461116790771484,
+                                                        'Sim 1 Bottom Bracket X Disp.': 0.02232583984732628,
+                                                        'Sim 1 Bottom Bracket Y Disp.': 0.2731778919696808,
+                                                        'Sim 1 Dropout X Disp.': 0.09372919797897339,
+                                                        'Sim 1 Dropout Y Disp.': 0.1128099337220192,
+                                                        'Sim 1 Safety Factor': -0.8752062320709229,
+                                                        'Sim 2 Bottom Bracket Z Disp.': 1.7482761144638062,
+                                                        'Sim 3 Bottom Bracket X Rot.': 2.0954513549804688,
+                                                        'Sim 3 Bottom Bracket Y Disp.': 3.2179315090179443,
+                                                        'Sim 3 Safety Factor': -0.3395128548145294}
 
 
 if __name__ == "__main__":
-    assert_model_is_functional()
+    end_to_end_test()
     app.run(debug=True, port=5050)

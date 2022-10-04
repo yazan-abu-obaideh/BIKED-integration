@@ -1,14 +1,22 @@
 import pandas as pd
 from production.xml_handler import XmlHandler
+from production.autogluon.autogluon_wrapper import AutogluonPredictorWrapper
 
 
 class AutogluonService:
     def __init__(self):
         self.xml_handler = XmlHandler()
+        self.predictor = AutogluonPredictorWrapper()
 
     def get_row(self, xml_request):
         self.xml_handler.set_xml(xml_request)
-        model_input_dict = self.xml_handler.get_entries_dict()
-        row = pd.DataFrame([list(model_input_dict.values())], columns=list(model_input_dict.keys()))
-        print(row.to_dict())
-        return row
+        model_input_dict = {key: float(value) for key, value in self.xml_handler.get_entries_dict().items()}
+        one_row_df = pd.DataFrame([list(model_input_dict.values())], columns=list(model_input_dict.keys()))
+        return one_row_df
+
+    def first_row_index(self, dataframe):
+        return dataframe.index.values[0]
+
+    def predict(self, bike_cad_xml) -> dict:
+        row = self.get_row(bike_cad_xml)
+        return self.predictor.predict(row).to_dict()
