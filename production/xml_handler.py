@@ -73,7 +73,7 @@ class XmlHandler:
     def set_entries_from_dict(self, entries_dict: dict):
         self.remove_all_entries()
         for key, value in entries_dict.items():
-            self.add_new_entry(key, value)
+            self.add_new_entry(str(key), str(value))
 
     def update_entries_from_dict(self, entries_dict: dict):
         for key, value in entries_dict.items():
