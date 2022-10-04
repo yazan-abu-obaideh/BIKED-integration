@@ -29,5 +29,4 @@ def end_to_end_test():
 
 
 if __name__ == "__main__":
-    end_to_end_test()
     app.run(debug=True, port=5050)
