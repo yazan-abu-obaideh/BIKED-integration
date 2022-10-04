@@ -14,9 +14,12 @@ class AutogluonService:
         one_row_df = pd.DataFrame([list(model_input_dict.values())], columns=list(model_input_dict.keys()))
         return one_row_df
 
+    def get_dict_from_row(self, row):
+        return row.loc[self.first_row_index(row)].to_dict()
+
     def first_row_index(self, dataframe):
         return dataframe.index.values[0]
 
     def predict(self, bike_cad_xml) -> dict:
         row = self.get_row(bike_cad_xml)
-        return self.predictor.predict(row).to_dict()
+        return self.get_dict_from_row(self.predictor.predict(row))
