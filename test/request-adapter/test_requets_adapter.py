@@ -18,9 +18,10 @@ class RequestAdapterTest(unittest.TestCase):
 
     def test_special_behavior(self):
         assert self.result_dict["Material=Steel"] == 1
+        assert self.result_dict["CSB_Include"] == 0
 
-    def test_include(self):
-        assert self.result_dict["CSB_Include"] == "false"
+    def test_ramifications(self):
+        self.result_dict["CSB_OD"] = 0.017759
 
     def test_default(self):
         assert self.result_dict["HT Thickness"] == 2
