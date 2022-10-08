@@ -5,9 +5,10 @@ default_values = {'Material=Steel': 0, 'Material=Aluminum': 0, 'Material=Titaniu
                   'HT UX': 0, 'HT Angle': 0, 'HT Length': 0, 'ST Length': 0, 'BB Length': 0,
                   'Dropout Offset': 0, 'SSB OD': 0, 'CSB OD': 0, 'SSB Offset': 0,
                   'CSB Offset': 0, 'SS Z': 0, 'SS Thickness': 0, 'CS Thickness': 0,
-                  'TT Thickness': 0, 'BB Thickness': 0, 'HT Thickness': 0, 'ST Thickness': 0,
+                  'TT Thickness': 0, 'BB Thickness': 2, 'HT Thickness': 2, 'ST Thickness': 0,
                   'DT Thickness': 0, 'DT Length': 0}
 warnings_map = {}
+keys_whose_presence_indicates_their_value = ["CSB_Include", "SSB_Include"]
 raise_exception_if_missing = []
 special_behavior = {
     "Material": "",

@@ -17,8 +17,13 @@ class RequestAdapterTest(unittest.TestCase):
         assert "irrelevant" not in self.result_dict.keys()
 
     def test_special_behavior(self):
-        assert self.result_dict["Material=Aluminum"] == 0
         assert self.result_dict["Material=Steel"] == 1
+
+    def test_include(self):
+        assert self.result_dict["CSB_Include"] == "false"
+
+    def test_default(self):
+        assert self.result_dict["HT Thickness"] == 2
 
     def get_BikeCad_file_as_raw_xml(self):
         with open("../resources/SimpleModel1.xml", "r") as file:

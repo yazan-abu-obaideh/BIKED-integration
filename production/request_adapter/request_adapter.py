@@ -1,5 +1,5 @@
 from production.xml_handler import XmlHandler
-from production.request_adapter.settings import default_values
+from production.request_adapter.settings import default_values, keys_whose_presence_indicates_their_value
 
 DEFAULT_VALUE = 0
 
@@ -43,9 +43,13 @@ class RequestAdapter:
         material_value = bikeCad_file_entries["MATERIAL"]
 
         self.handle_materials(result_dict, material_value)
+        # values whose presence indicates their value:
+        self.handle_keys_whose_presence_indicates_their_value(result_dict)
+        result_dict["CSB_Include"] = str("CSB_Include" in result_dict).lower()
 
-        if "CSB_Include" not in result_dict:
-            result_dict["CSB_Include"] = "false"
+        # if "CSB_Include" not in result_dict:
+        #     result_dict["CSB_Include"] = "false"
+        # TODO: ask Lyle whether it's fine to have an else clause here.
         if "SSB_Include" not in result_dict:
             result_dict["SSB_Include"] = "false"
 
@@ -60,13 +64,14 @@ class RequestAdapter:
         else:
             result_dict["SSB_Include"] = 1
 
-        result_dict["HT Thickness"] = 2
-        result_dict["BB Thickness"] = 2
-
         return result_dict
 
     def handle_materials(self, result_dict, materials_entry: str):
         result_dict[f"Material={materials_entry.lower().title()}"] = 1
+
+    def handle_keys_whose_presence_indicates_their_value(self, result_dict):
+        for key in keys_whose_presence_indicates_their_value:
+            result_dict[key] = str(key in result_dict).lower()
 
     def get_float_if_float(self, value):
         try:
