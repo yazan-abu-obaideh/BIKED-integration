@@ -1,6 +1,6 @@
 import unittest
 from production.xml_handler import XmlHandler
-from production.request_adapter.model_independent import RequestAdapter
+from production.request_adapter.request_adapter import RequestAdapter
 
 
 class RequestAdapterTest(unittest.TestCase):
@@ -17,9 +17,8 @@ class RequestAdapterTest(unittest.TestCase):
         assert "irrelevant" not in self.result_dict.keys()
 
     def test_special_behavior(self):
-        alum = "Material=Aluminum"
-        assert alum in self.result_dict.keys()
-        assert self.result_dict[alum] == 1
+        assert self.result_dict["Material=Aluminum"] == 0
+        assert self.result_dict["Material=Steel"] == 1
 
     def get_BikeCad_file_as_raw_xml(self):
         with open("../resources/SimpleModel1.xml", "r") as file:

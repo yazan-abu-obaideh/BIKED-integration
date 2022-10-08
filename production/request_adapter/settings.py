@@ -9,3 +9,6 @@ default_values = {'Material=Steel': 0, 'Material=Aluminum': 0, 'Material=Titaniu
                   'DT Thickness': 0, 'DT Length': 0}
 warnings_map = {}
 raise_exception_if_missing = []
+special_behavior = {
+    "Material": "",
+}

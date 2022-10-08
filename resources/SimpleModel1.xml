@@ -6,7 +6,7 @@
     <!--Will the request adapter change the key and read the value?-->
     <entry key="Wall thickness Top tube">5</entry>
     <!--Will the request adapter handle this special case?-->
-    <entry key="Material">Aluminum</entry>
+    <entry key="MATERIAL">STEEL</entry>
     <!--Will the request adapter warn this value?-->
     <entry key="test-warning">-1</entry>
     <!--Will the request adapter raise an exception if I'm missing?-->
