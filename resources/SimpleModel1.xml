@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!--Will the request adapter ignore me?-->
+    <entry key="irrelevant">I don't matter</entry>
+    <!--Will the request adapter change the key and read the value?-->
+    <entry key="Wall thickness Top tube">5</entry>
+    <!--Will the request adapter handle this special case?-->
+    <entry key="Material">Aluminum</entry>
+    <!--Will the request adapter warn this value?-->
+    <entry key="test-warning">-1</entry>
+    <!--Will the request adapter raise an exception if I'm missing?-->
+    <entry key="must-have">10</entry>
+</properties>
