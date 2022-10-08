@@ -1,7 +1,7 @@
 import pandas as pd
 from production.xml_handler import XmlHandler
 from production.autogluon.autogluon_wrapper import AutogluonPredictorWrapper
-from production.request_adapter import RequestAdapter
+from production.request_adapter.model_independent import RequestAdapter
 
 
 class AutogluonService:

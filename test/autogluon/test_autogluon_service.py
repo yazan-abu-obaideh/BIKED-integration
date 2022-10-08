@@ -1,7 +1,6 @@
 import os.path
 import unittest
 from production.autogluon.autogluon_service import AutogluonService
-import pandas as pd
 
 
 class TestAutogluonService(unittest.TestCase):

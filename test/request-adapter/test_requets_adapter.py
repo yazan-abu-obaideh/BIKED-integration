@@ -1,6 +1,6 @@
 import unittest
 from production.xml_handler import XmlHandler
-from production.request_adapter import RequestAdapter
+from production.request_adapter.model_independent import RequestAdapter
 
 
 class RequestAdapterTest(unittest.TestCase):
@@ -49,7 +49,7 @@ class RequestAdapterTest(unittest.TestCase):
         # assert result_dict == {key.strip(): value for key, value in stuff.items()}
 
     def get_BikeCad_file_as_raw_xml(self):
-        with open("../resources/Model2.xml", "r") as file:
+        with open("../resources/FullModel2.xml", "r") as file:
             return file.read()
 
 
