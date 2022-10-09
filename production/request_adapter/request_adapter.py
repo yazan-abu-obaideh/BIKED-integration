@@ -18,7 +18,7 @@ class RequestAdapter:
         self.handle_special_behavior(bikeCad_file_entries, result_dict)
         self.fill_default(result_dict)
 
-        return self.to_float_values(result_dict)
+        return self.to_final_values(result_dict)
 
     def transform_to_model(self, bikeCad_file_entries):
         result_dict = {}
@@ -57,11 +57,11 @@ class RequestAdapter:
             if key not in result_dict:
                 result_dict[key] = value
 
-    def get_float_if_float(self, value):
+    def to_final_values(self, result_dict):
+        return {key: self.get_float_or_strip(value) for key, value in result_dict.items()}
+
+    def get_float_or_strip(self, value):
         try:
             return float(value)
         except ValueError:
             return str(value).strip()
-
-    def to_float_values(self, result_dict):
-        return {key: self.get_float_if_float(value) for key, value in result_dict.items()}
