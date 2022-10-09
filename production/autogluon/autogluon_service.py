@@ -1,4 +1,6 @@
 import pandas as pd
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
 from production.xml_handler import XmlHandler
 from production.request_adapter.request_adapter import RequestAdapter
 import os
@@ -38,6 +40,18 @@ class AutogluonService:
         bike_cad_dict = self.adapter.convert(bike_cad_xml)
         row = self.get_row(bike_cad_dict)
         return self.get_dict_from_row(self.predictor.predict(row))
+
+    def get_metrics(self, predictions, y_test):
+        r2 = r2_score(y_test, predictions)
+        mse = mean_squared_error(y_test, predictions)
+        mae = mean_absolute_error(y_test, predictions)
+        return r2, mse, mae
+
+    def get_row_from_dict(self, model_input_dict):
+        return pd.DataFrame([list(model_input_dict.values())], columns=list(model_input_dict.keys()))
+
+    def get_dict_from_row(self, row):
+        return row.loc[self.first_row_index(row)].to_dict()
 
     def get_labels(self):
         return list(self.predictor.labels.values)

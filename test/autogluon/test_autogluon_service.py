@@ -5,7 +5,6 @@ import production.load_data as load_data
 from production.autogluon.autogluon_service import AutogluonService
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import pandas as pd
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
@@ -55,7 +54,7 @@ class AutogluonServiceTest(unittest.TestCase):
         x_test, y_test = self.prepare_x_y()
 
         predictions = self.service.predict_from_row(x_test)
-        r2, mse, mae = self.get_metrics(predictions, y_test)
+        r2, mse, mae = self.service.get_metrics(predictions, y_test)
         assert r2 > 0.97
         assert mse < 0.025
         assert mae < 0.055
@@ -68,26 +67,21 @@ class AutogluonServiceTest(unittest.TestCase):
         x, y = self.prepare_x_y()
         model_input = self.get_first_row(x)
         prediction = self.service.predict_from_row(model_input)
-        assert self.get_dict_from_row(model_input) == self.sample_input
-        assert (self.get_dict_from_row(prediction)) == \
+        assert self.service.get_dict_from_row(model_input) == self.sample_input
+        assert (self.service.get_dict_from_row(prediction)) == \
                self.expected_output
-        model_input_from_dict = self.get_row_from_dict(self.sample_input)
-        assert self.get_dict_from_row(self.service.predict_from_row(model_input_from_dict)) == self.expected_output
+        model_input_from_dict = self.service.get_row_from_dict(self.sample_input)
+        assert self.service.get_dict_from_row(self.service.predict_from_row(model_input_from_dict))\
+               == self.expected_output
 
     def test_cannot_predict_from_partial_singular_input(self):
-        incomplete_model_input = self.get_row_from_dict(
+        incomplete_model_input = self.service.get_row_from_dict(
             {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
              "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
              "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
              "BB Drop": 0.19327064177679704})
         self.assertRaises(KeyError, self.service.predict_from_row,
                           incomplete_model_input)
-
-    def get_row_from_dict(self, model_input_dict):
-        return pd.DataFrame([list(model_input_dict.values())], columns=list(model_input_dict.keys()))
-
-    def get_dict_from_row(self, row):
-        return row.loc[self.first_row_index(row)].to_dict()
 
     def first_row_index(self, dataframe):
         return dataframe.index.values[0]
@@ -113,14 +107,11 @@ class AutogluonServiceTest(unittest.TestCase):
         return load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
 
     def standard_split(self, x_scaled, y_scaled):
-        x_train, x_test, y_train, y_test = train_test_split(x_scaled, y_scaled, test_size=0.2, random_state=1950)
+        x_train, x_test, y_train, y_test = train_test_split(x_scaled,
+                                                            y_scaled,
+                                                            test_size=0.2,
+                                                            random_state=1950)
         return x_test, y_test
-
-    def get_metrics(self, predictions, y_test):
-        r2 = r2_score(y_test, predictions)
-        mse = mean_squared_error(y_test, predictions)
-        mae = mean_absolute_error(y_test, predictions)
-        return r2, mse, mae
 
     def standard_scaling(self, data):
         data_scaler = StandardScaler()
