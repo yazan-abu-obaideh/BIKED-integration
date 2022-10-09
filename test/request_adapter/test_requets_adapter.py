@@ -11,7 +11,7 @@ class RequestAdapterTest(unittest.TestCase):
         self.result_dict = self.adapter.convert(self.bikeCad_file)
 
     def test_can_transform(self):
-        assert self.result_dict["TT Thickness"] == '5' != self.adapter.default_values['TT Thickness']
+        assert self.result_dict["TT Thickness"] == 5 != self.adapter.default_values['TT Thickness']
 
     def test_does_ignore(self):
         assert "irrelevant" not in self.result_dict.keys()
@@ -21,7 +21,7 @@ class RequestAdapterTest(unittest.TestCase):
         assert self.result_dict["CSB_Include"] == 0
 
     def test_ramifications(self):
-        self.result_dict["CSB_OD"] = 0.017759
+        assert self.result_dict["CSB_OD"] == 0.017759
 
     def test_default(self):
         assert self.result_dict["HT Thickness"] == 2
