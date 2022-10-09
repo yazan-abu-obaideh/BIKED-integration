@@ -1,30 +1,20 @@
+import os.path
 import unittest
 
 import production.load_data as load_data
-from production.autogluon.MultilabelPredictor import MultilabelPredictor
+from production.autogluon.autogluon_service import AutogluonService
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import pandas as pd
-import os
-import __main__
 
-LABELS_REL_PATH = "../../resources/labels.txt"
-MODEL_REL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
+LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
 
 
-def importable_path(path):
-    return os.path.join(os.path.dirname(__file__), path)
-
-
-LABELS_PATH, MODEL_PATH = [importable_path(path) for path in (LABELS_REL_PATH, MODEL_REL_PATH)]
-
-
-class AutogluonLearningTest(unittest.TestCase):
+class AutogluonServiceTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        __main__.MultilabelPredictor = MultilabelPredictor
-        self.multi_predictor = MultilabelPredictor.load(MODEL_PATH)
+        self.service = AutogluonService()
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
@@ -55,18 +45,16 @@ class AutogluonLearningTest(unittest.TestCase):
                                 'Sim 3 Safety Factor': -0.3395128548145294}
 
     def test_can_get_labels(self):
-        self.multi_predictor: MultilabelPredictor
-        labels_from_predictor = list(self.multi_predictor.labels.values)
-        assert labels_from_predictor == ["Sim 1 Dropout X Disp.", "Sim 1 Dropout Y Disp.",
-                                         "Sim 1 Bottom Bracket X Disp.", "Sim 1 Bottom Bracket Y Disp.",
-                                         "Sim 2 Bottom Bracket Z Disp.", "Sim 3 Bottom Bracket Y Disp.",
-                                         "Sim 3 Bottom Bracket X Rot.", "Sim 1 Safety Factor",
-                                         "Sim 3 Safety Factor", "Model Mass"]
+        assert self.service.get_labels() == ["Sim 1 Dropout X Disp.", "Sim 1 Dropout Y Disp.",
+                                             "Sim 1 Bottom Bracket X Disp.", "Sim 1 Bottom Bracket Y Disp.",
+                                             "Sim 2 Bottom Bracket Z Disp.", "Sim 3 Bottom Bracket Y Disp.",
+                                             "Sim 3 Bottom Bracket X Rot.", "Sim 1 Safety Factor",
+                                             "Sim 3 Safety Factor", "Model Mass"]
 
     def test_can_predict(self):
         x_test, y_test = self.prepare_x_y()
 
-        predictions = self.multi_predictor.predict(x_test)
+        predictions = self.service.predict_from_row(x_test)
         r2, mse, mae = self.get_metrics(predictions, y_test)
         assert r2 > 0.97
         assert mse < 0.025
@@ -79,12 +67,12 @@ class AutogluonLearningTest(unittest.TestCase):
     def test_can_predict_singular_input(self):
         x, y = self.prepare_x_y()
         model_input = self.get_first_row(x)
-        prediction = self.multi_predictor.predict(model_input)
+        prediction = self.service.predict_from_row(model_input)
         assert self.get_dict_from_row(model_input) == self.sample_input
         assert (self.get_dict_from_row(prediction)) == \
                self.expected_output
         model_input_from_dict = self.get_row_from_dict(self.sample_input)
-        assert self.get_dict_from_row(self.multi_predictor.predict(model_input_from_dict)) == self.expected_output
+        assert self.get_dict_from_row(self.service.predict_from_row(model_input_from_dict)) == self.expected_output
 
     def test_cannot_predict_from_partial_singular_input(self):
         incomplete_model_input = self.get_row_from_dict(
@@ -92,7 +80,7 @@ class AutogluonLearningTest(unittest.TestCase):
              "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
              "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
              "BB Drop": 0.19327064177679704})
-        self.assertRaises(KeyError, self.multi_predictor.predict,
+        self.assertRaises(KeyError, self.service.predict_from_row,
                           incomplete_model_input)
 
     def get_row_from_dict(self, model_input_dict):

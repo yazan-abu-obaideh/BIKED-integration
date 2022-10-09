@@ -2,18 +2,21 @@ import pandas as pd
 from production.xml_handler import XmlHandler
 from production.request_adapter.request_adapter import RequestAdapter
 import os
-from MultilabelPredictor import MultilabelPredictor
+from production.autogluon.MultilabelPredictor import MultilabelPredictor
 import __main__
+
+RELATIVE_MODEL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
+CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
+                                     RELATIVE_MODEL_PATH)
 
 
 class AutogluonService:
     def __init__(self):
+        # TODO: investigate why this needs to be done
+        #  and what it implies
         __main__.MultilabelPredictor = MultilabelPredictor
-        relative_path = os.path.join(os.path.dirname(__file__),
-                                     "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/")
-        self.predictor = MultilabelPredictor.load(os.path.abspath(relative_path))
-        self.labels = self.predictor.labels
 
+        self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
         self.xml_handler = XmlHandler()
         self.adapter = RequestAdapter()
 
@@ -28,7 +31,13 @@ class AutogluonService:
     def first_row_index(self, dataframe):
         return dataframe.index.values[0]
 
-    def predict(self, bike_cad_xml) -> dict:
+    def predict_from_row(self, pd_row):
+        return self.predictor.predict(pd_row)
+
+    def predict_from_xml(self, bike_cad_xml) -> dict:
         bike_cad_dict = self.adapter.convert(bike_cad_xml)
         row = self.get_row(bike_cad_dict)
         return self.get_dict_from_row(self.predictor.predict(row))
+
+    def get_labels(self):
+        return list(self.predictor.labels.values)
