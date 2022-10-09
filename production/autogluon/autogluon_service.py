@@ -50,8 +50,5 @@ class AutogluonService:
     def get_row_from_dict(self, model_input_dict):
         return pd.DataFrame([list(model_input_dict.values())], columns=list(model_input_dict.keys()))
 
-    def get_dict_from_row(self, row):
-        return row.loc[self.first_row_index(row)].to_dict()
-
     def get_labels(self):
         return list(self.predictor.labels.values)
