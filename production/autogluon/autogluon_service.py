@@ -1,13 +1,20 @@
 import pandas as pd
 from production.xml_handler import XmlHandler
-from production.autogluon.autogluon_wrapper import AutogluonPredictorWrapper
 from production.request_adapter.request_adapter import RequestAdapter
+import os
+from MultilabelPredictor import MultilabelPredictor
+import __main__
 
 
 class AutogluonService:
     def __init__(self):
+        __main__.MultilabelPredictor = MultilabelPredictor
+        relative_path = os.path.join(os.path.dirname(__file__),
+                                     "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/")
+        self.predictor = MultilabelPredictor.load(os.path.abspath(relative_path))
+        self.labels = self.predictor.labels
+
         self.xml_handler = XmlHandler()
-        self.predictor = AutogluonPredictorWrapper()
         self.adapter = RequestAdapter()
 
     def get_row(self, adapted_request_dict):
