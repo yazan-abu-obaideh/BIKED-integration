@@ -8,14 +8,15 @@ class RequestAdapter:
         self.xml_handler = XmlHandler()
         self.default_values = default_values
 
-    def convert(self, raw_xml: str) -> dict:
+    def convert_xml(self, raw_xml: str) -> dict:
         self.xml_handler.set_xml(raw_xml)
         bikeCad_file_entries = self.xml_handler.get_entries_dict()
+        return self.convert_dict(bikeCad_file_entries)
 
+    def convert_dict(self, bikeCad_file_entries):
         result_dict = self.transform_to_model(bikeCad_file_entries)
         self.handle_special_behavior(bikeCad_file_entries, result_dict)
         self.fill_default(result_dict)
-
         return self.to_final_values(result_dict)
 
     def transform_to_model(self, bikeCad_file_entries):
@@ -30,8 +31,7 @@ class RequestAdapter:
         return model_key in self.default_values.keys()
 
     def handle_special_behavior(self, bikeCad_file_entries, result_dict):
-        material_value = bikeCad_file_entries["MATERIAL"]
-        self.handle_materials(result_dict, material_value)
+        self.handle_materials(result_dict, bikeCad_file_entries["MATERIAL"])
         self.handle_keys_whose_presence_indicates_their_value(result_dict)
         self.handle_ramifications(result_dict)
 

@@ -37,7 +37,7 @@ class AutogluonService:
         return self.predictor.predict(pd_row)
 
     def predict_from_xml(self, bike_cad_xml) -> dict:
-        bike_cad_dict = self.adapter.convert(bike_cad_xml)
+        bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
         row = self.get_row(bike_cad_dict)
         return self.get_dict_from_row(self.predictor.predict(row))
 

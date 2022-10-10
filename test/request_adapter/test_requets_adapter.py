@@ -8,7 +8,7 @@ class RequestAdapterTest(unittest.TestCase):
         self.x = XmlHandler()
         self.bikeCad_file = self.get_BikeCad_file_as_raw_xml()
         self.adapter = RequestAdapter()
-        self.result_dict = self.adapter.convert(self.bikeCad_file)
+        self.result_dict = self.adapter.convert_xml(self.bikeCad_file)
 
     def test_can_transform(self):
         assert self.result_dict["TT Thickness"] == 5 != self.adapter.default_values['TT Thickness']
