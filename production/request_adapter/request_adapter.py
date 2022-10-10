@@ -2,6 +2,7 @@ from production.xml_handler import XmlHandler
 from production.request_adapter.settings import default_values, \
     keys_whose_presence_indicates_their_value, bikeCad_to_model_map
 
+
 class RequestAdapter:
     def __init__(self):
         self.xml_handler = XmlHandler()
