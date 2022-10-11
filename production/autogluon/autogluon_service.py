@@ -24,8 +24,7 @@ class AutogluonService:
 
     def get_row(self, adapted_request_dict):
         model_input_dict = {key: float(value) for key, value in adapted_request_dict.items()}
-        one_row_df = pd.DataFrame([list(model_input_dict.values())], columns=list(model_input_dict.keys()))
-        return one_row_df
+        return self.get_row_from_dict(model_input_dict)
 
     def get_dict_from_row(self, row):
         return row.loc[self.first_row_index(row)].to_dict()
