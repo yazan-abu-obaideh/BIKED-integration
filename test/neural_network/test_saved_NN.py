@@ -9,7 +9,7 @@ from production.autogluon.MultilabelPredictor import MultilabelPredictor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
-MODEL_DIR = "../resources/models/Trained Models/BestNN"
+MODEL_DIR = "../resources/models/Trained Models/BestNN_Regressor_aug"
 LABELS_DIR = "../resources/labels.txt"
 
 
@@ -21,13 +21,13 @@ class SavedLearningTest(unittest.TestCase):
         self.p = tf.saved_model.load(MODEL_DIR)
 
     def test_can_get_model_summary(self):
-        self.k.summary()
+        print(self.k.summary())
 
     def test_can_get_config(self):
-        self.k.get_config()
+        print(self.k.get_config())
 
     def test_can_get_first_layer_config(self):
-        self.get_first_layer_config()
+        print(self.get_first_layer_config())
 
     def test_number_of_labels_is_number_of_inputs(self):
         assert len(self.labels) == self.get_first_layer_inputs()
