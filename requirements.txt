@@ -14,10 +14,10 @@ autogluon==0.5.2
 autogluon-contrib-nlp==0.0.1b20220208
 autogluon.common==0.5.2
 autogluon.core==0.5.2
-autogluon.extra==0.3.1
+autogluon.extra~=0.3.1
 autogluon.features==0.5.2
 autogluon.multimodal==0.5.2
-autogluon.mxnet==0.3.1
+autogluon.mxnet~=0.3.1
 autogluon.tabular==0.5.2
 autogluon.text==0.5.2
 autogluon.timeseries==0.5.2
