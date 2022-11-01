@@ -1,6 +1,6 @@
 import unittest
 import keras
-import sklearn.metrics
+from sklearn.metrics import r2_score
 from keras.engine.sequential import Sequential
 import tensorflow as tf
 import pandas as pd
@@ -52,7 +52,7 @@ class SavedLearningTest(unittest.TestCase):
         print(predictions)
         print(y_val)
 
-        print(sklearn.metrics.r2_score(predictions, y_train))
+        print(r2_score(predictions, y_train))
 
     def original_loading_code(self):
         x_scaled, y, _, x_scaler = self.standard_load()
