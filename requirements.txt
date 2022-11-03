@@ -186,6 +186,7 @@ typing_extensions==4.4.0
 typish==1.9.3
 urllib3==1.26.12
 virtualenv==20.16.6
+waitress==2.1.2
 wasabi==0.10.1
 Werkzeug==2.2.2
 wrapt==1.14.1
