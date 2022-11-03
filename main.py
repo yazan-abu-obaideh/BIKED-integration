@@ -1,5 +1,6 @@
 from flask import Flask, request
 from production.autogluon.autogluon_service import AutogluonService
+import waitress
 
 app = Flask(__name__)
 service = AutogluonService()
@@ -12,4 +13,4 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    waitress.serve(app, host="0.0.0.0", port=5000)
