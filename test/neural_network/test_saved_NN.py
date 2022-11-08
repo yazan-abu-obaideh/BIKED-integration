@@ -1,3 +1,4 @@
+import os.path
 import unittest
 import keras
 from sklearn.metrics import r2_score
@@ -9,8 +10,8 @@ from production.autogluon.MultilabelPredictor import MultilabelPredictor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 
-MODEL_DIR = "../resources/models/Trained Models/BestNN_Regressor_aug"
-LABELS_DIR = "../resources/labels.txt"
+MODEL_DIR = os.path.join(os.path.dirname(__file__), "../../resources/models/Trained Models/BestNN_Regressor_aug")
+LABELS_DIR = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
 
 
 class SavedLearningTest(unittest.TestCase):

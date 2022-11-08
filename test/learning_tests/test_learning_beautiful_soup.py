@@ -1,10 +1,13 @@
 import unittest
 from bs4 import BeautifulSoup
+import os
+
+RESOURCE_FILE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/test.xml")
 
 
 class BSAndLxmlLearningTest(unittest.TestCase):
     def setUp(self):
-        with open("../resources/test.xml", "r") as file:
+        with open(RESOURCE_FILE_PATH, "r") as file:
             self.soup = BeautifulSoup(file.read(), "xml")
             self.original_first_entry = self.get_first_entry()
 

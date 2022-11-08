@@ -1,6 +1,9 @@
+import os.path
 import unittest
 from production.xml_handler import XmlHandler
 from production.request_adapter.request_adapter import RequestAdapter
+
+RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/SimpleModel1.xml")
 
 
 class RequestAdapterTest(unittest.TestCase):
@@ -27,5 +30,5 @@ class RequestAdapterTest(unittest.TestCase):
         assert self.result_dict["HT Thickness"] == 2
 
     def get_BikeCad_file_as_raw_xml(self):
-        with open("../resources/SimpleModel1.xml", "r") as file:
+        with open(RESOURCE_PATH, "r") as file:
             return file.read()
