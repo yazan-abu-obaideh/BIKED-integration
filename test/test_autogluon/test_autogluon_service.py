@@ -1,8 +1,8 @@
 import os.path
 import unittest
 
-import production.load_data as load_data
-from production.autogluon.autogluon_service import AutogluonService
+import main.load_data as load_data
+from main.autogluon_model_helpers.autogluon_service import AutogluonService
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 import pandas as pd

@@ -1,10 +1,10 @@
 import pandas as pd
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
-from production.xml_handler import XmlHandler
-from production.request_adapter.request_adapter import RequestAdapter
+from main.xml_handler import XmlHandler
+from main.request_adapter.request_adapter import RequestAdapter
 import os
-from production.autogluon.MultilabelPredictor import MultilabelPredictor
+from main.autogluon_model_helpers.MultilabelPredictor import MultilabelPredictor
 import __main__
 
 RELATIVE_MODEL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"

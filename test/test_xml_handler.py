@@ -1,6 +1,6 @@
 import unittest
 
-from production.xml_handler import XmlHandler
+from main.xml_handler import XmlHandler
 
 
 class XmlHandlerTest(unittest.TestCase):

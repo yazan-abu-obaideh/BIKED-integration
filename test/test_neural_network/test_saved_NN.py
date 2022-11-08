@@ -5,8 +5,8 @@ from sklearn.metrics import r2_score
 from keras.engine.sequential import Sequential
 import tensorflow as tf
 import pandas as pd
-from production.load_data import load_framed_dataset
-from production.autogluon.MultilabelPredictor import MultilabelPredictor
+from main.load_data import load_framed_dataset
+from main.autogluon_model_helpers.MultilabelPredictor import MultilabelPredictor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 

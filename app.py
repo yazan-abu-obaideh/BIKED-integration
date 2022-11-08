@@ -1,5 +1,5 @@
 from flask import Flask, request
-from production.autogluon.autogluon_service import AutogluonService
+from main.autogluon_model_helpers.autogluon_service import AutogluonService
 
 app = Flask(__name__)
 service = AutogluonService()

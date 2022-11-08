@@ -1,7 +1,7 @@
 import os.path
 import unittest
-from production.xml_handler import XmlHandler
-from production.request_adapter.request_adapter import RequestAdapter
+from main.xml_handler import XmlHandler
+from main.request_adapter.request_adapter import RequestAdapter
 
 RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/SimpleModel1.xml")
 
