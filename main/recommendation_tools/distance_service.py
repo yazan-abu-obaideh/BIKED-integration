@@ -14,11 +14,12 @@ class DistanceService:
         user_entry_row = pd.Series(user_entry_dict)
 
         def distance_from_user_entry(row):
-            return np.linalg.norm(row.values - user_entry_row.values)
+            return np.linalg.norm(row.values - user_entry_row)
 
         self.data[DISTANCE] = self.data.apply(distance_from_user_entry, axis=1)
         smallest_distance = min(self.data[DISTANCE].values)
 
-        correct_row = self.data[self.data[DISTANCE] == smallest_distance]
+        correct_row_index = self.data[self.data[DISTANCE] == smallest_distance].index[0]
+        self.data.drop(columns=DISTANCE, axis=1, inplace=True)
 
-        return correct_row.drop(columns=DISTANCE, axis=1)
+        return self.data[self.data.index == correct_row_index]
