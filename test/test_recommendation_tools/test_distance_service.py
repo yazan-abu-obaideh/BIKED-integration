@@ -26,4 +26,4 @@ class TestDistanceService(unittest.TestCase):
         return row
 
     def assertCorrectMatch(self, row, user_entry):
-        assert (row == self.service.get_closest_to(user_entry)).all().all()
+        assert (row.values == self.service.get_closest_to(user_entry).values).all().all()
