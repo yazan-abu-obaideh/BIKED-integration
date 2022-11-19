@@ -27,7 +27,7 @@ class TestDistanceService(unittest.TestCase):
         last = self.get_by_index(max)
         first_user_entry = {"x": 0.1, "y": 0.05, "z": 0.03}
         second_user_entry = {"x": 0.95, "y": 0.95, "z": 0.99}
-        self.assertCorrectMatch(first, first_user_entry, expected_distance=.11575836902790226)
+        self.assertCorrectMatch(first, first_user_entry, expected_distance=0.11575836902790226)
         self.assertCorrectMatch(last, second_user_entry, expected_distance=0.07141428428542856)
 
     def get_by_index(self, selection_function):
