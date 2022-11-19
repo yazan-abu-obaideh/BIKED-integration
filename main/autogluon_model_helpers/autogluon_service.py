@@ -3,6 +3,7 @@ import pandas_utility as pd_util
 
 from main.xml_handler import XmlHandler
 from main.request_adapter.request_adapter import RequestAdapter
+from main.request_adapter.settings import Settings
 import os
 from main.autogluon_model_helpers.MultilabelPredictor import MultilabelPredictor
 import __main__
@@ -20,7 +21,7 @@ class AutogluonService:
 
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
         self.xml_handler = XmlHandler()
-        self.adapter = RequestAdapter()
+        self.adapter = RequestAdapter(Settings())
 
     def predict_from_row(self, pd_row):
         return self.predictor.predict(pd_row)
