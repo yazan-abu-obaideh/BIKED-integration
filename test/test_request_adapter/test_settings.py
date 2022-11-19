@@ -1,4 +1,7 @@
+
 class Settings:
+    """THIS IS NOT DUPLICATION. The test settings just so happen to match the real settings because we have not done the
+    requisite work on the real settings just yet."""
     default_values = {'Material=Steel': 0, 'Material=Aluminum': 0, 'Material=Titanium': 0, 'SSB_Include': 0,
                       'CSB_Include': 0, 'CS Length': 0, 'BB Drop': 0, 'Stack': 0, 'SS E': 0,
                       'ST Angle': 0, 'BB OD': 0, 'TT OD': 0, 'HT OD': 0, 'DT OD': 0, 'CS OD': 0,
