@@ -1,6 +1,7 @@
 import os.path
 import unittest
 
+import pandas_utility as pd_util
 import main.load_data as load_data
 from main.autogluon_model_helpers.autogluon_service import AutogluonService
 from sklearn.preprocessing import StandardScaler
@@ -67,15 +68,15 @@ class AutogluonServiceTest(unittest.TestCase):
         x, y = self.prepare_x_y()
         model_input = self.get_first_row(x)
         prediction = self.service.predict_from_row(model_input)
-        assert self.service.get_dict_from_row(model_input) == self.sample_input
-        assert (self.service.get_dict_from_row(prediction)) == \
+        assert pd_util.get_dict_from_row(model_input) == self.sample_input
+        assert (pd_util.get_dict_from_row(prediction)) == \
                self.expected_output
-        model_input_from_dict = self.service.get_row_from_dict(self.sample_input)
-        assert self.service.get_dict_from_row(self.service.predict_from_row(model_input_from_dict))\
+        model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
+        assert pd_util.get_dict_from_row(self.service.predict_from_row(model_input_from_dict))\
                == self.expected_output
 
     def test_cannot_predict_from_partial_singular_input(self):
-        incomplete_model_input = self.service.get_row_from_dict(
+        incomplete_model_input = pd_util.get_row_from_dict(
             {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
              "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
              "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,

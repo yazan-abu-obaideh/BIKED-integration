@@ -12,6 +12,12 @@ class TestDistanceService(unittest.TestCase):
         self.dataset = pd.read_csv(TEST_DISTANCE_DATASET_PATH)
         self.service = DistanceService(self.dataset)
 
+    def test_missing_input(self):
+        def get_closest_to_invalid():
+            self.service.get_closest_to({"x": 5, "y": 12})
+
+        self.assertRaises(ValueError, get_closest_to_invalid)
+
     def test_can_get_distance_from_point(self):
         first = self.get_by_index(min)
         last = self.get_by_index(max)
