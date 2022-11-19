@@ -1,2 +1,2 @@
-Install Python3.8 using the instructions in alternate_python_versions.txt
-Enjoy
+For development purposes, use the provided script (install-correct-py-version.sh) to install python3.8,
+create the virtual environment, and install the requirements.
