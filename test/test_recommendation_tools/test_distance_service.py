@@ -11,7 +11,7 @@ TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__), "../../reso
 class TestDistanceService(unittest.TestCase):
     def setUp(self) -> None:
         self.dataset = pd.read_csv(TEST_DISTANCE_DATASET_PATH)
-        self.service = DistanceService(self.dataset)
+        self.service = DistanceService(self.dataset, TestSettings())
 
     def test_missing_input(self):
         def get_closest_to_invalid():
@@ -22,7 +22,7 @@ class TestDistanceService(unittest.TestCase):
     def test_get_invalid_closest_n(self):
         with self.assertRaises(ValueError) as context:
             self.service.get_closest_n({}, 16)
-        assert context.exception.args[0] == "Cannot get more matches than number of elements in database"
+        assert context.exception.args[0] == f"Cannot get more matches than {TestSettings.MAX_N}"
 
     def test_get_closest_n(self):
         user_entry = {"x": 1, "y": 1, "z": 1}
@@ -57,3 +57,7 @@ class TestDistanceService(unittest.TestCase):
         for entry in row.keys():
             assert row[entry] == response[entry]
         assert response[DISTANCE] == expected_distance
+
+
+class TestSettings:
+    MAX_N = 5

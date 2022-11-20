@@ -6,8 +6,9 @@ DISTANCE = 'distance_from_user_entry'
 
 
 class DistanceService:
-    def __init__(self, data):
+    def __init__(self, data, settings):
         self.data = data
+        self.settings = settings
 
     def get_distance_between(self, first_entry, second_entry):
         return np.linalg.norm(pd.Series(first_entry).values - pd.Series(second_entry).values)
@@ -41,5 +42,5 @@ class DistanceService:
         return pd_util.get_dict_from_row(self.data[self.data.index == correct_row_index])
 
     def raise_if_invalid_number(self, n):
-        if n > len(self.data):
-            raise ValueError("Cannot get more matches than number of elements in database")
+        if n > self.settings.MAX_N:
+            raise ValueError(f"Cannot get more matches than {self.settings.MAX_N}")
