@@ -19,6 +19,11 @@ class TestDistanceService(unittest.TestCase):
 
         self.assertRaises(ValueError, get_closest_to_invalid)
 
+    def test_get_invalid_closest_n(self):
+        with self.assertRaises(ValueError) as context:
+            self.service.get_closest_n({}, 16)
+        assert context.exception.args[0] == "Cannot get more matches than number of elements in database"
+
     def test_get_closest_n(self):
         user_entry = {"x": 1, "y": 1, "z": 1}
         first_response, second_response = self.service.get_closest_n(user_entry, n=2)
