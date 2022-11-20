@@ -13,10 +13,16 @@ class DistanceService:
         return np.linalg.norm(pd.Series(first_entry).values - pd.Series(second_entry).values)
 
     def get_closest_to(self, user_entry_dict):
-        return self.get_first(self.get_closest_n(user_entry_dict, 1))
+        return self.get_closest_n(user_entry_dict, 1)[0]
 
-    def get_first(self, _list):
-        return _list[0]
+    def get_closest_n(self, user_entry, n):
+        self.raise_if_invalid_number(n)
+
+        self.calculate_distances(user_entry)
+        smallest_n = self.data.sort_values(by=DISTANCE)[DISTANCE].values[:n]
+        responses = [self.get_response_by_distance(distance) for distance in smallest_n]
+        self.remove_distance_column()
+        return responses
 
     def remove_distance_column(self):
         self.data.drop(columns=DISTANCE, axis=1, inplace=True)
@@ -33,15 +39,6 @@ class DistanceService:
     def get_response_by_distance(self, smallest_distance):
         correct_row_index = self.data[self.data[DISTANCE] == smallest_distance].index[0]
         return pd_util.get_dict_from_row(self.data[self.data.index == correct_row_index])
-
-    def get_closest_n(self, user_entry, n):
-        self.raise_if_invalid_number(n)
-
-        self.calculate_distances(user_entry)
-        smallest_n = self.data.sort_values(by=DISTANCE)[DISTANCE].values[:n]
-        responses = [self.get_response_by_distance(distance) for distance in smallest_n]
-        self.remove_distance_column()
-        return responses
 
     def raise_if_invalid_number(self, n):
         if n > len(self.data):
