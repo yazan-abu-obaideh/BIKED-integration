@@ -7,7 +7,8 @@ service = AutogluonService()
 
 @app.errorhandler(ValueError)
 def handle_value_error(e):
-    return make_response(f"Bad Request {e}", 400)
+    response_json = {"message": f"{e}"}
+    return make_response(response_json, 400)
 
 
 @app.route("/")

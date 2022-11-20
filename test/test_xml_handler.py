@@ -91,7 +91,7 @@ class XmlHandlerTest(unittest.TestCase):
         with self.assertRaises(ValueError) as raised_exception:
             self.xml_handler.set_xml("")
 
-        assert raised_exception.exception.args[0] == "Invalid XML"
+        assert raised_exception.exception.args[0] == "Malformed XML"
 
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "second": "2"})

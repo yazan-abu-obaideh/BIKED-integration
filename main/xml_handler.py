@@ -15,7 +15,7 @@ class XmlHandler:
             self.xml_tree = self.generate_xml_tree(xml)
             self.template_entry = self.copy_first_entry()
         except Exception:
-            raise ValueError("Invalid XML")
+            raise ValueError("Malformed XML")
 
     def generate_xml_tree(self, xml: str):
         return BeautifulSoup(xml, "xml")

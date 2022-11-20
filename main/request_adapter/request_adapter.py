@@ -7,9 +7,15 @@ class RequestAdapter:
         self.settings = settings
 
     def convert_xml(self, raw_xml: str) -> dict:
-        self.xml_handler.set_xml(raw_xml)
+        self.set_xml_or_throw(raw_xml)
         bikeCad_file_entries = self.xml_handler.get_entries_dict()
         return self.convert_dict(bikeCad_file_entries)
+
+    def set_xml_or_throw(self, raw_xml):
+        try:
+            self.xml_handler.set_xml(raw_xml)
+        except ValueError:
+            raise ValueError("Invalid BikeCAD file")
 
     def convert_dict(self, bikeCad_file_entries):
         result_dict = self.transform_to_model(bikeCad_file_entries)

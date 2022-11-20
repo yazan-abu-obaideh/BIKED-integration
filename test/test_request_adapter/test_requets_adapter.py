@@ -14,6 +14,11 @@ class RequestAdapterTest(unittest.TestCase):
         self.adapter = RequestAdapter(Settings())
         self.result_dict = self.adapter.convert_xml(self.bikeCad_file)
 
+    def test_raises_correct_exception(self):
+        with self.assertRaises(ValueError) as context:
+            self.adapter.convert_xml("")
+        assert context.exception.args[0] == "Invalid BikeCAD file"
+
     def test_can_transform(self):
         assert self.result_dict["TT Thickness"] == 5 != self.adapter.settings.default_values['TT Thickness']
 
