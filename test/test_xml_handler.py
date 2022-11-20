@@ -87,6 +87,12 @@ class XmlHandlerTest(unittest.TestCase):
         self.xml_handler.remove_all_entries()
         assert self.get_entries_count() == 0
 
+    def test_empty_xml(self):
+        with self.assertRaises(ValueError) as raised_exception:
+            self.xml_handler.set_xml("")
+
+        assert raised_exception.exception.args[0] == "Invalid XML"
+
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "second": "2"})
 

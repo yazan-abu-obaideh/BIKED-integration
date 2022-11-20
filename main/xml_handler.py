@@ -11,8 +11,11 @@ class XmlHandler:
         self.xml_tree = None
 
     def set_xml(self, xml: str):
-        self.xml_tree = self.generate_xml_tree(xml)
-        self.template_entry = self.copy_first_entry()
+        try:
+            self.xml_tree = self.generate_xml_tree(xml)
+            self.template_entry = self.copy_first_entry()
+        except Exception:
+            raise ValueError("Invalid XML")
 
     def generate_xml_tree(self, xml: str):
         return BeautifulSoup(xml, "xml")

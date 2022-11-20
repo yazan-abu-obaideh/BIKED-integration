@@ -29,11 +29,11 @@ class RequestAdapter:
         return model_key in self.settings.default_values.keys()
 
     def handle_special_behavior(self, bikeCad_file_entries, result_dict):
-        self.handle_materials(result_dict, bikeCad_file_entries["MATERIAL"])
+        self.one_hot_encode(result_dict, bikeCad_file_entries["MATERIAL"])
         self.handle_keys_whose_presence_indicates_their_value(result_dict)
         self.handle_ramifications(result_dict)
 
-    def handle_materials(self, result_dict, materials_entry: str):
+    def one_hot_encode(self, result_dict, materials_entry: str):
         result_dict[f"Material={materials_entry.lower().title()}"] = 1
 
     def handle_keys_whose_presence_indicates_their_value(self, result_dict):
