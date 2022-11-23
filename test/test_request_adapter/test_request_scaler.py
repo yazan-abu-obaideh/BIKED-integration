@@ -18,4 +18,6 @@ class TestRequestScaler(unittest.TestCase):
 
     def test_identical_to_load_data_scaler(self):
         first_scaled = self.scaled_data.iloc[0].to_dict()
-        assert first_scaled == self.request_scaler.scale(self.raw_data[:1], self.scaler)
+        input_row = self.raw_data[:1]
+        assert type(input_row) is pd.DataFrame
+        assert first_scaled == self.request_scaler.scale(input_row, self.scaler)
