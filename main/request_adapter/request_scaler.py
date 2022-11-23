@@ -1,5 +1,6 @@
 from sklearn.preprocessing import StandardScaler
 import pandas as pd
+import main.pandas_utility as pd_util
 
 
 def OH_encode(data):
@@ -13,7 +14,10 @@ def OH_encode(data):
 
 
 class RequestScaler:
-    def scale(self, row: pd.Series, scaler):
+    def scale(self, row, scaler):
+
+        row = pd_util.get_row_from_dict(row)
+
         x_reg = row.iloc[:, :-11]
 
         x_reg = OH_encode(x_reg)

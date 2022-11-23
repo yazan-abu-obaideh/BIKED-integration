@@ -4,6 +4,7 @@ from main.load_data import load_framed_dataset
 from main.request_adapter.request_scaler import RequestScaler
 import os
 import pandas as pd
+import main.pandas_utility as pd_util
 
 RESOURCES_FILE = os.path.join(os.path.dirname(__file__))
 RELATIVE_PATH = "../../resources/all_structural_data_aug.csv"
@@ -20,4 +21,5 @@ class TestRequestScaler(unittest.TestCase):
         first_scaled = self.scaled_data.iloc[0].to_dict()
         input_row = self.raw_data[:1]
         assert type(input_row) is pd.DataFrame
-        assert first_scaled == self.request_scaler.scale(input_row, self.scaler)
+        input_dict = pd_util.get_dict_from_row(input_row)
+        assert first_scaled == self.request_scaler.scale(input_dict, self.scaler)
