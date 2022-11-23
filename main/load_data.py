@@ -65,12 +65,12 @@ def load_framed_dataset(c_r="c", onehot=True, scaled=True, augmented=False):
         y = reg_data.iloc[:, -11:-1]
         for col in ['Sim 1 Safety Factor', 'Sim 3 Safety Factor']:
             y[col] = 1 / y[col]
-            y.rename(columns={col: col + " (Inverted)"})
+            y.rename(columns={col: col + " (Inverted)"}, inplace=True)
         for col in ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
                     'Sim 1 Bottom Bracket Y Disp.', 'Sim 2 Bottom Bracket Z Disp.', 'Sim 3 Bottom Bracket Y Disp.',
                     'Sim 3 Bottom Bracket X Rot.', 'Model Mass']:
             y[col] = [np.abs(val) for val in y[col].values]
-            y.rename(columns={col: col + " Magnitude"})
+            y.rename(columns={col: col + " Magnitude"}, inplace=True)
         return x_reg, y, batch, scaler
 
 
