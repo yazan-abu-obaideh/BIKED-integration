@@ -33,6 +33,7 @@ class AutogluonServiceTest(unittest.TestCase):
                              'BB Thickness': -0.11934492802927218, 'HT Thickness': -0.7465363724789722,
                              'ST Thickness': -0.5700521782698762, 'DT Thickness': -1.0553146425778421,
                              'DT Length': 0.10253602811555089}
+        self.x, self.y, self.y_scaler = self.prepare_x_y()
         self.expected_output = {'Model Mass': -0.9461116790771484,
                                 'Sim 1 Bottom Bracket X Disp.': 0.02232583984732628,
                                 'Sim 1 Bottom Bracket Y Disp.': 0.2731778919696808,
@@ -43,9 +44,10 @@ class AutogluonServiceTest(unittest.TestCase):
                                 'Sim 3 Bottom Bracket X Rot.': 2.0954513549804688,
                                 'Sim 3 Bottom Bracket Y Disp.': 3.2179315090179443,
                                 'Sim 3 Safety Factor': -0.3395128548145294}
-        self.x, self.y, _ = self.prepare_x_y()
+        self.expected_unscaled_output = self.get_unscaled_output(self.expected_output)
 
     def test_results_are_unscaled_back(self):
+        print(self.expected_unscaled_output)
         assert False
 
     def test_can_get_labels(self):
@@ -72,7 +74,7 @@ class AutogluonServiceTest(unittest.TestCase):
         assert (pd_util.get_dict_from_row(prediction)) == \
                self.expected_output
         model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
-        assert pd_util.get_dict_from_row(self.service.predict_from_row(model_input_from_dict))\
+        assert pd_util.get_dict_from_row(self.service.predict_from_row(model_input_from_dict)) \
                == self.expected_output
 
     def test_cannot_predict_from_partial_singular_input(self):
@@ -103,6 +105,13 @@ class AutogluonServiceTest(unittest.TestCase):
         for col in y.columns:
             y = y[y[col] <= q[col]]
         return y
+
+    def get_unscaled_output(self, scaled_dict):
+        self.y_scaler: StandardScaler()
+        scaled_row = pd_util.get_row_from_dict(scaled_dict)
+        unscaled_values = self.y_scaler.inverse_transform(scaled_row)
+        unscaled_row = pd.DataFrame(unscaled_values, columns=scaled_row.columns, index=scaled_row.index)
+        return pd_util.get_dict_from_row(unscaled_row)
 
     def get_data(self):
         return load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
