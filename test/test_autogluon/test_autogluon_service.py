@@ -44,6 +44,9 @@ class AutogluonServiceTest(unittest.TestCase):
                                 'Sim 3 Bottom Bracket Y Disp.': 3.2179315090179443,
                                 'Sim 3 Safety Factor': -0.3395128548145294}
 
+    def test_results_are_unscaled_back(self):
+        assert False
+
     def test_can_get_labels(self):
         assert self.service.get_labels() == ["Sim 1 Dropout X Disp.", "Sim 1 Dropout Y Disp.",
                                              "Sim 1 Bottom Bracket X Disp.", "Sim 1 Bottom Bracket Y Disp.",
