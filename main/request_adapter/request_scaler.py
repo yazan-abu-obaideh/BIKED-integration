@@ -14,7 +14,11 @@ def OH_encode(data):
 
 
 class RequestScaler:
-    def scale(self, row, scaler):
+
+    def __init__(self, scaler):
+        self.scaler = scaler
+
+    def scale(self, row):
 
         row = pd_util.get_row_from_dict(row)
 
@@ -22,7 +26,7 @@ class RequestScaler:
 
         x_reg = OH_encode(x_reg)
 
-        x_reg_sc = scaler.transform(x_reg)
+        x_reg_sc = self.scaler.transform(x_reg)
         x_reg = pd.DataFrame(x_reg_sc, columns=x_reg.columns, index=x_reg.index)
 
         return x_reg.iloc[0].to_dict()
