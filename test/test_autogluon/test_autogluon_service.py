@@ -43,6 +43,7 @@ class AutogluonServiceTest(unittest.TestCase):
                                 'Sim 3 Bottom Bracket X Rot.': 2.0954513549804688,
                                 'Sim 3 Bottom Bracket Y Disp.': 3.2179315090179443,
                                 'Sim 3 Safety Factor': -0.3395128548145294}
+        self.x, self.y, _ = self.prepare_x_y()
 
     def test_results_are_unscaled_back(self):
         assert False
@@ -55,21 +56,17 @@ class AutogluonServiceTest(unittest.TestCase):
                                              "Sim 3 Safety Factor", "Model Mass"]
 
     def test_can_predict(self):
-        x_test, y_test = self.prepare_x_y()
-
-        predictions = self.service.predict_from_row(x_test)
-        r2, mse, mae = self.service.get_metrics(predictions, y_test)
+        predictions = self.service.predict_from_row(self.x)
+        r2, mse, mae = self.service.get_metrics(predictions, self.y)
         assert r2 > 0.97
         assert mse < 0.025
         assert mae < 0.055
 
     def test_input_shape(self):
-        x, y = self.prepare_x_y()
-        assert list(x.columns.values) == self.get_input_labels()
+        assert list(self.x.columns.values) == self.get_input_labels()
 
     def test_can_predict_singular_input(self):
-        x, y = self.prepare_x_y()
-        model_input = self.get_first_row(x)
+        model_input = self.get_first_row(self.x)
         prediction = self.service.predict_from_row(model_input)
         assert pd_util.get_dict_from_row(model_input) == self.sample_input
         assert (pd_util.get_dict_from_row(prediction)) == \
@@ -97,9 +94,9 @@ class AutogluonServiceTest(unittest.TestCase):
         x_scaled, y, _, xscaler = self.get_data()
         y = self.filter_y(y)
         x_scaled = x_scaled.loc[y.index]
-        y_scaled = self.standard_scaling(y)
+        y_scaled, y_scaler = self.standard_scaling(y)
         x_test, y_test = self.standard_split(x_scaled, y_scaled)
-        return x_test, y_test
+        return x_test, y_test, y_scaler
 
     def filter_y(self, y):
         q = y.quantile(.95)
@@ -122,7 +119,7 @@ class AutogluonServiceTest(unittest.TestCase):
         data_scaler.fit(data)
         data_scaled = data_scaler.transform(data)
         data_scaled = pd.DataFrame(data_scaled, columns=data.columns, index=data.index)
-        return data_scaled
+        return data_scaled, data_scaler
 
     def get_input_labels(self):
         with open(LABELS_PATH, "r") as file:
