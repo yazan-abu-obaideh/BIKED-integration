@@ -51,31 +51,31 @@ class AutogluonServiceTest(unittest.TestCase):
         assert False
 
     def test_can_get_labels(self):
-        assert self.service.get_labels() == ["Sim 1 Dropout X Disp.", "Sim 1 Dropout Y Disp.",
-                                             "Sim 1 Bottom Bracket X Disp.", "Sim 1 Bottom Bracket Y Disp.",
-                                             "Sim 2 Bottom Bracket Z Disp.", "Sim 3 Bottom Bracket Y Disp.",
-                                             "Sim 3 Bottom Bracket X Rot.", "Sim 1 Safety Factor",
-                                             "Sim 3 Safety Factor", "Model Mass"]
+        self.assertEqual(self.service.get_labels(), ["Sim 1 Dropout X Disp.", "Sim 1 Dropout Y Disp.",
+                                                     "Sim 1 Bottom Bracket X Disp.", "Sim 1 Bottom Bracket Y Disp.",
+                                                     "Sim 2 Bottom Bracket Z Disp.", "Sim 3 Bottom Bracket Y Disp.",
+                                                     "Sim 3 Bottom Bracket X Rot.", "Sim 1 Safety Factor",
+                                                     "Sim 3 Safety Factor", "Model Mass"])
 
     def test_can_predict(self):
         predictions = self.service.predict_from_row(self.x)
-        r2, mse, mae = self.service.get_metrics(predictions, self.y)
-        assert r2 > 0.97
-        assert mse < 0.025
-        assert mae < 0.055
+        r2, mean_square_error, mean_absolute_error = self.service.get_metrics(predictions, self.y)
+        self.assertGreater(r2, 0.97)
+        self.assertLess(mean_square_error, 0.025)
+        self.assertLess(mean_absolute_error, 0.055)
 
     def test_input_shape(self):
-        assert list(self.x.columns.values) == self.get_input_labels()
+        self.assertEqual(list(self.x.columns.values), self.get_input_labels())
 
     def test_can_predict_singular_input(self):
         model_input = self.get_first_row(self.x)
         prediction = self.service.predict_from_row(model_input)
         assert pd_util.get_dict_from_row(model_input) == self.sample_input
-        assert (pd_util.get_dict_from_row(prediction)) == \
-               self.expected_output
+        self.assertEqual(pd_util.get_dict_from_row(prediction),
+                         self.expected_output)
         model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
-        assert pd_util.get_dict_from_row(self.service.predict_from_row(model_input_from_dict)) \
-               == self.expected_output
+        self.assertEqual(pd_util.get_dict_from_row(self.service.predict_from_row(model_input_from_dict)),
+                         self.expected_output)
 
     def test_cannot_predict_from_partial_singular_input(self):
         incomplete_model_input = pd_util.get_row_from_dict(

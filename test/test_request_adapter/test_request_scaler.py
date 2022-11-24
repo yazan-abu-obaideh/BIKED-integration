@@ -30,7 +30,7 @@ class TestRequestScaler(unittest.TestCase):
         unscaled_twice = self.request_scaler.unscale(self.request_scaler.scale(unscaled_once))
         scaled_twice = self.request_scaler.scale(unscaled_twice)
         for key in self.first_scaled.keys():
-            self.assertAlmostEqual(scaled_twice[key], self.first_scaled[key])
+            self.assertAlmostEqual(scaled_twice[key], self.first_scaled[key], 10)
 
     def prepare_input_row(self):
         input_row = self.raw_data[:1]
