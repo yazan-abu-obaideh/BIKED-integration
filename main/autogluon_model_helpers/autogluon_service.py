@@ -14,6 +14,14 @@ CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
 
 
 class AutogluonService:
+    labels_inverted = ["Sim 1 Safety Factor", "Sim 3 Safety Factor"]
+    labels_magnitude = ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
+                        'Sim 1 Bottom Bracket Y Disp.', 'Sim 2 Bottom Bracket Z Disp.', 'Sim 3 Bottom Bracket Y Disp.',
+                        'Sim 3 Bottom Bracket X Rot.', 'Model Mass']
+
+    LABEL_REPLACEMENTS = {label: label + " (Inverted)" for label in labels_inverted}
+    LABEL_REPLACEMENTS.update({label: label + " Magnitude" for label in labels_magnitude})
+
     def __init__(self):
         # TODO: investigate why this needs to be done
         #  and what it implies
@@ -24,7 +32,7 @@ class AutogluonService:
         self.adapter = RequestAdapter(Settings())
 
     def predict_from_row(self, pd_row):
-        return self.predictor.predict(pd_row)
+        return self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS)
 
     def predict_from_xml(self, bike_cad_xml) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
@@ -38,4 +46,8 @@ class AutogluonService:
         return r2, mse, mae
 
     def get_labels(self):
-        return list(self.predictor.labels.values)
+        unaltered_labels = list(self.predictor.labels.values)
+        for key, value in self.LABEL_REPLACEMENTS.items():
+            unaltered_labels.remove(key)
+            unaltered_labels.append(value)
+        return unaltered_labels

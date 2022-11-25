@@ -34,16 +34,16 @@ class AutogluonServiceTest(unittest.TestCase):
                              'ST Thickness': -0.5700521782698762, 'DT Thickness': -1.0553146425778421,
                              'DT Length': 0.10253602811555089}
         self.x, self.y, self.y_scaler = self.prepare_x_y()
-        self.expected_output = {'Model Mass': -0.9461116790771484,
-                                'Sim 1 Bottom Bracket X Disp.': 0.02232583984732628,
-                                'Sim 1 Bottom Bracket Y Disp.': 0.2731778919696808,
-                                'Sim 1 Dropout X Disp.': 0.09372919797897339,
-                                'Sim 1 Dropout Y Disp.': 0.1128099337220192,
-                                'Sim 1 Safety Factor': -0.8752062320709229,
-                                'Sim 2 Bottom Bracket Z Disp.': 1.7482761144638062,
-                                'Sim 3 Bottom Bracket X Rot.': 2.0954513549804688,
-                                'Sim 3 Bottom Bracket Y Disp.': 3.2179315090179443,
-                                'Sim 3 Safety Factor': -0.3395128548145294}
+        self.expected_output = {'Model Mass Magnitude': -0.9461116790771484,
+                                'Sim 1 Bottom Bracket X Disp. Magnitude': 0.02232583984732628,
+                                'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.2731778919696808,
+                                'Sim 1 Dropout X Disp. Magnitude': 0.09372919797897339,
+                                'Sim 1 Dropout Y Disp. Magnitude': 0.1128099337220192,
+                                'Sim 1 Safety Factor (Inverted)': -0.8752062320709229,
+                                'Sim 2 Bottom Bracket Z Disp. Magnitude': 1.7482761144638062,
+                                'Sim 3 Bottom Bracket X Rot. Magnitude': 2.0954513549804688,
+                                'Sim 3 Bottom Bracket Y Disp. Magnitude': 3.2179315090179443,
+                                'Sim 3 Safety Factor (Inverted)': -0.3395128548145294}
         self.expected_unscaled_output = self.get_unscaled_output(self.expected_output)
 
     def test_results_are_unscaled_back(self):
@@ -51,11 +51,16 @@ class AutogluonServiceTest(unittest.TestCase):
         assert False
 
     def test_can_get_labels(self):
-        self.assertEqual(self.service.get_labels(), ["Sim 1 Dropout X Disp.", "Sim 1 Dropout Y Disp.",
-                                                     "Sim 1 Bottom Bracket X Disp.", "Sim 1 Bottom Bracket Y Disp.",
-                                                     "Sim 2 Bottom Bracket Z Disp.", "Sim 3 Bottom Bracket Y Disp.",
-                                                     "Sim 3 Bottom Bracket X Rot.", "Sim 1 Safety Factor",
-                                                     "Sim 3 Safety Factor", "Model Mass"])
+        self.assertEqual({"Sim 1 Dropout X Disp. Magnitude",
+                          "Sim 1 Dropout Y Disp. Magnitude",
+                          "Sim 1 Bottom Bracket X Disp. Magnitude",
+                          "Sim 1 Bottom Bracket Y Disp. Magnitude",
+                          "Sim 2 Bottom Bracket Z Disp. Magnitude",
+                          "Sim 3 Bottom Bracket Y Disp. Magnitude",
+                          "Sim 3 Bottom Bracket X Rot. Magnitude",
+                          "Sim 1 Safety Factor (Inverted)",
+                          "Sim 3 Safety Factor (Inverted)", "Model Mass Magnitude"},
+                         set(self.service.get_labels()))
 
     def test_can_predict(self):
         predictions = self.service.predict_from_row(self.x)
