@@ -10,6 +10,10 @@ class RecommendationService:
         self.data = data
         self.settings = settings
 
+        # TODO: make it so the distance service remains completely agnostic of the type of data,
+        #  the settings, the scaling and unscaling required - because this service CAN be concrete.
+        #  Do this right and you won't have to change anything about this package if the dataset changes.
+
     def get_distance_between(self, first_entry, second_entry):
         return np.linalg.norm(pd.Series(first_entry).values - pd.Series(second_entry).values)
 
