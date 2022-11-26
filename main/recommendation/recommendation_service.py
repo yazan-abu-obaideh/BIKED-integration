@@ -5,7 +5,7 @@ import pandas_utility as pd_util
 DISTANCE = 'distance_from_user_entry'
 
 
-class DistanceService:
+class RecommendationService:
     def __init__(self, data, settings):
         self.data = data
         self.settings = settings

@@ -3,17 +3,17 @@ import unittest
 
 import pandas_utility as pd_util
 import main.load_data as load_data
-from main.evaluation.autogluon_service import AutogluonService
+from main.evaluation.autogluon_service import EvaluationService
 from sklearn.model_selection import train_test_split
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
 
 
-class AutogluonServiceTest(unittest.TestCase):
+class EvaluationServiceTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.x, self.y, self.result_scaler = self.prepare_x_y()
-        self.service = AutogluonService()
+        self.service = EvaluationService()
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,

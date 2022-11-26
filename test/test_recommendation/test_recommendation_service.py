@@ -3,15 +3,15 @@ import pandas as pd
 import os
 import pandas_utility as pd_util
 
-from main.recommendation_tools.distance_service import DistanceService, DISTANCE
+from main.recommendation.recommendation_service import RecommendationService, DISTANCE
 
 TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__), "../../resources/simple_distance_set.csv")
 
 
-class TestDistanceService(unittest.TestCase):
+class RecommendationServiceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.dataset = pd.read_csv(TEST_DISTANCE_DATASET_PATH)
-        self.service = DistanceService(self.dataset, TestSettings())
+        self.service = RecommendationService(self.dataset, TestSettings())
 
     def test_missing_input(self):
         def get_closest_to_invalid():

@@ -1,8 +1,8 @@
 from flask import Flask, request, make_response
-from main.evaluation.autogluon_service import AutogluonService
+from main.evaluation.autogluon_service import EvaluationService
 
 app = Flask(__name__)
-service = AutogluonService()
+service = EvaluationService()
 
 
 @app.errorhandler(ValueError)
