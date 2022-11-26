@@ -1,6 +1,6 @@
 import unittest
 
-from main.load_data import load_framed_dataset, OH_encode
+from main.load_data import load_augmented_framed_dataset, one_hot_encode_material
 from main.request_adapter.request_scaler import RequestScaler
 import os
 import pandas as pd
@@ -14,7 +14,8 @@ class TestRequestScaler(unittest.TestCase):
 
     def setUp(self) -> None:
         self.raw_data = pd.read_csv(os.path.join(RESOURCES_FILE, RELATIVE_PATH), index_col=0)
-        self.scaled_data, _, _, scaler = load_framed_dataset("r", True, True, True)
+        # x, y, x_scaler, y_scaler
+        self.scaled_data, _, scaler, _ = load_augmented_framed_dataset()
         self.request_scaler = RequestScaler(scaler)
         self.input_row = self.prepare_input_row()
         self.first_scaled = self.scaled_data.iloc[0].to_dict()
@@ -35,5 +36,5 @@ class TestRequestScaler(unittest.TestCase):
     def prepare_input_row(self):
         input_row = self.raw_data[:1]
         input_row = input_row.iloc[:, :-11]
-        input_row = OH_encode(input_row)
+        input_row = one_hot_encode_material(input_row)
         return input_row

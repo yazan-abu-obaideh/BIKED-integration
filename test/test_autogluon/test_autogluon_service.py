@@ -4,9 +4,7 @@ import unittest
 import pandas_utility as pd_util
 import main.load_data as load_data
 from main.autogluon_model_helpers.autogluon_service import AutogluonService
-from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-import pandas as pd
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
 
@@ -100,10 +98,10 @@ class AutogluonServiceTest(unittest.TestCase):
         return dataframe[dataframe.index == self.first_row_index(dataframe)]
 
     def prepare_x_y(self):
-        x_scaled, y, _, xscaler = self.get_data()
+        x_scaled, y, x_scaler, y_scaler = self.get_data()
         y = self.filter_y(y)
         x_scaled = x_scaled.loc[y.index]
-        y_scaled, y_scaler = self.standard_scaling(y)
+        y_scaled, y_scaler = load_data.scale(y)
         x_test, y_test = self.standard_split(x_scaled, y_scaled)
         return x_test, y_test, y_scaler
 
@@ -114,7 +112,7 @@ class AutogluonServiceTest(unittest.TestCase):
         return y
 
     def get_data(self):
-        return load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
+        return load_data.load_augmented_framed_dataset()
 
     def standard_split(self, x_scaled, y_scaled):
         x_train, x_test, y_train, y_test = train_test_split(x_scaled,
@@ -122,13 +120,6 @@ class AutogluonServiceTest(unittest.TestCase):
                                                             test_size=0.2,
                                                             random_state=1950)
         return x_test, y_test
-
-    def standard_scaling(self, data):
-        data_scaler = StandardScaler()
-        data_scaler.fit(data)
-        data_scaled = data_scaler.transform(data)
-        data_scaled = pd.DataFrame(data_scaled, columns=data.columns, index=data.index)
-        return data_scaled, data_scaler
 
     def get_input_labels(self):
         with open(LABELS_PATH, "r") as file:
