@@ -3,12 +3,12 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import pandas_utility as pd_util
 import pandas as pd
 
-from main.xml_handler import XmlHandler
 from main.request_adapter.request_adapter import RequestAdapter
 from main.request_adapter.settings import Settings
 import os
-from main.autogluon_model_helpers.MultilabelPredictor import MultilabelPredictor
+from main.evaluation.MultilabelPredictor import MultilabelPredictor
 import __main__
+from main.load_data import load_augmented_framed_dataset
 
 RELATIVE_MODEL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
 CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
@@ -24,15 +24,15 @@ class AutogluonService:
     LABEL_REPLACEMENTS = {label: label + " (Inverted)" for label in labels_inverted}
     LABEL_REPLACEMENTS.update({label: label + " Magnitude" for label in labels_magnitude})
 
-    def __init__(self, result_scaler):
+    def __init__(self):
         # TODO: investigate why this needs to be done
         #  and what it implies
         __main__.MultilabelPredictor = MultilabelPredictor
 
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
-        self.xml_handler = XmlHandler()
         self.adapter = RequestAdapter(Settings())
-        self.result_scaler = result_scaler
+
+        _, _, self.request_scaler, self.result_scaler = load_augmented_framed_dataset()
 
     def _predict_from_row(self, pd_row):
         return self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS)
