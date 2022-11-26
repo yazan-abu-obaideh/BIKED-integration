@@ -46,9 +46,11 @@ class AutogluonServiceTest(unittest.TestCase):
                                 'Sim 3 Safety Factor (Inverted)': -0.3395128548145294}
         self.expected_unscaled_output = self.get_unscaled_output(self.expected_output)
 
-    def test_results_are_unscaled_back(self):
-        print(self.expected_unscaled_output)
-        assert False
+    def test_results_can_be_unscaled_back(self):
+        predictions = self.service.predict_from_row(self.x)
+        r2, _, _ = self.service.get_metrics(self.y_scaler.inverse_transform(predictions),
+                                            self.y_scaler.inverse_transform(self.y))
+        self.assertGreater(r2, 0.97)
 
     def test_can_get_labels(self):
         self.assertEqual({"Sim 1 Dropout X Disp. Magnitude",
