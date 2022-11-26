@@ -98,18 +98,9 @@ class AutogluonServiceTest(unittest.TestCase):
         return dataframe[dataframe.index == self.first_row_index(dataframe)]
 
     def prepare_x_y(self):
-        x_scaled, y, x_scaler, y_scaler = self.get_data()
-        y = self.filter_y(y)
-        x_scaled = x_scaled.loc[y.index]
-        y_scaled, y_scaler = load_data.scale(y)
+        x_scaled, y_scaled, x_scaler, y_scaler = self.get_data()
         x_test, y_test = self.standard_split(x_scaled, y_scaled)
         return x_test, y_test, y_scaler
-
-    def filter_y(self, y):
-        q = y.quantile(.95)
-        for col in y.columns:
-            y = y[y[col] <= q[col]]
-        return y
 
     def get_data(self):
         return load_data.load_augmented_framed_dataset()

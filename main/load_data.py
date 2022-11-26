@@ -34,7 +34,6 @@ def load_augmented_framed_dataset():
 
     x, x_scaler = scale(x)
     y = reg_data.iloc[:, -11:-1]
-    _, y_scaler = scale(y)
 
     for col in ['Sim 1 Safety Factor', 'Sim 3 Safety Factor']:
         y[col] = 1 / y[col]
@@ -45,6 +44,10 @@ def load_augmented_framed_dataset():
         y[col] = [np.abs(val) for val in y[col].values]
         y.rename(columns={col: col + " Magnitude"}, inplace=True)
 
+    y = filter_y(y)
+    x = x.loc[y.index]
+    y, y_scaler = scale(y)
+
     return x, y, x_scaler, y_scaler
 
 
@@ -54,3 +57,10 @@ def scale(v):
     v_scaled_values = v_scaler.transform(v)
     new_v = pd.DataFrame(v_scaled_values, columns=v.columns, index=v.index)
     return new_v, v_scaler
+
+
+def filter_y(y):
+    q = y.quantile(.95)
+    for col in y.columns:
+        y = y[y[col] <= q[col]]
+    return y
