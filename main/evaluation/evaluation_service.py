@@ -1,14 +1,15 @@
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-
-import pandas_utility as pd_util
 import pandas as pd
 
 from main.request_adapter.request_adapter import RequestAdapter
 from main.request_adapter.settings import Settings
-import os
 from main.evaluation.MultilabelPredictor import MultilabelPredictor
-import __main__
 from main.load_data import load_augmented_framed_dataset
+from main.request_adapter.request_scaler import ScalerWrapper
+
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+import pandas_utility as pd_util
+import os
+import __main__
 
 RELATIVE_MODEL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
 CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
@@ -32,24 +33,20 @@ class EvaluationService:
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
         self.adapter = RequestAdapter(Settings())
 
-        _, _, self.request_scaler, self.result_scaler = load_augmented_framed_dataset()
+        _, _, request_scaler, result_scaler = load_augmented_framed_dataset()
+        self.result_scaler = ScalerWrapper(result_scaler)
 
-    def _predict_from_row(self, pd_row):
+    def _predict_from_row(self, pd_row) -> pd.DataFrame:
         return self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS)
 
-    def predict_from_row(self, pd_row):
-        return self.get_unscaled_output(pd_util.get_dict_from_row(self._predict_from_row(pd_row)))
+    def predict_from_row(self, pd_row) -> dict:
+        scaled_dict = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
+        return self.result_scaler.unscale(scaled_dict)
 
     def predict_from_xml(self, bike_cad_xml) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
         row = pd_util.get_row_from_dict(bike_cad_dict)
         return self.predict_from_row(row)
-
-    def get_unscaled_output(self, scaled_dict):
-        scaled_row = pd_util.get_row_from_dict(scaled_dict)
-        unscaled_values = self.result_scaler.inverse_transform(scaled_row)
-        unscaled_row = pd.DataFrame(unscaled_values, columns=scaled_row.columns, index=scaled_row.index)
-        return pd_util.get_dict_from_row(unscaled_row)
 
     def get_metrics(self, predictions, y_test):
         r2 = r2_score(y_test, predictions)

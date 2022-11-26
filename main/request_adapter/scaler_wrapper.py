@@ -2,7 +2,7 @@ import pandas as pd
 import main.pandas_utility as pd_util
 
 
-class RequestScaler:
+class ScalerWrapper:
 
     def __init__(self, scaler):
         self.scaler = scaler
@@ -17,6 +17,9 @@ class RequestScaler:
 
     def unscale(self, data: dict) -> dict:
         data = pd_util.get_row_from_dict(data)
+        return self.unscale_dataframe(data)
+
+    def unscale_dataframe(self, data: pd.DataFrame) -> dict:
         unscaled_values = self.scaler.inverse_transform(data)
         return pd_util.get_dict_from_row(pd.DataFrame(unscaled_values,
                                                       columns=data.columns,

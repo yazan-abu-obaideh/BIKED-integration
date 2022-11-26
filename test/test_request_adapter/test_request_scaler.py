@@ -1,7 +1,7 @@
 import unittest
 
 from main.load_data import load_augmented_framed_dataset, one_hot_encode_material
-from main.request_adapter.request_scaler import RequestScaler
+from main.request_adapter.request_scaler import ScalerWrapper
 import os
 import pandas as pd
 import main.pandas_utility as pd_util
@@ -10,13 +10,13 @@ RESOURCES_FILE = os.path.join(os.path.dirname(__file__))
 RELATIVE_PATH = "../../resources/all_structural_data_aug.csv"
 
 
-class TestRequestScaler(unittest.TestCase):
+class TestScalerWrapper(unittest.TestCase):
 
     def setUp(self) -> None:
         self.raw_data = pd.read_csv(os.path.join(RESOURCES_FILE, RELATIVE_PATH), index_col=0)
         # x, y, x_scaler, y_scaler
         self.scaled_data, _, scaler, _ = load_augmented_framed_dataset()
-        self.request_scaler = RequestScaler(scaler)
+        self.request_scaler = ScalerWrapper(scaler)
         self.input_row = self.prepare_input_row()
         self.first_scaled = self.scaled_data.iloc[0].to_dict()
 
