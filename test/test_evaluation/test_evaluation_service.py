@@ -3,7 +3,7 @@ import unittest
 
 import pandas_utility as pd_util
 import main.load_data as load_data
-from main.evaluation.autogluon_service import EvaluationService
+from main.evaluation.evaluation_service import EvaluationService
 from sklearn.model_selection import train_test_split
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")

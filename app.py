@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response
-from main.evaluation.autogluon_service import EvaluationService
+from main.evaluation.evaluation_service import EvaluationService
 
 app = Flask(__name__)
 service = EvaluationService()
