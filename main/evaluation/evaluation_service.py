@@ -4,7 +4,7 @@ from main.request_adapter.request_adapter import RequestAdapter
 from main.request_adapter.settings import Settings
 from main.evaluation.MultilabelPredictor import MultilabelPredictor
 from main.load_data import load_augmented_framed_dataset
-from main.request_adapter.request_scaler import ScalerWrapper
+from main.request_adapter.scaler_wrapper import ScalerWrapper
 
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import pandas_utility as pd_util

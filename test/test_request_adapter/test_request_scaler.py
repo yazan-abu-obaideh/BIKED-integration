@@ -1,7 +1,7 @@
 import unittest
 
 from main.load_data import load_augmented_framed_dataset, one_hot_encode_material
-from main.request_adapter.request_scaler import ScalerWrapper
+from main.request_adapter.scaler_wrapper import ScalerWrapper
 import os
 import pandas as pd
 import main.pandas_utility as pd_util
