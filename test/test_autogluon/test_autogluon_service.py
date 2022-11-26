@@ -14,7 +14,8 @@ LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.tx
 class AutogluonServiceTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.service = AutogluonService()
+        self.x, self.y, self.result_scaler = self.prepare_x_y()
+        self.service = AutogluonService(self.result_scaler)
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
@@ -33,23 +34,21 @@ class AutogluonServiceTest(unittest.TestCase):
                              'BB Thickness': -0.11934492802927218, 'HT Thickness': -0.7465363724789722,
                              'ST Thickness': -0.5700521782698762, 'DT Thickness': -1.0553146425778421,
                              'DT Length': 0.10253602811555089}
-        self.x, self.y, self.y_scaler = self.prepare_x_y()
-        self.expected_output = {'Model Mass Magnitude': -0.9461116790771484,
-                                'Sim 1 Bottom Bracket X Disp. Magnitude': 0.02232583984732628,
-                                'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.2731778919696808,
-                                'Sim 1 Dropout X Disp. Magnitude': 0.09372919797897339,
-                                'Sim 1 Dropout Y Disp. Magnitude': 0.1128099337220192,
-                                'Sim 1 Safety Factor (Inverted)': -0.8752062320709229,
-                                'Sim 2 Bottom Bracket Z Disp. Magnitude': 1.7482761144638062,
-                                'Sim 3 Bottom Bracket X Rot. Magnitude': 2.0954513549804688,
-                                'Sim 3 Bottom Bracket Y Disp. Magnitude': 3.2179315090179443,
-                                'Sim 3 Safety Factor (Inverted)': -0.3395128548145294}
-        self.expected_unscaled_output = self.get_unscaled_output(self.expected_output)
+        self.expected_output = {'Model Mass Magnitude': 3.189100876474357,
+                                'Sim 1 Bottom Bracket X Disp. Magnitude': 0.012183772767391373,
+                                'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.012939156170363236,
+                                'Sim 1 Dropout X Disp. Magnitude': 0.011111431121145088,
+                                'Sim 1 Dropout Y Disp. Magnitude': 0.021787148423259715,
+                                'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
+                                'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0023485019730819755,
+                                'Sim 3 Bottom Bracket X Rot. Magnitude': 0.0063891630717543306,
+                                'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.01666142336216584,
+                                'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
 
     def test_results_can_be_unscaled_back(self):
-        predictions = self.service.predict_from_row(self.x)
-        r2, _, _ = self.service.get_metrics(self.y_scaler.inverse_transform(predictions),
-                                            self.y_scaler.inverse_transform(self.y))
+        predictions = self.service._predict_from_row(self.x)
+        r2, _, _ = self.service.get_metrics(self.result_scaler.inverse_transform(predictions),
+                                            self.result_scaler.inverse_transform(self.y))
         self.assertGreater(r2, 0.97)
 
     def test_can_get_labels(self):
@@ -65,8 +64,9 @@ class AutogluonServiceTest(unittest.TestCase):
                          set(self.service.get_labels()))
 
     def test_can_predict(self):
-        predictions = self.service.predict_from_row(self.x)
-        r2, mean_square_error, mean_absolute_error = self.service.get_metrics(predictions, self.y)
+        predictions = self.service._predict_from_row(self.x)
+        r2, mean_square_error, mean_absolute_error = self.service.get_metrics(predictions,
+                                                                              self.y)
         self.assertGreater(r2, 0.97)
         self.assertLess(mean_square_error, 0.025)
         self.assertLess(mean_absolute_error, 0.055)
@@ -78,10 +78,10 @@ class AutogluonServiceTest(unittest.TestCase):
         model_input = self.get_first_row(self.x)
         prediction = self.service.predict_from_row(model_input)
         assert pd_util.get_dict_from_row(model_input) == self.sample_input
-        self.assertEqual(pd_util.get_dict_from_row(prediction),
+        self.assertEqual(prediction,
                          self.expected_output)
         model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
-        self.assertEqual(pd_util.get_dict_from_row(self.service.predict_from_row(model_input_from_dict)),
+        self.assertEqual(self.service.predict_from_row(model_input_from_dict),
                          self.expected_output)
 
     def test_cannot_predict_from_partial_singular_input(self):
@@ -112,13 +112,6 @@ class AutogluonServiceTest(unittest.TestCase):
         for col in y.columns:
             y = y[y[col] <= q[col]]
         return y
-
-    def get_unscaled_output(self, scaled_dict):
-        self.y_scaler: StandardScaler()
-        scaled_row = pd_util.get_row_from_dict(scaled_dict)
-        unscaled_values = self.y_scaler.inverse_transform(scaled_row)
-        unscaled_row = pd.DataFrame(unscaled_values, columns=scaled_row.columns, index=scaled_row.index)
-        return pd_util.get_dict_from_row(unscaled_row)
 
     def get_data(self):
         return load_data.load_framed_dataset("r", onehot=True, scaled=True, augmented=True)
