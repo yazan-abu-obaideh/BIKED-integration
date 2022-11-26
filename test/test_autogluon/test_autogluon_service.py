@@ -37,17 +37,17 @@ class AutogluonServiceTest(unittest.TestCase):
                                 'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.012939156170363236,
                                 'Sim 1 Dropout X Disp. Magnitude': 0.011111431121145088,
                                 'Sim 1 Dropout Y Disp. Magnitude': 0.021787148423259715,
-                                'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
                                 'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0023485019730819755,
                                 'Sim 3 Bottom Bracket X Rot. Magnitude': 0.0063891630717543306,
                                 'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.01666142336216584,
+                                'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
                                 'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
 
-    def test_results_can_be_unscaled_back(self):
+    def test_can_predict_and_unscale(self):
         predictions = self.service._predict_from_row(self.x)
-        r2, _, _ = self.service.get_metrics(self.result_scaler.inverse_transform(predictions),
-                                            self.result_scaler.inverse_transform(self.y))
-        self.assertGreater(r2, 0.97)
+        self.assert_correct_metrics(predictions, self.y)
+        self.assert_correct_metrics(self.result_scaler.inverse_transform(predictions),
+                                    self.result_scaler.inverse_transform(self.y))
 
     def test_can_get_labels(self):
         self.assertEqual({"Sim 1 Dropout X Disp. Magnitude",
@@ -60,14 +60,6 @@ class AutogluonServiceTest(unittest.TestCase):
                           "Sim 1 Safety Factor (Inverted)",
                           "Sim 3 Safety Factor (Inverted)", "Model Mass Magnitude"},
                          set(self.service.get_labels()))
-
-    def test_can_predict(self):
-        predictions = self.service._predict_from_row(self.x)
-        r2, mean_square_error, mean_absolute_error = self.service.get_metrics(predictions,
-                                                                              self.y)
-        self.assertGreater(r2, 0.97)
-        self.assertLess(mean_square_error, 0.025)
-        self.assertLess(mean_absolute_error, 0.055)
 
     def test_input_shape(self):
         self.assertEqual(list(self.x.columns.values), self.get_input_labels())
@@ -90,6 +82,13 @@ class AutogluonServiceTest(unittest.TestCase):
              "BB Drop": 0.19327064177679704})
         self.assertRaises(KeyError, self.service.predict_from_row,
                           incomplete_model_input)
+
+    def assert_correct_metrics(self, predictions, actual):
+        r2, mean_square_error, mean_absolute_error = self.service.get_metrics(predictions,
+                                                                              actual)
+        self.assertGreater(r2, 0.97)
+        self.assertLess(mean_square_error, 0.025)
+        self.assertLess(mean_absolute_error, 0.055)
 
     def first_row_index(self, dataframe):
         return dataframe.index.values[0]
