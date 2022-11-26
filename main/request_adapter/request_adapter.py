@@ -18,12 +18,12 @@ class RequestAdapter:
             raise ValueError("Invalid BikeCAD file")
 
     def convert_dict(self, bikeCad_file_entries):
-        result_dict = self.transform_to_model(bikeCad_file_entries)
+        result_dict = self.map_to_model_input(bikeCad_file_entries)
         self.handle_special_behavior(bikeCad_file_entries, result_dict)
         self.fill_default(result_dict)
         return self.to_final_values(result_dict)
 
-    def transform_to_model(self, bikeCad_file_entries):
+    def map_to_model_input(self, bikeCad_file_entries):
         result_dict = {}
         for key, value in bikeCad_file_entries.items():
             model_key = self.settings.bikeCad_to_model_map.get(key, key)
