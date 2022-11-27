@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
 import pandas_utility as pd_util
+from main.recommendation.recommendation_service_settings import RecommendationSettings
 
 DISTANCE = 'distance_from_user_entry'
 
 
 class RecommendationService:
-    def __init__(self, data, settings):
+    def __init__(self, data, settings: RecommendationSettings):
         self.data = data
         self.settings = settings
 
@@ -46,5 +47,5 @@ class RecommendationService:
         return pd_util.get_dict_from_row(self.data[self.data.index == correct_row_index])
 
     def raise_if_invalid_number(self, n):
-        if n > self.settings.MAX_N:
-            raise ValueError(f"Cannot get more matches than {self.settings.MAX_N}")
+        if n > self.settings.max_n():
+            raise ValueError(f"Cannot get more matches than {self.settings.max_n()}")

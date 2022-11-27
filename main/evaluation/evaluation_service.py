@@ -1,7 +1,7 @@
 import pandas as pd
 
 from main.request_adapter.request_adapter import RequestAdapter
-from main.request_adapter.settings import Settings
+from main.request_adapter.request_adapter_settings import RequestAdapterSettings
 from main.evaluation.MultilabelPredictor import MultilabelPredictor
 from main.load_data import load_augmented_framed_dataset
 from main.request_adapter.scaler_wrapper import ScalerWrapper
@@ -31,7 +31,7 @@ class EvaluationService:
         __main__.MultilabelPredictor = MultilabelPredictor
 
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
-        self.adapter = RequestAdapter(Settings())
+        self.adapter = RequestAdapter(RequestAdapterSettings())
 
         _, _, request_scaler, result_scaler = load_augmented_framed_dataset()
         self.result_scaler = ScalerWrapper(result_scaler)

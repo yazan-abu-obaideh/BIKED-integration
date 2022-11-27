@@ -4,6 +4,7 @@ import os
 import pandas_utility as pd_util
 
 from main.recommendation.recommendation_service import RecommendationService, DISTANCE
+from main.recommendation.recommendation_service_settings import RecommendationSettings
 
 TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__), "../../resources/simple_distance_set.csv")
 
@@ -22,7 +23,7 @@ class RecommendationServiceTest(unittest.TestCase):
     def test_get_invalid_closest_n(self):
         with self.assertRaises(ValueError) as context:
             self.service.get_closest_n({}, 16)
-        assert context.exception.args[0] == f"Cannot get more matches than {TestSettings.MAX_N}"
+        assert context.exception.args[0] == f"Cannot get more matches than {TestSettings().max_n()}"
 
     def test_get_closest_n(self):
         user_entry = {"x": 1, "y": 1, "z": 1}
@@ -59,5 +60,6 @@ class RecommendationServiceTest(unittest.TestCase):
         assert response[DISTANCE] == expected_distance
 
 
-class TestSettings:
-    MAX_N = 5
+class TestSettings(RecommendationSettings):
+    def max_n(self):
+        return 5

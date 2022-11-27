@@ -20,7 +20,7 @@ class RequestAdapterTest(unittest.TestCase):
         assert context.exception.args[0] == "Invalid BikeCAD file"
 
     def test_can_transform(self):
-        assert self.result_dict["TT Thickness"] == 5 != self.adapter.settings.default_values['TT Thickness']
+        assert self.result_dict["TT Thickness"] == 5 != self.adapter.settings.default_values()['TT Thickness']
 
     def test_does_ignore(self):
         assert "irrelevant" not in self.result_dict.keys()

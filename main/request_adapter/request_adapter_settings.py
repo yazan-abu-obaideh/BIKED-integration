@@ -1,9 +1,27 @@
-from main.request_adapter.request_adapter_settings import RequestAdapterSettings
+from abc import abstractmethod
+
+UNIMPLEMENTED_MESSAGE = "Unimplemented abstract method"
 
 
-class Settings(RequestAdapterSettings):
-    """THIS IS NOT DUPLICATION. The test settings just so happen to match the real settings because we have not done the
-    requisite work on the real settings just yet."""
+class RequestAdapterSettings:
+    @abstractmethod
+    def default_values(self) -> dict:
+        raise Exception(UNIMPLEMENTED_MESSAGE)
+
+    @abstractmethod
+    def bikeCad_to_model_map(self) -> dict:
+        raise Exception(UNIMPLEMENTED_MESSAGE)
+
+    @abstractmethod
+    def keys_whose_presence_indicates_their_value(self) -> list:
+        raise Exception(UNIMPLEMENTED_MESSAGE)
+
+    @abstractmethod
+    def raise_exception_if_missing(self) -> list:
+        raise Exception(UNIMPLEMENTED_MESSAGE)
+
+
+class DefaultAdapterSettings(RequestAdapterSettings):
     def default_values(self) -> dict:
         return {'Material=Steel': 0, 'Material=Aluminum': 0, 'Material=Titanium': 0, 'SSB_Include': 0,
                 'CSB_Include': 0, 'CS Length': 0, 'BB Drop': 0, 'Stack': 0, 'SS E': 0,
