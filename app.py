@@ -1,6 +1,8 @@
 from flask import Flask, request, make_response
 from main.evaluation.evaluation_service import EvaluationService
 
+UTF_8 = "utf-8"
+
 app = Flask(__name__)
 evaluation_service = EvaluationService()
 
@@ -13,11 +15,11 @@ def handle_value_error(e):
 
 @app.route("/evaluate")
 def evaluate_design():
-    request_as_raw_xml = request.data.decode("utf-8")
+    request_as_raw_xml = request.data.decode(UTF_8)
     return evaluation_service.predict_from_xml(request_as_raw_xml)
 
 
 @app.route("/recommend")
 def recommend_similar():
-    request_dict = request.data.decode("utf-8")
+    request_dict = request.data.decode(UTF_8)
     return request_dict
