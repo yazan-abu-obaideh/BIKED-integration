@@ -1,24 +1,22 @@
 from abc import abstractmethod
 
-UNIMPLEMENTED_MESSAGE = "Unimplemented abstract method"
-
 
 class RequestAdapterSettings:
     @abstractmethod
     def default_values(self) -> dict:
-        raise Exception(UNIMPLEMENTED_MESSAGE)
+        pass
 
     @abstractmethod
     def bikeCad_to_model_map(self) -> dict:
-        raise Exception(UNIMPLEMENTED_MESSAGE)
+        pass
 
     @abstractmethod
     def keys_whose_presence_indicates_their_value(self) -> list:
-        raise Exception(UNIMPLEMENTED_MESSAGE)
+        pass
 
     @abstractmethod
     def raise_exception_if_missing(self) -> list:
-        raise Exception(UNIMPLEMENTED_MESSAGE)
+        pass
 
 
 class DefaultAdapterSettings(RequestAdapterSettings):
