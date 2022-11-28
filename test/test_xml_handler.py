@@ -93,8 +93,14 @@ class XmlHandlerTest(unittest.TestCase):
 
         assert raised_exception.exception.args[0] == "Malformed XML"
 
+    def test_generate_xml_from_dict(self):
+        handler = XmlHandler()
+        handler.set_entries_from_dict({"first": "1", "second": "2"})
+        assert handler.get_all_entries().__str__() == '[<entry key="first">1</entry>, <entry key="second">2</entry>]'
+
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "second": "2"})
+        assert self.get_all_entries_string() == '[<entry key="first">1</entry>, <entry key="second">2</entry>]'
 
     def test_update_xml_from_dict(self):
         self.xml_handler.update_entries_from_dict({"ready": "ready-new", "new": "new-value"})

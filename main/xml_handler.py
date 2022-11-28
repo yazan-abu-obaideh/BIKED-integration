@@ -74,7 +74,8 @@ class XmlHandler:
             self.remove_entry(entry)
 
     def set_entries_from_dict(self, entries_dict: dict):
-        self.remove_all_entries()
+        if self.xml_tree:
+            self.remove_all_entries()
         for key, value in entries_dict.items():
             self.add_new_entry(str(key), str(value))
 
