@@ -1,4 +1,6 @@
 import unittest
+from typing import List
+
 import pandas as pd
 import os
 import pandas_utility as pd_util
@@ -56,10 +58,13 @@ class RecommendationServiceTest(unittest.TestCase):
 
     def assertCorrectMatch(self, row, response, expected_distance):
         for entry in row.keys():
-            assert row[entry] == response[entry]
-        assert response[DISTANCE] == expected_distance
+            self.assertEqual(row[entry], response[entry])
+        self.assertEqual(response[DISTANCE], expected_distance)
 
 
 class TestSettings(RecommendationSettings):
+    def weights(self) -> List[float]:
+        pass
+
     def max_n(self):
         return 5

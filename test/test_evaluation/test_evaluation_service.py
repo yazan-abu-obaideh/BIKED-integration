@@ -78,7 +78,7 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_can_predict_singular_row(self):
         model_input = self.get_first_row(self.x)
         prediction = self.service.predict_from_row(model_input)
-        assert pd_util.get_dict_from_row(model_input) == self.sample_input
+        self.assertEqual(pd_util.get_dict_from_row(model_input), self.sample_input)
         self.assertEqual(prediction,
                          self.expected_output)
         model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
