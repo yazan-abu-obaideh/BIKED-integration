@@ -30,7 +30,7 @@ class RequestAdapterTest(unittest.TestCase):
         assert self.result_dict["CSB_Include"] == 0
 
     def test_ramifications(self):
-        assert self.result_dict["CSB_OD"] == 0.017759
+        assert self.result_dict["CSB OD"] == 0.017759
 
     def test_default(self):
         assert self.result_dict["HT Thickness"] == 2
