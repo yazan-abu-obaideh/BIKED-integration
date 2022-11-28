@@ -63,8 +63,11 @@ class RecommendationServiceTest(unittest.TestCase):
 
 
 class TestSettings(RecommendationSettings):
-    def weights(self) -> List[float]:
-        pass
+    MAX_N = 5
+    WEIGHTS = {}
+
+    def weights(self) -> dict:
+        return self.WEIGHTS
 
     def max_n(self):
-        return 5
+        return self.MAX_N

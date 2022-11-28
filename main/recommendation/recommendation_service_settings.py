@@ -10,5 +10,5 @@ class RecommendationSettings:
         pass
 
     @abstractmethod
-    def weights(self) -> List[float]:
+    def weights(self) -> dict:
         pass
