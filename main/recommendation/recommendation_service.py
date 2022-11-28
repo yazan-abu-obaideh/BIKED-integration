@@ -42,7 +42,7 @@ class RecommendationService:
 
         self.data[DISTANCE] = self.data.apply(distance_from_user_entry, axis=1)
 
-    def get_response_by_distance(self, smallest_distance):
+    def get_response_by_distance(self, smallest_distance) -> dict:
         correct_row_index = self.data[self.data[DISTANCE] == smallest_distance].index[0]
         return pd_util.get_dict_from_row(self.data[self.data.index == correct_row_index])
 

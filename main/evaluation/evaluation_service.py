@@ -38,21 +38,21 @@ class EvaluationService:
         self.response_scaler = ScalerWrapper(output_scaler)
         self.request_scaler = ScalerWrapper(input_scaler)
 
-    def predict_from_xml(self, bike_cad_xml) -> dict:
+    def predict_from_xml(self, bike_cad_xml: str) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
         return self.predict_from_dict(bike_cad_dict)
 
-    def predict_from_dict(self, bike_cad_dict):
+    def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
         row = pd_util.get_row_from_dict(scaled_dict)
         return self.predict_from_row(row)
 
-    def predict_from_row(self, pd_row) -> dict:
+    def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         scaled_result = pd_util.get_dict_from_row(
             self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS))
         return self.ensure_magnitude(self.response_scaler.unscale(scaled_result))
 
-    def _predict_from_row(self, pd_row) -> pd.DataFrame:
+    def _predict_from_row(self, pd_row: pd.DataFrame) -> pd.DataFrame:
         return self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS)
 
     def ensure_magnitude(self, scaled_result):
