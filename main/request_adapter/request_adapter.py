@@ -51,9 +51,9 @@ class RequestAdapter:
 
     def handle_ramifications(self, result_dict):
         if result_dict["CSB_Include"] == 0:
-            result_dict["CSB_OD"] = 0.017759
+            result_dict["CSB OD"] = 0.017759
         if result_dict["SSB_Include"] == 0:
-            result_dict["SSB_OD"] = 0.015849
+            result_dict["SSB OD"] = 0.015849
 
     def fill_default(self, result_dict):
         for key, value in self.settings.default_values().items():

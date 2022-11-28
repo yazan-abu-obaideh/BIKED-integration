@@ -33,7 +33,8 @@ class EvaluationService:
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
         self.adapter = RequestAdapter(DefaultAdapterSettings())
 
-        _, _, input_scaler, output_scaler = self.get_data()
+        x, _, input_scaler, output_scaler = self.get_data()
+        self.columns_order = x.columns
         self.response_scaler = ScalerWrapper(output_scaler)
         self.request_scaler = ScalerWrapper(input_scaler)
 
@@ -51,11 +52,11 @@ class EvaluationService:
             self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS))
         return self.ensure_magnitude(self.response_scaler.unscale(scaled_result))
 
-    def ensure_magnitude(self, scaled_result):
-        return {key: abs(value) for key, value in scaled_result.items()}
-
     def _predict_from_row(self, pd_row) -> pd.DataFrame:
         return self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS)
+
+    def ensure_magnitude(self, scaled_result):
+        return {key: abs(value) for key, value in scaled_result.items()}
 
     def get_metrics(self, predictions, y_test):
         r2 = r2_score(y_test, predictions)

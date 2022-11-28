@@ -3,16 +3,22 @@ import unittest
 
 import pandas_utility as pd_util
 from main.evaluation.evaluation_service import EvaluationService
+from main.request_adapter.scaler_wrapper import ScalerWrapper
 from sklearn.model_selection import train_test_split
 
-LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
+RESOURCES_PATH = "../../resources/"
+
+LABELS_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "labels.txt")
+FIRST_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel1.xml")
+SECOND_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel2.xml")
 
 
 class EvaluationServiceTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.service = EvaluationService()
-        self.x, self.y, self.result_scaler = self.prepare_x_y()
+        self.x, self.y, request_scaler, self.result_scaler = self.prepare_x_y()
+        self.request_scaler = ScalerWrapper(request_scaler)
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
@@ -42,11 +48,14 @@ class EvaluationServiceTest(unittest.TestCase):
                                 'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
                                 'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
 
-    def test_can_predict_and_unscale(self):
-        predictions = self.service._predict_from_row(self.x)
-        self.assert_correct_metrics(predictions, self.y)
-        self.assert_correct_metrics(self.result_scaler.inverse_transform(predictions),
-                                    self.result_scaler.inverse_transform(self.y))
+    def test_can_predict_from_xml(self):
+        with open(SECOND_BIKE_PATH, "r") as file:
+            xml_as_string = file.read()
+        print(self.service.predict_from_xml(xml_as_string))
+
+    def test_can_predict_from_partial_request(self):
+        self.sample_input = self.request_scaler.unscale(self.sample_input)
+        print(self.service.predict_from_dict(self.sample_input))
 
     def test_can_get_labels(self):
         self.assertEqual({"Sim 1 Dropout X Disp. Magnitude",
@@ -60,10 +69,13 @@ class EvaluationServiceTest(unittest.TestCase):
                           "Sim 3 Safety Factor (Inverted)", "Model Mass Magnitude"},
                          set(self.service.get_labels()))
 
-    def test_input_shape(self):
-        self.assertEqual(list(self.x.columns.values), self.get_input_labels())
+    def test_model_and_scalers_loaded(self):
+        predictions = self.service._predict_from_row(self.x)
+        self.assert_correct_metrics(predictions, self.y)
+        self.assert_correct_metrics(self.result_scaler.inverse_transform(predictions),
+                                    self.result_scaler.inverse_transform(self.y))
 
-    def test_can_predict_singular_input(self):
+    def test_can_predict_singular_row(self):
         model_input = self.get_first_row(self.x)
         prediction = self.service.predict_from_row(model_input)
         assert pd_util.get_dict_from_row(model_input) == self.sample_input
@@ -72,6 +84,9 @@ class EvaluationServiceTest(unittest.TestCase):
         model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
         self.assertEqual(self.service.predict_from_row(model_input_from_dict),
                          self.expected_output)
+
+    def test_input_shape(self):
+        self.assertEqual(list(self.x.columns.values), self.get_input_labels())
 
     def test_cannot_predict_from_partial_row(self):
         incomplete_model_input = pd_util.get_row_from_dict(
@@ -98,7 +113,7 @@ class EvaluationServiceTest(unittest.TestCase):
     def prepare_x_y(self):
         x_scaled, y_scaled, x_scaler, y_scaler = self.service.get_data()
         x_test, y_test = self.standard_split(x_scaled, y_scaled)
-        return x_test, y_test, y_scaler
+        return x_test, y_test, x_scaler, y_scaler
 
     def standard_split(self, x_scaled, y_scaled):
         x_train, x_test, y_train, y_test = train_test_split(x_scaled,
