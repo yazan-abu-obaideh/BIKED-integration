@@ -18,7 +18,7 @@ class EvaluationServiceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.service = EvaluationService()
         self.x, self.y, request_scaler, self.result_scaler = self.prepare_x_y()
-        self.request_scaler = ScalerWrapper(request_scaler)
+        self.request_scaler = ScalerWrapper(request_scaler, self.x.columns)
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,

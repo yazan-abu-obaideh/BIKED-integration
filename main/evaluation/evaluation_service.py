@@ -33,10 +33,9 @@ class EvaluationService:
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
         self.adapter = RequestAdapter(DefaultAdapterSettings())
 
-        x, _, input_scaler, output_scaler = self.get_data()
-        self.columns_order = x.columns
-        self.response_scaler = ScalerWrapper(output_scaler)
-        self.request_scaler = ScalerWrapper(input_scaler)
+        x, y, input_scaler, output_scaler = self.get_data()
+        self.response_scaler = ScalerWrapper(output_scaler, y.columns)
+        self.request_scaler = ScalerWrapper(input_scaler, x.columns)
 
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
