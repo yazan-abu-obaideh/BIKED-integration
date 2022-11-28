@@ -2,7 +2,6 @@ import os.path
 import unittest
 
 import pandas_utility as pd_util
-import main.load_data as load_data
 from main.evaluation.evaluation_service import EvaluationService
 from sklearn.model_selection import train_test_split
 
@@ -12,8 +11,8 @@ LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.tx
 class EvaluationServiceTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.x, self.y, self.result_scaler = self.prepare_x_y()
         self.service = EvaluationService()
+        self.x, self.y, self.result_scaler = self.prepare_x_y()
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
@@ -74,7 +73,7 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertEqual(self.service.predict_from_row(model_input_from_dict),
                          self.expected_output)
 
-    def test_cannot_predict_from_partial_singular_input(self):
+    def test_cannot_predict_from_partial_row(self):
         incomplete_model_input = pd_util.get_row_from_dict(
             {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
              "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
@@ -97,12 +96,9 @@ class EvaluationServiceTest(unittest.TestCase):
         return dataframe[dataframe.index == self.first_row_index(dataframe)]
 
     def prepare_x_y(self):
-        x_scaled, y_scaled, x_scaler, y_scaler = self.get_data()
+        x_scaled, y_scaled, x_scaler, y_scaler = self.service.get_data()
         x_test, y_test = self.standard_split(x_scaled, y_scaled)
         return x_test, y_test, y_scaler
-
-    def get_data(self):
-        return load_data.load_augmented_framed_dataset()
 
     def standard_split(self, x_scaled, y_scaled):
         x_train, x_test, y_train, y_test = train_test_split(x_scaled,

@@ -33,20 +33,29 @@ class EvaluationService:
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
         self.adapter = RequestAdapter(DefaultAdapterSettings())
 
-        _, _, request_scaler, result_scaler = load_augmented_framed_dataset()
-        self.result_scaler = ScalerWrapper(result_scaler)
-
-    def _predict_from_row(self, pd_row) -> pd.DataFrame:
-        return self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS)
-
-    def predict_from_row(self, pd_row) -> dict:
-        scaled_dict = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
-        return self.result_scaler.unscale(scaled_dict)
+        _, _, input_scaler, output_scaler = self.get_data()
+        self.response_scaler = ScalerWrapper(output_scaler)
+        self.request_scaler = ScalerWrapper(input_scaler)
 
     def predict_from_xml(self, bike_cad_xml) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
-        row = pd_util.get_row_from_dict(bike_cad_dict)
+        return self.predict_from_dict(bike_cad_dict)
+
+    def predict_from_dict(self, bike_cad_dict):
+        scaled_dict = self.request_scaler.scale(bike_cad_dict)
+        row = pd_util.get_row_from_dict(scaled_dict)
         return self.predict_from_row(row)
+
+    def predict_from_row(self, pd_row) -> dict:
+        scaled_result = pd_util.get_dict_from_row(
+            self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS))
+        return self.ensure_magnitude(self.response_scaler.unscale(scaled_result))
+
+    def ensure_magnitude(self, scaled_result):
+        return {key: abs(value) for key, value in scaled_result.items()}
+
+    def _predict_from_row(self, pd_row) -> pd.DataFrame:
+        return self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS)
 
     def get_metrics(self, predictions, y_test):
         r2 = r2_score(y_test, predictions)
@@ -60,7 +69,10 @@ class EvaluationService:
             unaltered_labels.remove(key)
             unaltered_labels.append(value)
         return unaltered_labels
-    
+
+    def get_data(self):
+        return load_augmented_framed_dataset()
+
 
 class DefaultAdapterSettings(RequestAdapterSettings):
     def default_values(self) -> dict:
