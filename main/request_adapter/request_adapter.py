@@ -1,11 +1,9 @@
 from main.xml_handler import XmlHandler
-from main.request_adapter.request_adapter_settings import RequestAdapterSettings, DefaultAdapterSettings
-
-DEFAULT_SETTINGS = DefaultAdapterSettings()
+from main.request_adapter.request_adapter_settings import RequestAdapterSettings
 
 
 class RequestAdapter:
-    def __init__(self, settings: RequestAdapterSettings = DEFAULT_SETTINGS):
+    def __init__(self, settings: RequestAdapterSettings):
         self.xml_handler = XmlHandler()
         self.settings = settings
 
