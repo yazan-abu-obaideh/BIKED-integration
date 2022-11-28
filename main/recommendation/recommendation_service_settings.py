@@ -1,7 +1,5 @@
 from abc import abstractmethod
 
-from typing import List
-
 
 class RecommendationSettings:
 
