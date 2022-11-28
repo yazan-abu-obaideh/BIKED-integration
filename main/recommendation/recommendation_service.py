@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import pandas_utility as pd_util
+import main.pandas_utility as pd_util
 from main.recommendation.recommendation_service_settings import RecommendationSettings
 
 DISTANCE = 'distance_from_user_entry'
