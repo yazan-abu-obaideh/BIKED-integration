@@ -1,5 +1,4 @@
 import unittest
-from typing import List
 
 import pandas as pd
 import os
