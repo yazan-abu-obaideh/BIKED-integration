@@ -17,3 +17,7 @@ class RequestAdapterSettings:
     @abstractmethod
     def raise_exception_if_missing(self) -> list:
         pass
+
+    @abstractmethod
+    def div_dict(self):
+        pass

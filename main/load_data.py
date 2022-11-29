@@ -43,7 +43,7 @@ def load_augmented_framed_dataset():
                 'Sim 3 Bottom Bracket X Rot.', 'Model Mass']:
         y[col] = [np.abs(val) for val in y[col].values]
         y.rename(columns={col: col + " Magnitude"}, inplace=True)
-
+    # TODO: consider whether to drop outliers
     y = filter_y(y)
     x = x.loc[y.index]
     y, y_scaler = scale(y)

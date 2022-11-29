@@ -50,6 +50,7 @@ class RequestAdapter:
             result_dict[key] = int(key in result_dict)
 
     def handle_ramifications(self, result_dict):
+        # TODO: check whether this should be done before or after scaling
         if result_dict["CSB_Include"] == 0:
             result_dict["CSB OD"] = 0.017759
         if result_dict["SSB_Include"] == 0:

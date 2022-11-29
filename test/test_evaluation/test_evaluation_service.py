@@ -11,6 +11,7 @@ RESOURCES_PATH = "../../resources/"
 LABELS_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "labels.txt")
 FIRST_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel1.xml")
 SECOND_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel2.xml")
+THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel3.xml")
 
 
 class EvaluationServiceTest(unittest.TestCase):
@@ -48,8 +49,15 @@ class EvaluationServiceTest(unittest.TestCase):
                                 'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
                                 'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
 
+    def test_direct_model_calls_equivalent(self):
+        x, y, _, _ = self.service.get_data()
+        print(pd_util.get_dict_from_row(x))
+        # self.result_scaler = ScalerWrapper(self.result_scaler, self.y.columns)
+        # scaled_response = pd_util.get_dict_from_row(self.service._predict_from_row(x.iloc[:1]))
+        # print(self.result_scaler.unscale(scaled_response))
+
     def test_can_predict_from_xml(self):
-        with open(SECOND_BIKE_PATH, "r") as file:
+        with open(THIRD_BIKE_PATH, "r") as file:
             xml_as_string = file.read()
         print(self.service.predict_from_xml(xml_as_string))
 
