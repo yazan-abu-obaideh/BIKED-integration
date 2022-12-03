@@ -91,7 +91,7 @@ class DefaultAdapterSettings(RequestAdapterSettings):
         # noinspection SpellCheckingInspection
         return {'CS textfield': 'CS Length', 'BB textfield': 'BB Drop', 'Stack': 'Stack',
                 'Head angle': 'HT Angle', 'Head tube length textfield': 'HT Length',
-                'Seat stay junction0': 'SS E', 'Seat angle': 'ST Angle', 'DT Length': 'DT Length',
+                'Seat stay junction': 'SS E', 'Seat angle': 'ST Angle', 'DT Length': 'DT Length',
                 'Seat tube length': 'ST Length', 'BB diameter': 'BB OD', 'ttd': 'TT OD',
                 'Head tube diameter': 'HT OD', 'dtd': 'DT OD', 'csd': 'CS OD', 'ssd': 'SS OD',
                 'Seat tube diameter': 'ST OD', 'Wall thickness Bottom Bracket': 'BB Thickness',

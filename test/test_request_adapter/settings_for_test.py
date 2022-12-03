@@ -4,6 +4,10 @@ from main.request_adapter.request_adapter_settings import RequestAdapterSettings
 class Settings(RequestAdapterSettings):
     """THIS IS NOT DUPLICATION. The test settings just so happen to match the real settings because we have not done the
     requisite work on the real settings just yet."""
+
+    def div_dict(self):
+        pass
+
     def default_values(self) -> dict:
         return {'Material=Steel': 0, 'Material=Aluminum': 0, 'Material=Titanium': 0, 'SSB_Include': 0,
                 'CSB_Include': 0, 'CS Length': 0, 'BB Drop': 0, 'Stack': 0, 'SS E': 0,
