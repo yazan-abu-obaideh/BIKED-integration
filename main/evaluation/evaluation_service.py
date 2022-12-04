@@ -39,7 +39,6 @@ class EvaluationService:
 
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
-        bike_cad_dict = {key: value / self.adapter.settings.div_dict()[key] for key, value in bike_cad_dict.items()}
         return self.predict_from_dict(bike_cad_dict)
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
@@ -114,7 +113,7 @@ class DefaultAdapterSettings(RequestAdapterSettings):
     def raise_exception_if_missing(self) -> list:
         return []
 
-    def div_dict(self):
+    def unit_conversion_division_dict(self):
         return {'Material=Steel': 1, 'Material=Aluminum': 1, 'Material=Titanium': 1, 'SSB_Include': 1,
                 'CSB_Include': 1, 'CS Length': 1000, 'BB Drop': 1000, 'Stack': 1000, 'SS E': 1000,
                 'ST Angle': 1, 'BB OD': 1000, 'TT OD': 1000, 'HT OD': 1000, 'DT OD': 1000, 'CS OD': 1000,

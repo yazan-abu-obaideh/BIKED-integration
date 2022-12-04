@@ -19,5 +19,5 @@ class RequestAdapterSettings:
         pass
 
     @abstractmethod
-    def div_dict(self):
+    def unit_conversion_division_dict(self) -> dict:
         pass

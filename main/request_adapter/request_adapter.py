@@ -20,9 +20,11 @@ class RequestAdapter:
 
     def convert_dict(self, bikeCad_file_entries):
         result_dict = self.map_to_model_input(bikeCad_file_entries)
+        result_dict = self.parse_values(result_dict)
+        self.convert_units(result_dict)
         self.handle_special_behavior(bikeCad_file_entries, result_dict)
         self.fill_default(result_dict)
-        return self.to_final_values(result_dict)
+        return result_dict
 
     def map_to_model_input(self, bikeCad_file_entries):
         result_dict = {}
@@ -61,7 +63,7 @@ class RequestAdapter:
             if key not in result_dict:
                 result_dict[key] = value
 
-    def to_final_values(self, result_dict):
+    def parse_values(self, result_dict):
         return {key: self.get_float_or_strip(value) for key, value in result_dict.items()}
 
     def get_float_or_strip(self, value):
@@ -69,3 +71,7 @@ class RequestAdapter:
             return float(value)
         except ValueError:
             return str(value).strip()
+
+    def convert_units(self, result_dict):
+        for key, divider in self.settings.unit_conversion_division_dict().items():
+            result_dict[key] = result_dict[key]/divider

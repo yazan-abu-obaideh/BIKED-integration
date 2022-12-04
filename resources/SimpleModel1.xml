@@ -7,8 +7,10 @@
     <entry key="Wall thickness Top tube">5</entry>
     <!--Will the request adapter handle this special case?-->
     <entry key="MATERIAL">STEEL</entry>
-    <!--Will the request adapter warn this value?-->
+    <!--Will the request adapter warn about this value?-->
     <entry key="test-warning">-1</entry>
+    <!--Will the request adapter convert this value from cm to m?-->
+    <entry key="Chain stay position on BB">50</entry>
     <!--Will the request adapter raise an exception if I'm missing?-->
     <entry key="must-have">10</entry>
 </properties>
