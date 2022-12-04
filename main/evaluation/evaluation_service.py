@@ -48,8 +48,7 @@ class EvaluationService:
         return self.predict_from_row(row)
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
-        scaled_result = pd_util.get_dict_from_row(
-            self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS))
+        scaled_result = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
         return self.ensure_magnitude(self.response_scaler.unscale(scaled_result))
 
     def _predict_from_row(self, pd_row: pd.DataFrame) -> pd.DataFrame:
