@@ -36,7 +36,7 @@ class RequestAdapterTest(unittest.TestCase):
         self.assertEqual(self.result_dict["CSB OD"], 0.017759)
 
     def test_default(self):
-        self.assertEqual(self.result_dict["HT Thickness"], 2)
+        self.assertEqual(self.result_dict["BB Thickness"], 2)
 
     def get_BikeCad_file_as_raw_xml(self):
         with open(RESOURCE_PATH, "r") as file:

@@ -51,10 +51,9 @@ class EvaluationServiceTest(unittest.TestCase):
 
     def test_direct_model_calls_equivalent(self):
         x, y, _, _ = self.service.get_data()
-        print(pd_util.get_dict_from_row(x))
-        # self.result_scaler = ScalerWrapper(self.result_scaler, self.y.columns)
-        # scaled_response = pd_util.get_dict_from_row(self.service._predict_from_row(x.iloc[:1]))
-        # print(self.result_scaler.unscale(scaled_response))
+        self.result_scaler = ScalerWrapper(self.result_scaler, self.y.columns)
+        scaled_response = pd_util.get_dict_from_row(self.service._predict_from_row(x.iloc[:1]))
+        print(self.result_scaler.unscale(scaled_response))
 
     def test_can_predict_from_xml(self):
         with open(THIRD_BIKE_PATH, "r") as file:
