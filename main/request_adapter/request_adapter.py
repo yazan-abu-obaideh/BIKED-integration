@@ -24,8 +24,8 @@ class RequestAdapter:
         result_dict = self.calculate_composite_values(result_dict)
         result_dict = self.map_to_model_input(result_dict)
         self.handle_special_behavior(bikeCad_file_entries, result_dict)
-        self.fill_default(result_dict)
         self.convert_units(result_dict)
+        self.fill_default(result_dict)
         return result_dict
 
     def map_to_model_input(self, bikeCad_file_entries):
@@ -76,7 +76,11 @@ class RequestAdapter:
 
     def convert_units(self, result_dict):
         for key, divider in self.settings.unit_conversion_division_dict().items():
-            result_dict[key] = result_dict[key]/divider
+            self.convert_unit_if_valid_key(divider, key, result_dict)
+
+    def convert_unit_if_valid_key(self, divider, key, result_dict):
+        if key in result_dict:
+            result_dict[key] = result_dict[key] / divider
 
     def calculate_composite_values(self, bikeCad_file_entries):
         bbd = bikeCad_file_entries['BB textfield']

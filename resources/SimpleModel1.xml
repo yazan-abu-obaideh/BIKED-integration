@@ -29,11 +29,11 @@
     <entry key='SEATSTAY_HR'>10</entry>
     <entry key='ssd'>10</entry>
     <entry key='Top tube rear diameter'>10</entry>
-    <entry key='Top tube rear dia2'>10</entry>
+    <entry key='Top tube rear dia2'>15</entry>
     <entry key='Top tube front diameter'>10</entry>
-    <entry key='Top tube front dia2'>10</entry>
-    <entry key='Down tube rear diameter'>10</entry>
+    <entry key='Top tube front dia2'>15</entry>
+    <entry key='Down tube rear diameter'>15</entry>
     <entry key='Down tube rear dia2'>10</entry>
     <entry key='Down tube front diameter'>10</entry>
-    <entry key='Down tube front dia2'>10</entry>
+    <entry key='Down tube front dia2'>15</entry>
 </properties>
