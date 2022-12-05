@@ -1,5 +1,12 @@
 from bs4 import BeautifulSoup
 
+TEMPLATE = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="k">1</entry>
+</properties>
+'''
+
 
 class XmlHandler:
     ENTRY_TAG = "entry"
@@ -9,6 +16,7 @@ class XmlHandler:
     def __init__(self):
         self.template_entry = None
         self.xml_tree = None
+        self.set_xml(TEMPLATE)
 
     def set_xml(self, xml: str):
         try:

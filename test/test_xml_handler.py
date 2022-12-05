@@ -96,7 +96,8 @@ class XmlHandlerTest(unittest.TestCase):
     def test_generate_xml_from_dict(self):
         handler = XmlHandler()
         handler.set_entries_from_dict({"first": "1", "second": "2"})
-        assert handler.get_all_entries().__str__() == '[<entry key="first">1</entry>, <entry key="second">2</entry>]'
+        self.assertEqual('[<entry key="first">1</entry>, <entry key="second">2</entry>]',
+                         handler.get_all_entries().__str__())
 
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "second": "2"})
