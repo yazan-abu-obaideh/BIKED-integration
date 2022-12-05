@@ -15,8 +15,9 @@ class AppTest(unittest.TestCase):
         app.run(port=5000)
 
     def test_empty_request(self):
-        response = send_request("GET", "http://localhost:5000/evaluate").json()["message"]
-        self.assertEqual("Invalid BikeCAD file", response)
+        response = send_request("GET", "http://localhost:5000/evaluate")
+        self.assertEqual("Invalid BikeCAD file", response.json()["message"])
+        self.assertEqual(400, response.status_code)
 
     def test_valid_request(self):
         with open(os.path.join(os.path.dirname(__file__), "../../resources/FullModel1.xml")) as file:
