@@ -5,7 +5,7 @@ from main.xml_handler import XmlHandler
 
 class XmlHandlerTest(unittest.TestCase):
     def setUp(self):
-        with open("../resources/test.xml", "r") as file:
+        with open("../resources/test-assets/test.xml", "r") as file:
             self.xml_handler = XmlHandler()
             self.xml_handler.set_xml(file.read())
         self.ENTRY_TAG = self.xml_handler.ENTRY_TAG
