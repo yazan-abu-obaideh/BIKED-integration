@@ -11,7 +11,7 @@ RESOURCES_PATH = "../../resources/"
 LABELS_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "labels.txt")
 FIRST_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel1.xml")
 SECOND_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel2.xml")
-THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel3.xml")
+THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "bike(1).xml")
 
 
 class EvaluationServiceTest(unittest.TestCase):
