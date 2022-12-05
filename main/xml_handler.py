@@ -18,6 +18,9 @@ class XmlHandler:
         self.xml_tree = None
         self.set_xml(TEMPLATE)
 
+    def get_all_entries_string(self):
+        return self.get_all_entries().__str__()
+
     def set_xml(self, xml: str):
         try:
             self.xml_tree = self.generate_xml_tree(xml)
