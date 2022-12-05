@@ -20,7 +20,7 @@ class AppTest(unittest.TestCase):
         self.assertEqual(400, response.status_code)
 
     def test_valid_request(self):
-        with open(os.path.join(os.path.dirname(__file__), "../../resources/FullModel1.xml")) as file:
+        with open(os.path.join(os.path.dirname(__file__), "../../resources/bikes/FullModel1.xml")) as file:
             response = send_request("GET", "http://localhost:5000/evaluate", data=file)
         self.assertIsNotNone(response.json())
         self.assertEqual(200, response.status_code)

@@ -7,11 +7,12 @@ from main.request_adapter.scaler_wrapper import ScalerWrapper
 from sklearn.model_selection import train_test_split
 
 RESOURCES_PATH = "../../resources/"
+BIKES_PATH = "../../resources/bikes/"
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "labels.txt")
-FIRST_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel1.xml")
-SECOND_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "FullModel2.xml")
-THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "bike(1).xml")
+FIRST_BIKE_PATH = os.path.join(os.path.dirname(__file__), BIKES_PATH + "FullModel1.xml")
+SECOND_BIKE_PATH = os.path.join(os.path.dirname(__file__), BIKES_PATH + "FullModel2.xml")
+THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), BIKES_PATH + "bike(1).xml")
 
 
 class EvaluationServiceTest(unittest.TestCase):
