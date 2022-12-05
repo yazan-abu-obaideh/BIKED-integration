@@ -30,7 +30,7 @@ class AppTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         AppTest.APP_PROCESS = multiprocessing.Process(target=AppTest.run_app)
         AppTest.APP_PROCESS.start()
-        while send_request("GET", "http://127.0.0.1:5000/health").text != "UP":
+        while send_request("GET", "http://localhost:5000/health").text != "UP":
             sleep(0.5)
     @classmethod
     def tearDownClass(cls) -> None:
