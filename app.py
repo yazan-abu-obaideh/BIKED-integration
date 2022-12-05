@@ -23,3 +23,7 @@ def evaluate_design():
 def recommend_similar():
     request_dict = request.data.decode(UTF_8)
     return request_dict
+
+@app.route("/health")
+def get_health():
+    return "UP"
