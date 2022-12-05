@@ -23,6 +23,7 @@ class AppTest(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__), "../../resources/bikes/FullModel1.xml")) as file:
             response = send_request("GET", "http://localhost:5000/evaluate", data=file)
         self.assertIsNotNone(response.json())
+        self.assertIs(type(response.json()), dict)
         self.assertEqual(200, response.status_code)
 
 
