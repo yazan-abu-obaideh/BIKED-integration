@@ -7,7 +7,7 @@ import pandas as pd
 import main.pandas_utility as pd_util
 
 RESOURCES_FILE = os.path.join(os.path.dirname(__file__))
-RELATIVE_PATH = "../../resources/all_structural_data_aug.csv"
+RELATIVE_PATH = "../../resources/datasets/all_structural_data_aug.csv"
 
 
 class TestScalerWrapper(unittest.TestCase):
