@@ -92,6 +92,12 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertEqual(self.service.predict_from_row(model_input_from_dict),
                          self.expected_output)
 
+    def test_order_does_not_matter(self):
+        input_in_different_order = {key: self.sample_input[key]
+                                    for key in sorted(self.sample_input.keys())}
+        self.assertEqual(self.service.predict_from_dict(self.sample_input),
+                         self.service.predict_from_dict(input_in_different_order))
+
     def test_input_shape(self):
         self.assertEqual(list(self.x.columns.values), self.get_input_labels())
 
