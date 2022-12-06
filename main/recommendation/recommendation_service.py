@@ -17,7 +17,30 @@ class RecommendationService:
         #  Do this right and you won't have to change anything about this package if the dataset changes.
 
     def get_distance_between(self, first_entry, second_entry):
-        return np.linalg.norm(pd.Series(first_entry).values - pd.Series(second_entry).values)
+        try:
+            deltas = self.get_deltas(first_entry, second_entry)
+            return np.linalg.norm(deltas)
+        except KeyError:
+            raise ValueError
+
+    def get_deltas(self, first_entry, second_entry):
+        first_entry, second_entry = self.reorder_entries(first_entry, second_entry)
+        return self.calculate_deltas(first_entry, second_entry)
+
+    def calculate_deltas(self, first_entry, second_entry):
+        deltas = []
+        for (key, first_value), (_, second_value) in zip(first_entry.items(), second_entry.items()):
+            deltas.append(self.weight_delta((first_value - second_value), key))
+        return deltas
+
+    def weight_delta(self, delta, key):
+        return delta * (self.settings.weights().get(key, 1) ** 0.5)
+
+    def reorder_entries(self, first_entry, second_entry):
+        sorted_keys = sorted(first_entry.keys())
+        first_entry = {key: first_entry[key] for key in sorted_keys}
+        second_entry = {key: second_entry[key] for key in sorted_keys}
+        return first_entry, second_entry
 
     def get_closest_to(self, user_entry_dict):
         return self.get_closest_n(user_entry_dict, 1)[0]

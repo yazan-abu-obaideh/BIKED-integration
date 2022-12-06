@@ -26,6 +26,9 @@ class RecommendationServiceTest(unittest.TestCase):
             self.service.get_closest_n({}, 16)
         assert context.exception.args[0] == f"Cannot get more matches than {TestSettings().max_n()}"
 
+    def test_order_does_not_matter(self):
+        self.assertEqual(self.service.get_distance_between({"x": 1, "y": 0}, {"y": 0, "x": 1}), 0)
+
     def test_get_closest_n(self):
         user_entry = {"x": 1, "y": 1, "z": 1}
         first_response, second_response = self.service.get_closest_n(user_entry, n=2)
@@ -35,7 +38,12 @@ class RecommendationServiceTest(unittest.TestCase):
                                 second_response, expected_distance=0.4330127018922193)
 
     def test_get_distance_between(self):
-        assert self.service.get_distance_between({"x": 0, "y": 0}, {"x": 3, "y": 4}) == 5
+        self.assertEqual(5, self.service.get_distance_between({"x": 0, "y": 0}, {"x": 3, "y": 4}))
+
+    def test_get_weighted_distance_between(self):
+        self.service.settings.WEIGHTS = {"x": 10}
+        self.assertAlmostEqual(self.service.get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4}), 7, places=6)
+
 
     def test_can_get_distance_from_point(self):
         first = self.get_by_selection_function(min)
