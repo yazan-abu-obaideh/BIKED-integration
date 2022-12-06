@@ -1,0 +1,50 @@
+Sim 1 Dropout X Disp. Magnitude
+Xml value: 0.029860021061014083
+Entry value: 0.011111431121145088
+Percent difference: 168.732%
+*****
+Sim 1 Dropout Y Disp. Magnitude
+Xml value: 0.07726708122157638
+Entry value: 0.021787148423259715
+Percent difference: 254.645%
+*****
+Sim 1 Bottom Bracket X Disp. Magnitude
+Xml value: 0.032526737727240886
+Entry value: 0.012183772767391373
+Percent difference: 166.968%
+*****
+Sim 1 Bottom Bracket Y Disp. Magnitude
+Xml value: 0.05835188736205106
+Entry value: 0.012939156170363236
+Percent difference: 350.971%
+*****
+Sim 2 Bottom Bracket Z Disp. Magnitude
+Xml value: 0.005616206436294553
+Entry value: 0.0023485019730819755
+Percent difference: 139.14%
+*****
+Sim 3 Bottom Bracket Y Disp. Magnitude
+Xml value: 0.04257478101070088
+Entry value: 0.01666142336216584
+Percent difference: 155.529%
+*****
+Sim 3 Bottom Bracket X Rot. Magnitude
+Xml value: 0.022929779151317938
+Entry value: 0.0063891630717543306
+Percent difference: 258.885%
+*****
+Sim 1 Safety Factor (Inverted)
+Xml value: 11.580350892728157
+Entry value: 0.542653611374427
+Percent difference: 2034.023%
+*****
+Sim 3 Safety Factor (Inverted)
+Xml value: 6.569368238366282
+Entry value: 0.6966032103094124
+Percent difference: 843.057%
+*****
+Model Mass Magnitude
+Xml value: 5.506871920866078
+Entry value: 3.189100876474357
+Percent difference: 72.678%
+*****

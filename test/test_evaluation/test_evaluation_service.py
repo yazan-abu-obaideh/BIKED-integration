@@ -62,13 +62,18 @@ class EvaluationServiceTest(unittest.TestCase):
         report = ""
 
         for key, value in xml_response.items():
-            report += key + "\n"
-            report += f"Xml value: {value}" + "\n"
-            report += f"Entry value: {entry_response[key]}" + "\n"
-            report += f"Percent difference: {round(((value - entry_response[key]) / entry_response[key]) * 100, 3)}%" + "\n"
-            report += "*" * 5
+            report = self.add_to_report(key, report)
+            report = self.add_to_report(f"Xml value: {value}", report)
+            report = self.add_to_report(f"Entry value: {entry_response[key]}", report)
+            report = self.add_to_report(
+                f"Percent difference: {round(((value - entry_response[key]) / entry_response[key]) * 100, 3)}%", report)
+            report = self.add_to_report("*" * 5, report)
         with open('performance_report.txt', "w") as file:
             file.write(report)
+
+    def add_to_report(self, entry, report):
+        report += entry + "\n"
+        return report
 
     def test_can_predict_from_partial_request(self):
         self.sample_input = self.request_scaler.unscale(self.sample_input)
