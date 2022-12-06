@@ -28,7 +28,10 @@ class AppTest(unittest.TestCase):
         AppTest.APP_PROCESS = multiprocessing.Process(target=AppTest.run_app)
         AppTest.APP_PROCESS.start()
         start_time = time()
-        while (AppTest.site_not_up()) and AppTest.has_not_timed_out(start_time):
+        while AppTest.site_not_up():
+            if AppTest.has_timed_out(start_time):
+                AppTest.APP_PROCESS.terminate()
+                raise SystemError("Timed out waiting for app to start")
             sleep(0.5)
 
     @classmethod
@@ -44,5 +47,5 @@ class AppTest(unittest.TestCase):
         AppTest.APP_PROCESS.terminate()
 
     @classmethod
-    def has_not_timed_out(cls, start_time):
+    def has_timed_out(cls, start_time):
         return (time() - start_time) > 5
