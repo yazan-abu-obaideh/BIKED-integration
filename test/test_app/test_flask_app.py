@@ -4,7 +4,7 @@ import unittest
 
 from app import app
 from requests import request as send_request
-from time import sleep
+from time import sleep, time
 
 
 class AppTest(unittest.TestCase):
@@ -27,8 +27,13 @@ class AppTest(unittest.TestCase):
     def setUpClass(cls) -> None:
         AppTest.APP_PROCESS = multiprocessing.Process(target=AppTest.run_app)
         AppTest.APP_PROCESS.start()
-        while send_request("GET", "http://localhost:5000/health").text != "UP":
+        start_time = time()
+        while (AppTest.site_not_up()) and AppTest.has_not_timed_out(start_time):
             sleep(0.5)
+
+    @classmethod
+    def site_not_up(cls):
+        return send_request("GET", "http://localhost:5000/health").text != "UP"
 
     @staticmethod
     def run_app():
@@ -37,3 +42,7 @@ class AppTest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls) -> None:
         AppTest.APP_PROCESS.terminate()
+
+    @classmethod
+    def has_not_timed_out(cls, start_time):
+        return (time() - start_time) > 5
