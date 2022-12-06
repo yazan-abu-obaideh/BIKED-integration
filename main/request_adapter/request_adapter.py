@@ -65,7 +65,7 @@ class RequestAdapter:
             if key not in result_dict:
                 result_dict[key] = value
 
-    def parse_values(self, result_dict):
+    def parse_values(self, result_dict) -> dict:
         return {key: self.get_float_or_strip(value) for key, value in result_dict.items()}
 
     def get_float_or_strip(self, value):

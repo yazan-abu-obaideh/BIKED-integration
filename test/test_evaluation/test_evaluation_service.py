@@ -19,8 +19,9 @@ class EvaluationServiceTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.service = EvaluationService()
-        self.x, self.y, request_scaler, self.result_scaler = self.prepare_x_y()
+        self.x, self.y, request_scaler, result_scaler = self.prepare_x_y()
         self.request_scaler = ScalerWrapper(request_scaler, self.x.columns)
+        self.result_scaler = ScalerWrapper(result_scaler, self.y.columns)
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
@@ -50,16 +51,24 @@ class EvaluationServiceTest(unittest.TestCase):
                                 'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
                                 'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
 
-    def test_direct_model_calls_equivalent(self):
-        x, y, _, _ = self.service.get_data()
-        self.result_scaler = ScalerWrapper(self.result_scaler, self.y.columns)
-        scaled_response = pd_util.get_dict_from_row(self.service._predict_from_row(x.iloc[:1]))
-        print(self.result_scaler.unscale(scaled_response))
-
-    def test_can_predict_from_xml(self):
+    def test_report_performance(self):
         with open(THIRD_BIKE_PATH, "r") as file:
             xml_as_string = file.read()
-        print(self.service.predict_from_xml(xml_as_string))
+        xml_response = self.service.predict_from_xml(xml_as_string)
+
+        scaled_response = pd_util.get_dict_from_row(self.service._predict_from_row(self.x.iloc[:1]))
+        entry_response = self.result_scaler.unscale(scaled_response)
+
+        report = ""
+
+        for key, value in xml_response.items():
+            report += key + "\n"
+            report += f"Xml value: {value}" + "\n"
+            report += f"Entry value: {entry_response[key]}" + "\n"
+            report += f"Percent difference: {round(((value - entry_response[key]) / entry_response[key]) * 100, 3)}%" + "\n"
+            report += "*" * 5
+        with open('performance_report.txt', "w") as file:
+            file.write(report)
 
     def test_can_predict_from_partial_request(self):
         self.sample_input = self.request_scaler.unscale(self.sample_input)
@@ -80,8 +89,8 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_model_and_scalers_loaded(self):
         predictions = self.service._predict_from_row(self.x)
         self.assert_correct_metrics(predictions, self.y)
-        self.assert_correct_metrics(self.result_scaler.inverse_transform(predictions),
-                                    self.result_scaler.inverse_transform(self.y))
+        self.assert_correct_metrics(self.result_scaler.scaler.inverse_transform(predictions),
+                                    self.result_scaler.scaler.inverse_transform(self.y))
 
     def test_can_predict_singular_row(self):
         model_input = self.get_first_row(self.x)
