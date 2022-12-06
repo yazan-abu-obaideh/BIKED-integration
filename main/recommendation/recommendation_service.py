@@ -19,9 +19,12 @@ class RecommendationService:
     def get_distance_between(self, first_entry, second_entry):
         try:
             deltas = self.get_deltas(first_entry, second_entry)
-            return np.linalg.norm(deltas)
+            return self.normalize(deltas)
         except KeyError:
             raise ValueError
+
+    def normalize(self, deltas):
+        return np.linalg.norm(deltas)
 
     def get_deltas(self, first_entry, second_entry):
         first_entry, second_entry = self.reorder_entries(first_entry, second_entry)
@@ -30,11 +33,18 @@ class RecommendationService:
     def calculate_deltas(self, first_entry, second_entry):
         deltas = []
         for (key, first_value), (_, second_value) in zip(first_entry.items(), second_entry.items()):
-            deltas.append(self.weight_delta((first_value - second_value), key))
+            deltas.append(self.weigh_delta((first_value - second_value), key))
         return deltas
 
-    def weight_delta(self, delta, key):
-        return delta * (self.settings.weights().get(key, 1) ** 0.5)
+    def weigh_delta(self, delta, key):
+        return delta * (self.pre_normalize_weight(key))
+
+    def pre_normalize_weight(self, key):
+        # sqrt(weight * delta**2) --> sqrt(((weight ** 0.5) * delta)**2)
+        return self.weight_or_default(key) ** 0.5
+
+    def weight_or_default(self, key):
+        return self.settings.weights().get(key, 1)
 
     def reorder_entries(self, first_entry, second_entry):
         sorted_keys = sorted(first_entry.keys())
