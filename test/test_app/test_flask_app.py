@@ -35,17 +35,17 @@ class AppTest(unittest.TestCase):
             sleep(0.5)
 
     @classmethod
-    def site_not_up(cls):
+    def tearDownClass(cls) -> None:
+        AppTest.APP_PROCESS.terminate()
+
+    @staticmethod
+    def site_not_up():
         return send_request("GET", "http://localhost:5000/health").text != "UP"
 
     @staticmethod
     def run_app():
         app.run(port=5000)
 
-    @classmethod
-    def tearDownClass(cls) -> None:
-        AppTest.APP_PROCESS.terminate()
-
-    @classmethod
-    def has_timed_out(cls, start_time):
+    @staticmethod
+    def has_timed_out(start_time):
         return (time() - start_time) > 5
