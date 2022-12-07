@@ -16,18 +16,15 @@ class RecommendationService:
         #  the settings, the scaling and unscaling required - because this service CAN be concrete.
         #  Do this right and you won't have to change anything about this package if the dataset changes.
 
-    def calculate_distances(self, user_entry_dict):
+    def calculate_distances(self, user_entry_dict: dict):
         self.data: pd.DataFrame
-        user_entry_row = pd.Series(user_entry_dict)
+        filtered_user_entry = {key: value for key, value in user_entry_dict.items() if key in self.settings.include()}
+        user_entry_row = pd.Series(filtered_user_entry)
 
         def distance_from_user_entry(row):
             return self.get_distance_between(row, user_entry_row)
 
         self.data[DISTANCE] = self.data.apply(distance_from_user_entry, axis=1)
-
-    def get_response_by_distance(self, smallest_distance) -> dict:
-        correct_row_index = self.data[self.data[DISTANCE] == smallest_distance].index[0]
-        return pd_util.get_dict_from_row(self.data[self.data.index == correct_row_index])
 
 
     def get_distance_between(self, first_entry, second_entry):
@@ -61,7 +58,7 @@ class RecommendationService:
         return self.settings.weights().get(key, 1)
 
     def reorder_entries(self, first_entry, second_entry):
-        sorted_keys = sorted(first_entry.keys())
+        sorted_keys = sorted([key for key in first_entry.keys() if key in self.settings.include()])
         first_entry = {key: first_entry[key] for key in sorted_keys}
         second_entry = {key: second_entry[key] for key in sorted_keys}
         return first_entry, second_entry
@@ -73,8 +70,9 @@ class RecommendationService:
         self.raise_if_invalid_number(n)
 
         self.calculate_distances(user_entry)
-        smallest_n = self.data.sort_values(by=DISTANCE)[DISTANCE].values[:n]
-        responses = [self.get_response_by_distance(distance) for distance in smallest_n]
+        self.data: pd.DataFrame
+        smallest_n = self.data.sort_values(by=DISTANCE)[:n]
+        responses = [pd_util.get_dict_from_row(smallest_n.iloc[i: i+1]) for i in range(n)]
         self.remove_distance_column()
         return responses
 

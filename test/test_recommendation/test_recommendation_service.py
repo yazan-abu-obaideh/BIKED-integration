@@ -35,19 +35,19 @@ class RecommendationServiceTest(unittest.TestCase):
         first_response, second_response = self.service.get_closest_n(user_entry, n=2)
         self.assertCorrectMatch(self.get_by_index(3),
                                 first_response, expected_distance=0)
-        self.assertCorrectMatch(self.get_by_index(2),
-                                second_response, expected_distance=0.4330127018922193)
+        self.assertCorrectMatch(self.get_by_index(4),
+                                second_response, expected_distance=0)
 
     def test_get_distance_between(self):
         self.assertEqual(5, self.service.get_distance_between({"x": 0, "y": 0}, {"x": 3, "y": 4}))
 
     def test_get_weighted_distance_between(self):
         self.service.settings.WEIGHTS = {"x": 10}
-        self.assertAlmostEqual(self.service.get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4}), 7, places=6)
+        self.assertAlmostEqual(first=7, second=self.service.get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4}), places=6)
 
     def test_can_get_distance_from_point(self):
-        first = self.get_by_selection_function(min)
-        last = self.get_by_selection_function(max)
+        first = self.get_by_index(0)
+        last = self.get_by_index(3)
         first_user_entry = {"x": 0.1, "y": 0.05, "z": 0.03}
         second_user_entry = {"x": 0.95, "y": 0.95, "z": 0.99}
         self.assertCorrectMatch(first, self.service.get_closest_to(first_user_entry),
@@ -55,10 +55,6 @@ class RecommendationServiceTest(unittest.TestCase):
         self.assertCorrectMatch(last, self.service.get_closest_to(second_user_entry),
                                 expected_distance=0.07141428428542856)
 
-    def get_by_selection_function(self, selection_function):
-        indices = self.dataset.index.values
-        row = self.dataset[self.dataset.index == selection_function(indices)]
-        return pd_util.get_dict_from_row(row)
 
     def get_by_index(self, index):
         return pd_util.get_dict_from_row(self.dataset[self.dataset.index == index])
@@ -70,11 +66,12 @@ class RecommendationServiceTest(unittest.TestCase):
 
 
 class TestSettings(RecommendationSettings):
-    def include(self) -> list:
-        pass
-
     MAX_N = 5
     WEIGHTS = {}
+    INCLUDE=["x", "y", "z"]
+
+    def include(self) -> list:
+        return self.INCLUDE
 
     def weights(self) -> dict:
         return self.WEIGHTS
