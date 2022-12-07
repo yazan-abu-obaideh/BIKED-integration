@@ -7,7 +7,7 @@ DISTANCE = 'distance_from_user_entry'
 
 
 class RecommendationService:
-    def __init__(self, data, settings: RecommendationSettings):
+    def __init__(self, data, settings:RecommendationSettings):
         self.data = data
         # TODO: USE the sheet provided
         self.settings = settings

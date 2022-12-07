@@ -1,10 +1,12 @@
-from flask import Flask, request, make_response
+from main.recommendation.bike_recommendation_service import BikeRecommendationService
 from main.evaluation.evaluation_service import EvaluationService
+from flask import Flask, request, make_response
 
 UTF_8 = "utf-8"
 
 app = Flask(__name__)
 evaluation_service = EvaluationService()
+recommendation_service = BikeRecommendationService()
 
 
 @app.errorhandler(ValueError)
@@ -21,8 +23,8 @@ def evaluate_design():
 
 @app.route("/recommend")
 def recommend_similar():
-    request_dict = request.data.decode(UTF_8)
-    return request_dict
+    request_as_raw_xml = request.data.decode(UTF_8)
+    return recommendation_service.recommend_bike(request_as_raw_xml)
 
 @app.route("/health")
 def get_health():

@@ -6,6 +6,8 @@ from app import app
 from requests import request as send_request
 from time import sleep, time
 
+VALID_MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/FullModel1.xml")
+
 
 class AppTest(unittest.TestCase):
     APP_PROCESS = None
@@ -15,13 +17,18 @@ class AppTest(unittest.TestCase):
         self.assertEqual("Invalid BikeCAD file", response.json()["message"])
         self.assertEqual(400, response.status_code)
 
-    def test_valid_request(self):
-        VALID_MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/FullModel1.xml")
+    def test_valid_evaluation_request(self):
         with open(VALID_MODEL_PATH, 'r') as file:
             response = send_request("GET", "http://localhost:5000/evaluate", data=file)
         self.assertIsNotNone(response.json())
         self.assertIs(type(response.json()), dict)
         self.assertEqual(200, response.status_code)
+
+    def test_valid_recommendation_request(self):
+        with open(VALID_MODEL_PATH, 'r') as file:
+            response = send_request("GET", "http://localhost:5000/recommend", data=file)
+        print(response.content)
+        self.assertIsNotNone(response.text)
 
     @classmethod
     def setUpClass(cls) -> None:
