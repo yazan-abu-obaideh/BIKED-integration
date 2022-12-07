@@ -27,8 +27,8 @@ class AppTest(unittest.TestCase):
     def test_valid_recommendation_request(self):
         with open(VALID_MODEL_PATH, 'r') as file:
             response = send_request("GET", "http://localhost:5000/recommend", data=file)
-        print(response.content)
         self.assertIsNotNone(response.text)
+        self.assertEqual(200, response.status_code)
 
     @classmethod
     def setUpClass(cls) -> None:

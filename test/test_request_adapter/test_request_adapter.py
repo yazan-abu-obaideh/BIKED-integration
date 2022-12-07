@@ -37,6 +37,7 @@ class RequestAdapterTest(unittest.TestCase):
 
     def test_default(self):
         self.assertEqual(self.result_dict["BB Thickness"], 2)
+        assert False
 
     def test_composite(self):
         self.assertEqual(self.result_dict['DT OD'], 12.5)

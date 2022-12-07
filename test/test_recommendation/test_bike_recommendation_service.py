@@ -12,8 +12,4 @@ class RecommendationServiceTest(unittest.TestCase):
         self.service = BikeRecommendationService()
 
     def test_get_closest_to(self):
-        with open(VALID_MODEL_PATH, "r") as file:
-            response = self.service.recommend_bike(file.read())
-            print(response[0])
-            array = numpy.array(list(response[1].values()))
-            print(numpy.unique(array))
+        assert False
