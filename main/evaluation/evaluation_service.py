@@ -39,6 +39,7 @@ class EvaluationService:
 
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
+        # TODO: MAKE IT SO YOU FILL THE DEFAULT AFTER YOU SCALE
         self.adapter.fill_default(bike_cad_dict)
         return self.predict_from_dict(bike_cad_dict)
 

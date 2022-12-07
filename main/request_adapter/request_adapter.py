@@ -48,12 +48,9 @@ class RequestAdapter:
 
     def handle_keys_whose_presence_indicates_their_value(self, result_dict):
         for key in self.settings.keys_whose_presence_indicates_their_value():
-            # TODO: ask Lyle whether it's a bug or a feature that CSB_Include is
-            #  assigned to 0 in both the IF and ELSE clauses
             result_dict[key] = int(key in result_dict)
 
     def handle_ramifications(self, result_dict):
-        # TODO: check whether this should be done before or after scaling
         if result_dict["CSB_Include"] == 0:
             result_dict["CSB OD"] = 17.759
         if result_dict["SSB_Include"] == 0:

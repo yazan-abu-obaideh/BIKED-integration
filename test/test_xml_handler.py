@@ -23,7 +23,6 @@ class XmlHandlerTest(unittest.TestCase):
         new_key = "key"
         new_value = "value"
         self.xml_handler.add_new_entry(new_key, new_value)
-        # TODO: generalize this so it doesn't depend on the word entry in so many places.
         assert self.get_entries_count() == 3
         assert self.xml_handler.get_all_entries_string() == \
                '[<entry key="ready">3</entry>, <entry key="stuff">5</entry>, ' + \
