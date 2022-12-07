@@ -7,14 +7,13 @@ import pandas_utility as pd_util
 from main.recommendation.recommendation_service import RecommendationService, DISTANCE
 from main.recommendation.recommendation_service_settings import RecommendationSettings
 
-TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__),
-                                          "../../resources/test-assets/simple_distance_set.csv")
+TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__), "../../resources/test-assets/simple_distance_set.csv")
 
 
 class RecommendationServiceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.dataset = pd.read_csv(TEST_DISTANCE_DATASET_PATH)
-        self.service = RecommendationService(self.dataset, TestSettings())
+        self.service = RecommendationService(self.dataset, TestBikeSettings())
 
     def test_missing_input(self):
         def get_closest_to_invalid():
@@ -25,7 +24,7 @@ class RecommendationServiceTest(unittest.TestCase):
     def test_get_invalid_closest_n(self):
         with self.assertRaises(ValueError) as context:
             self.service.get_closest_n({}, 16)
-        assert context.exception.args[0] == f"Cannot get more matches than {TestSettings().max_n()}"
+        assert context.exception.args[0] == f"Cannot get more matches than {TestBikeSettings().max_n()}"
 
     def test_order_does_not_matter(self):
         self.assertEqual(self.service.get_distance_between({"x": 1, "y": 0}, {"y": 0, "x": 1}), 0)
@@ -44,6 +43,7 @@ class RecommendationServiceTest(unittest.TestCase):
     def test_get_weighted_distance_between(self):
         self.service.settings.WEIGHTS = {"x": 10}
         self.assertAlmostEqual(self.service.get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4}), 7, places=6)
+
 
     def test_can_get_distance_from_point(self):
         first = self.get_by_selection_function(min)
@@ -69,12 +69,20 @@ class RecommendationServiceTest(unittest.TestCase):
         self.assertEqual(response[DISTANCE], expected_distance)
 
 
-class TestSettings(RecommendationSettings):
-    MAX_N = 5
-    WEIGHTS = {}
+class TestBikeSettings(RecommendationSettings):
+    def __init__(self):
+        self.maybe = ["Head tube upper extension2", "Seat tube extension2", "Head tube lower extension2", "Wheel width rear", "Wheel width front", "Head tube type", "BB length", "Head tube diameter", "Wheel cut", "BB diameter", "Seat tube diameter", "Top tube type", "CHAINSTAYbrdgdia1", "CHAINSTAYbrdgshift", "SEATSTAYbrdgdia1", "SEATSTAYbrdgshift", "bottle SEATTUBE0 show", "bottle DOWNTUBE0 show", "Front Fender include", "Rear Fender include", "Display RACK"]
+        self.yes = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield", "FCD textfield", "Head angle", "Saddle height", "Head tube length textfield", "ERD rear", "Dropout spacing style", "BSD front", "ERD front", "BSD rear", "Fork type", "Stem kind", "Display AEROBARS", "Handlebar style", "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN", "Number of cogs", "Number of chainrings"]
+
+    def max_n(self) -> int:
+        return 10
+
+    def include(self) -> list:
+        return self.maybe + self.yes
 
     def weights(self) -> dict:
-        return self.WEIGHTS
-
-    def max_n(self):
-        return self.MAX_N
+        maybe_weights = {key: 1 for key in self.maybe}
+        yes_weights = {key: 3 for key in self.yes}
+        weights = maybe_weights
+        weights.update(yes_weights)
+        return weights
