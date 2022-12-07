@@ -33,7 +33,7 @@ class RequestAdapterTest(unittest.TestCase):
         self.assertEqual(self.result_dict["CS F"], 0.5)
 
     def test_ramifications(self):
-        self.assertEqual(self.result_dict["CSB OD"], 0.017759)
+        self.assertEqual(self.result_dict["CSB OD"], 17.759)
 
     def test_default(self):
         self.assertEqual(self.result_dict["BB Thickness"], 2)
