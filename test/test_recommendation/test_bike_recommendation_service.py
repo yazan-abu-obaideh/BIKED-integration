@@ -1,3 +1,5 @@
+import numpy
+
 from main.recommendation.bike_recommendation_service import BikeRecommendationService
 import unittest
 import os
@@ -11,4 +13,7 @@ class RecommendationServiceTest(unittest.TestCase):
 
     def test_get_closest_to(self):
         with open(VALID_MODEL_PATH, "r") as file:
-            print(self.service.recommend_bike(file.read()))
+            response = self.service.recommend_bike(file.read())
+            print(response[0])
+            array = numpy.array(list(response[1].values()))
+            print(numpy.unique(array))

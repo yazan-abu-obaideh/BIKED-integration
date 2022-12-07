@@ -25,7 +25,6 @@ class RequestAdapter:
         result_dict = self.map_to_model_input(result_dict)
         self.handle_special_behavior(bikeCad_file_entries, result_dict)
         self.convert_units(result_dict)
-        self.fill_default(result_dict)
         return result_dict
 
     def map_to_model_input(self, bikeCad_file_entries):
@@ -56,9 +55,9 @@ class RequestAdapter:
     def handle_ramifications(self, result_dict):
         # TODO: check whether this should be done before or after scaling
         if result_dict["CSB_Include"] == 0:
-            result_dict["CSB OD"] = 0.017759
+            result_dict["CSB OD"] = 17.759
         if result_dict["SSB_Include"] == 0:
-            result_dict["SSB OD"] = 0.015849
+            result_dict["SSB OD"] = 15.849
 
     def fill_default(self, result_dict):
         for key, value in self.settings.default_values().items():

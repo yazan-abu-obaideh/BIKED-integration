@@ -42,21 +42,22 @@ class BikeRecommendationService:
     def recommend_bike(self, xml_user_entry: str):
         self.xml_handler.set_xml(xml_user_entry)
         user_entry_dict = self.xml_handler.get_entries_dict()
-        user_entry_dict = {key: self.get_float(value) for key, value in user_entry_dict.items()}
+        self.warning = {}
+        user_entry_dict = {key: self.enumerate(key, value) for key, value in user_entry_dict.items()}
         closest_bike = self.inner_service.get_closest_n(user_entry_dict, 1)[0]
-        self.xml_handler.set_entries_from_dict(closest_bike)
-        return self.xml_handler.get_all_entries_string()
+        return closest_bike, self.warning
 
-    def get_float(self, value: str):
+    def enumerate(self, key, value: str):
         value = value.lower()
         if value == 'true':
             return 1
-        elif value in ['false', 'none']:
+        elif value == 'false':
             return 0
         else:
             try:
                 return float(value)
             except ValueError:
+                self.warning[key] = value
                 return 0
 
 if __name__ == "__main__":
