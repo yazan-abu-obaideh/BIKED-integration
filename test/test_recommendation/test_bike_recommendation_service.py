@@ -7,7 +7,7 @@ import pandas_utility as pd_util
 from main.recommendation.recommendation_service import RecommendationService, DISTANCE
 from main.recommendation.recommendation_service_settings import RecommendationSettings
 
-TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__), "../../resources/test-assets/simple_distance_set.csv")
+TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__), "../../resources/datasets/microBIKED_processed.csv")
 
 
 class RecommendationServiceTest(unittest.TestCase):

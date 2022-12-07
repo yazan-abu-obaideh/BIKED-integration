@@ -70,6 +70,9 @@ class RecommendationServiceTest(unittest.TestCase):
 
 
 class TestSettings(RecommendationSettings):
+    def include(self) -> list:
+        pass
+
     MAX_N = 5
     WEIGHTS = {}
 
