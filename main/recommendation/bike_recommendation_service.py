@@ -25,16 +25,27 @@ class DefaultBikeSettings(RecommendationSettings):
         return weights
 
 DEFAULT_SETTINGS = DefaultBikeSettings()
-DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datasets/microBIKED_processed.csv")
+DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datasets/BIKED_raw.csv")
 
 
 class BikeRecommendationService:
     def __init__(self):
         self.inner_service = RecommendationService(pd.read_csv(DEFAULT_DATASET), DefaultBikeSettings())
         self.xml_handler = XmlHandler()
+        num = 0
+        for key in self.inner_service.settings.include():
+            if key not in self.inner_service.data.columns.values:
+                print(key)
+                num += 1
+        print(num)
+        print(len(self.inner_service.settings.include()))
     def recommend_bike(self, xml_user_entry: str):
         self.xml_handler.set_xml(xml_user_entry)
         user_entry_dict = self.xml_handler.get_entries_dict()
         closest_bike = self.inner_service.get_closest_n(user_entry_dict, 1)
         self.xml_handler.set_entries_from_dict(closest_bike)
         return self.xml_handler.get_content_string()
+
+if __name__ == "__main__":
+    service = BikeRecommendationService()
+
