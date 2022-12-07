@@ -17,10 +17,9 @@ class RecommendationServiceTest(unittest.TestCase):
         self.service = RecommendationService(self.dataset, TestSettings())
 
     def test_missing_input(self):
-        def get_closest_to_invalid():
-            self.service.get_closest_to({"x": 5, "y": 12})
-
-        self.assertRaises(ValueError, get_closest_to_invalid)
+        response = self.service.get_closest_to({"x": 5, "y": 12})
+        self.assertCorrectMatch(row=self.get_by_index(3), response=response,
+                                expected_distance=11.704699910719626)
 
     def test_get_invalid_closest_n(self):
         with self.assertRaises(ValueError) as context:

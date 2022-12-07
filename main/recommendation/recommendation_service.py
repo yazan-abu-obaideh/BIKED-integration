@@ -22,14 +22,14 @@ class RecommendationService:
         user_entry_row = pd.Series(filtered_user_entry)
 
         def distance_from_user_entry(row):
-            return self.get_distance_between(row, user_entry_row)
+            return self.get_distance_between(user_entry_row, row)
 
         self.data[DISTANCE] = self.data.apply(distance_from_user_entry, axis=1)
 
 
-    def get_distance_between(self, first_entry, second_entry):
+    def get_distance_between(self, reference_entry, second_entry):
         try:
-            deltas = self.get_deltas(first_entry, second_entry)
+            deltas = self.get_deltas(reference_entry, second_entry)
             return self.normalize(deltas)
         except KeyError:
             raise ValueError
@@ -37,9 +37,9 @@ class RecommendationService:
     def normalize(self, deltas):
         return np.linalg.norm(deltas)
 
-    def get_deltas(self, first_entry, second_entry):
-        first_entry, second_entry = self.reorder_entries(first_entry, second_entry)
-        return self.calculate_deltas(first_entry, second_entry)
+    def get_deltas(self, reference_entry, second_entry):
+        reference_entry, second_entry = self.reorder_entries(reference_entry, second_entry)
+        return self.calculate_deltas(reference_entry, second_entry)
 
     def calculate_deltas(self, first_entry, second_entry):
         deltas = []
@@ -57,11 +57,11 @@ class RecommendationService:
     def weight_or_default(self, key):
         return self.settings.weights().get(key, 1)
 
-    def reorder_entries(self, first_entry, second_entry):
-        sorted_keys = sorted([key for key in first_entry.keys() if key in self.settings.include()])
-        first_entry = {key: first_entry[key] for key in sorted_keys}
+    def reorder_entries(self, reference_entry, second_entry):
+        sorted_keys = sorted([key for key in reference_entry.keys() if key in self.settings.include()])
+        reference_entry = {key: reference_entry[key] for key in sorted_keys}
         second_entry = {key: second_entry[key] for key in sorted_keys}
-        return first_entry, second_entry
+        return reference_entry, second_entry
 
     def get_closest_to(self, user_entry_dict):
         return self.get_closest_n(user_entry_dict, 1)[0]
