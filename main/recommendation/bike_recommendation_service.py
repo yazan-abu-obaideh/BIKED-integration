@@ -25,7 +25,7 @@ class DefaultBikeSettings(RecommendationSettings):
         return weights
 
 DEFAULT_SETTINGS = DefaultBikeSettings()
-DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datasets/BIKED_raw.csv")
+DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datasets/BIKED_recommend.csv")
 
 
 class BikeRecommendationService:
