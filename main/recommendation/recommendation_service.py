@@ -66,8 +66,9 @@ class RecommendationService:
     def get_closest_to(self, user_entry_dict):
         return self.get_closest_n(user_entry_dict, 1)[0]
 
-    def get_closest_n(self, user_entry, n):
+    def get_closest_n(self, user_entry: dict, n: int):
         self.raise_if_invalid_number(n)
+        self.raise_if_invalid_entry(user_entry)
 
         self.calculate_distances(user_entry)
         self.data: pd.DataFrame
@@ -79,6 +80,11 @@ class RecommendationService:
     def remove_distance_column(self):
         self.data.drop(columns=DISTANCE, axis=1, inplace=True)
 
-    def raise_if_invalid_number(self, n):
+    def raise_if_invalid_number(self, n: int):
         if n > self.settings.max_n():
             raise ValueError(f"Cannot get more matches than {self.settings.max_n()}")
+
+    def raise_if_invalid_entry(self, user_entry: dict):
+        truth_list = [key in self.settings.include() for key in user_entry.keys()]
+        if not any(truth_list):
+            raise ValueError("Cannot recommend similar bike.")

@@ -16,14 +16,19 @@ class RecommendationServiceTest(unittest.TestCase):
         self.dataset = pd.read_csv(TEST_DISTANCE_DATASET_PATH)
         self.service = RecommendationService(self.dataset, TestSettings())
 
-    def test_missing_input(self):
+    def test_empty_input(self):
+        with self.assertRaises(ValueError) as context:
+            self.service.get_closest_n({}, 1)
+        assert context.exception.args[0] == f"Cannot recommend similar bike."
+
+    def test_incomplete_input(self):
         response = self.service.get_closest_to({"x": 5, "y": 12})
         self.assertCorrectMatch(row=self.get_by_index(3), response=response,
                                 expected_distance=11.704699910719626)
 
     def test_get_invalid_closest_n(self):
         with self.assertRaises(ValueError) as context:
-            self.service.get_closest_n({}, 16)
+            self.service.get_closest_n({"x": 5, "y": 12}, 16)
         assert context.exception.args[0] == f"Cannot get more matches than {TestSettings().max_n()}"
 
     def test_order_does_not_matter(self):
