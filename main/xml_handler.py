@@ -18,10 +18,7 @@ class XmlHandler:
         return len(self.get_all_entries())
 
     def set_xml(self, xml: str):
-        try:
-            self.xml_tree = self.generate_xml_tree(xml)
-        except Exception:
-            raise ValueError("Malformed XML")
+        self.xml_tree = self.generate_xml_tree(xml)
 
     def generate_xml_tree(self, xml: str):
         return BeautifulSoup(xml, "xml")

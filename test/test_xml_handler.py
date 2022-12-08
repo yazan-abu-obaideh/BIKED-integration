@@ -97,6 +97,10 @@ class XmlHandlerTest(unittest.TestCase):
         self.assertEqual('''<?xml version="1.0" encoding="utf-8"?>
 <properties><entry key="0">0</entry><entry key="1">1</entry><entry key="2">2</entry></properties>''' , handler.get_content_string())
 
+    def test_set_xml_does_not_throw(self):
+        garbage = "fewfwefew"
+        self.xml_handler.set_xml("%s" % garbage)
+
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "third": "3"})
         self.assertEqual(self.xml_handler.get_all_entries_string(),

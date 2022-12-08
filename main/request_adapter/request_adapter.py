@@ -9,15 +9,18 @@ class RequestAdapter:
         self.settings = settings
 
     def convert_xml(self, raw_xml: str) -> dict:
-        self.set_xml_or_throw(raw_xml)
-        bikeCad_file_entries = self.xml_handler.get_entries_dict()
+        bikeCad_file_entries = self.get_dict_from(raw_xml)
+        self.raise_if_empty_dict(bikeCad_file_entries)
         return self.convert_dict(bikeCad_file_entries)
 
-    def set_xml_or_throw(self, raw_xml):
-        try:
-            self.xml_handler.set_xml(raw_xml)
-        except ValueError:
-            raise ValueError("Invalid BikeCAD file")
+    def raise_if_empty_dict(self, bikeCad_file_entries):
+        if len(bikeCad_file_entries) == 0:
+            raise ValueError('Invalid BikeCAD file')
+
+    def get_dict_from(self, raw_xml):
+        self.xml_handler.set_xml(raw_xml)
+        bikeCad_file_entries = self.xml_handler.get_entries_dict()
+        return bikeCad_file_entries
 
     def convert_dict(self, bikeCad_file_entries):
         result_dict = self.parse_values(bikeCad_file_entries)
@@ -82,31 +85,32 @@ class RequestAdapter:
         bbd = bikeCad_file_entries['BB textfield']
         fcd = bikeCad_file_entries['FCD textfield']
         fty = bbd
-        ftx = np.sqrt(fty**2 + fcd ** 2)
+        ftx = np.sqrt(fty ** 2 + fcd ** 2)
         x = bikeCad_file_entries.get('FORKOR', 0)
         fkl = bikeCad_file_entries['FORK0L']
         htlx = bikeCad_file_entries['Head tube lower extension2']
         lsth = bikeCad_file_entries.get('lower stack height', 0)
         y = fkl + htlx + lsth
-        ha = bikeCad_file_entries['Head angle'] * np.pi/180
+        ha = bikeCad_file_entries['Head angle'] * np.pi / 180
         dtx = ftx - y * np.cos(ha) - x * np.sin(ha)
         dty = fty + y * np.sin(ha) + x * np.cos(ha)
         bikeCad_file_entries['DT Length'] = np.sqrt(dtx ** 2 + dty ** 2)
         csbd = bikeCad_file_entries['Chain stay back diameter']
         csvd = bikeCad_file_entries['Chain stay vertical diameter']
-        csd = (csbd + csvd)/2
+        csd = (csbd + csvd) / 2
         bikeCad_file_entries['csd'] = csd
         ssbd = bikeCad_file_entries['Seat stay bottom diameter']
         sshr = bikeCad_file_entries["SEATSTAY_HR"]
-        ssd = (ssbd + sshr)/2
+        ssd = (ssbd + sshr) / 2
         bikeCad_file_entries['ssd'] = ssd
         ttrd = bikeCad_file_entries.get('Top tube rear diameter', 0)
         ttrd2 = bikeCad_file_entries.get("Top tube rear dia2", 0)
         ttfd = bikeCad_file_entries['Top tube front diameter']
         ttfd2 = bikeCad_file_entries.get("Top tube front dia2", 0)
-        ttd = (ttrd + ttrd2 + ttfd ++ ttfd2) / 4
+        ttd = (ttrd + ttrd2 + ttfd + + ttfd2) / 4
         bikeCad_file_entries['ttd'] = ttd
-        dtrd, dtrd2, dtfd, dtfd2 = bikeCad_file_entries['Down tube rear diameter'], bikeCad_file_entries.get('Down tube rear dia2', 0), \
+        dtrd, dtrd2, dtfd, dtfd2 = bikeCad_file_entries['Down tube rear diameter'], bikeCad_file_entries.get(
+            'Down tube rear dia2', 0), \
             bikeCad_file_entries['Down tube front diameter'], bikeCad_file_entries.get('Down tube front dia2', 0)
         dtd = (dtrd + dtrd2 + dtfd + dtfd2) / 4
         bikeCad_file_entries['dtd'] = dtd
