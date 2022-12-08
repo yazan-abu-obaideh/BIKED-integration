@@ -1,5 +1,5 @@
 from main.xml_handler import XmlHandler
-from main.request_adapter.request_adapter_settings import RequestAdapterSettings
+from main.request_processing.request_adapter_settings import RequestAdapterSettings
 import numpy as np
 
 

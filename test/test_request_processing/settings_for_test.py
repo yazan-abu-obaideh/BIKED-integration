@@ -1,4 +1,4 @@
-from main.request_adapter.request_adapter_settings import RequestAdapterSettings
+from main.request_processing.request_adapter_settings import RequestAdapterSettings
 
 
 class Settings(RequestAdapterSettings):

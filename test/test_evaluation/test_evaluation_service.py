@@ -1,5 +1,5 @@
 from main.evaluation.evaluation_service import EvaluationService
-from main.request_adapter.scaler_wrapper import ScalerWrapper
+from main.request_processing.scaler_wrapper import ScalerWrapper
 from sklearn.model_selection import train_test_split
 import main.pandas_utility as pd_util
 import unittest
