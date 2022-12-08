@@ -88,16 +88,14 @@ class XmlHandlerTest(unittest.TestCase):
         assert self.xml_handler.get_entries_count() == 0
 
     def test_empty_xml(self):
-        with self.assertRaises(ValueError) as raised_exception:
-            self.xml_handler.set_xml("")
-
-        assert raised_exception.exception.args[0] == "Malformed XML"
+        self.xml_handler.set_xml("")
+        self.assertEqual('<?xml version="1.0" encoding="utf-8"?>\n', self.xml_handler.get_content_string())
 
     def test_generate_xml_from_dict(self):
         handler = XmlHandler()
-        handler.set_entries_from_dict({"first": "1", "second": "2", "third": "3"})
-        self.assertEqual('[<entry key="first">1</entry>, <entry key="second">2</entry>, <entry key="third">3</entry>]',
-                         handler.get_all_entries().__str__())
+        handler.set_entries_from_dict({num: num for num in range(3)})
+        self.assertEqual('''<?xml version="1.0" encoding="utf-8"?>
+<properties><entry key="0">0</entry><entry key="1">1</entry><entry key="2">2</entry></properties>''' , handler.get_content_string())
 
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "third": "3"})

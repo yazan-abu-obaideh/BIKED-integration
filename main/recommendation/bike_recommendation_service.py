@@ -34,27 +34,29 @@ class DefaultBikeSettings(RecommendationSettings):
         return weights
 
 DEFAULT_SETTINGS = DefaultBikeSettings()
-DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datasets/microBIKED_processed.csv")
+DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datasets/BIKED_recommend.csv")
 
 
 class BikeRecommendationService:
     def __init__(self):
         self.inner_service = RecommendationService(pd.read_csv(DEFAULT_DATASET), DefaultBikeSettings())
         self.xml_handler = XmlHandler()
-        num = 0
+        num_not_included = 0
         for key in self.inner_service.settings.include():
             if key not in self.inner_service.data.columns.values:
                 print(key)
-                num += 1
-        print(num)
-        print(len(self.inner_service.settings.include()))
+                num_not_included += 1
+        print(f"{num_not_included=}")
+        num_included = len(self.inner_service.settings.include())
+        print(f"{num_included=}")
     def recommend_bike(self, xml_user_entry: str):
         self.xml_handler.set_xml(xml_user_entry)
         user_entry_dict = self.xml_handler.get_entries_dict()
         self.warning = {}
         user_entry_dict = {key: self.enumerate(key, value) for key, value in user_entry_dict.items()}
         closest_bike = self.inner_service.get_closest_n(user_entry_dict, 1)[0]
-        return closest_bike, self.warning
+        self.xml_handler.set_entries_from_dict(closest_bike)
+        return self.xml_handler.get_content_string()
 
     def enumerate(self, key, value: str):
         value = value.lower()

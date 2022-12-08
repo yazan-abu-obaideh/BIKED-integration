@@ -1,11 +1,6 @@
 from bs4 import BeautifulSoup
 
-TEMPLATE = '''<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-<entry key="k">1</entry>
-</properties>
-'''
+TEMPLATE_ENTRY = "<entry key='k'>1</entry>"
 
 
 class XmlHandler:
@@ -14,9 +9,7 @@ class XmlHandler:
     PARENT_TAG = "properties"
 
     def __init__(self):
-        self.template_entry = None
         self.xml_tree = None
-        self.set_xml(TEMPLATE)
 
     def get_all_entries_string(self):
         return self.get_all_entries().__str__()
@@ -27,7 +20,6 @@ class XmlHandler:
     def set_xml(self, xml: str):
         try:
             self.xml_tree = self.generate_xml_tree(xml)
-            self.template_entry = self.copy_first_entry()
         except Exception:
             raise ValueError("Malformed XML")
 
@@ -56,7 +48,7 @@ class XmlHandler:
         return new_tree.find_all(self.ENTRY_TAG)[0]
 
     def add_new_entry(self, key: str, value: str):
-        new_entry = self.copy_entry(self.template_entry.__str__())
+        new_entry = self.copy_entry(TEMPLATE_ENTRY)
         new_entry[self.ENTRY_KEY] = key
         new_entry.find(string=new_entry.text).replace_with(value)
         self.xml_tree.find_all(self.PARENT_TAG)[0].append(new_entry)
@@ -90,9 +82,12 @@ class XmlHandler:
     def set_entries_from_dict(self, entries_dict: dict):
         if self.xml_tree:
             self.remove_all_entries()
+        else:
+            self.set_xml("")
+            parent = self.xml_tree.new_tag("properties")
+            self.xml_tree.append(parent)
         for key, value in entries_dict.items():
             self.add_new_entry(str(key), str(value))
-
     def update_entries_from_dict(self, entries_dict: dict):
         for key, value in entries_dict.items():
             self.add_or_update(key, value)
