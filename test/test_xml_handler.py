@@ -1,11 +1,13 @@
-import unittest
-
 from main.xml_handler import XmlHandler
+import unittest
+import os
+
+file_path = os.path.join(os.path.dirname(__file__), "../resources/test-assets/test.xml")
 
 
 class XmlHandlerTest(unittest.TestCase):
     def setUp(self):
-        with open("../resources/test-assets/test.xml", "r") as file:
+        with open(file_path, "r") as file:
             self.xml_handler = XmlHandler()
             self.xml_handler.set_xml(file.read())
         self.ENTRY_TAG = self.xml_handler.ENTRY_TAG

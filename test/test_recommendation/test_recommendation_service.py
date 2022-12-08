@@ -1,11 +1,11 @@
-import unittest
-
-import pandas as pd
-import os
-import pandas_utility as pd_util
-
-from main.recommendation.recommendation_service import RecommendationService, DISTANCE
 from main.recommendation.recommendation_service_settings import RecommendationSettings
+from main.recommendation.recommendation_service import RecommendationService, DISTANCE
+import main.pandas_utility as pd_util
+import pandas as pd
+import unittest
+import os
+
+
 
 TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__),
                                           "../../resources/test-assets/simple_distance_set.csv")
