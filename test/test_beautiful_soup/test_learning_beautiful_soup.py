@@ -31,3 +31,12 @@ class BSAndLxmlLearningTest(unittest.TestCase):
 
     def get_first_entry(self):
         return self.soup.find_all("entry")[0]
+
+    def test_get_entire_document(self):
+        self.assertEqual('''<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment> Made with care! </comment>
+<entry key="ready">3</entry>
+<entry key="stuff">5</entry>
+</properties>''', self.soup.__str__())
