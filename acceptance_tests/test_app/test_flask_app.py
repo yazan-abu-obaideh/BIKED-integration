@@ -12,7 +12,8 @@ BAD_REQUEST = 400
 VALID_MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/FullModel1.xml")
 
 
-# TODO: find out why running these tests in debug mode causes failures (LMAO)
+# TODO: find out why running these tests in debug mode causes failures
+#  (debug debug bug LMAO)
 class AppTest(unittest.TestCase):
     APP_PROCESS = None
 
