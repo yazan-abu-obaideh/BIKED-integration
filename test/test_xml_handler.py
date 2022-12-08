@@ -100,6 +100,7 @@ class XmlHandlerTest(unittest.TestCase):
     def test_set_xml_does_not_throw(self):
         garbage = "fewfwefew"
         self.xml_handler.set_xml("%s" % garbage)
+        self.assertEqual(0, self.xml_handler.get_entries_count())
 
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "third": "3"})
