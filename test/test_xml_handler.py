@@ -13,7 +13,7 @@ class XmlHandlerTest(unittest.TestCase):
         self.PARENT_TAG = self.xml_handler.PARENT_TAG
 
     def test_xml_tree_contains_entries(self):
-        assert self.get_entries_count() == 2
+        assert self.xml_handler.get_entries_count() == 2
 
     def test_can_copy(self):
         assert self.xml_handler.copy_first_entry()[self.ENTRY_KEY] == "ready"
@@ -23,7 +23,7 @@ class XmlHandlerTest(unittest.TestCase):
         new_key = "key"
         new_value = "value"
         self.xml_handler.add_new_entry(new_key, new_value)
-        assert self.get_entries_count() == 3
+        assert self.xml_handler.get_entries_count() == 3
         assert self.xml_handler.get_all_entries_string() == \
                '[<entry key="ready">3</entry>, <entry key="stuff">5</entry>, ' + \
                f'<entry key="{new_key}">{new_value}</entry>]'
@@ -67,24 +67,24 @@ class XmlHandlerTest(unittest.TestCase):
         self.xml_handler.add_new_entry(key="new_key", value="10")
         self.xml_handler.update_entry_key(self.get_ready_entry(), "ready-updated-key")
         self.xml_handler.update_entry_value(self.get_stuff_entry(), "new-stuff")
-        assert self.xml_handler.get_content_string() == expected_final_content
+        self.assertEqual(self.xml_handler.get_content_string(), expected_final_content)
 
     def test_can_get_entries_dict(self):
-        assert self.xml_handler.get_entries_dict() == {"ready": "3", "stuff": "5"}
+        self.assertEqual(self.xml_handler.get_entries_dict(), {"ready": "3", "stuff": "5"})
 
     def test_does_entry_exist(self):
-        assert self.xml_handler.does_entry_exist("does not exist") is False
-        assert self.xml_handler.does_entry_exist("ready") is True
+        self.assertFalse(self.xml_handler.does_entry_exist("does not exist"))
+        self.assertTrue(self.xml_handler.does_entry_exist("ready"))
 
     def test_remove_entry(self):
         self.xml_handler.remove_entry(self.get_stuff_entry())
         assert self.xml_handler.get_all_entries_string() == '[<entry key="ready">3</entry>]'
         self.xml_handler.remove_entry(self.get_ready_entry())
-        assert self.get_entries_count() == 0
+        assert self.xml_handler.get_entries_count() == 0
 
     def test_remove_all_entries(self):
         self.xml_handler.remove_all_entries()
-        assert self.get_entries_count() == 0
+        assert self.xml_handler.get_entries_count() == 0
 
     def test_empty_xml(self):
         with self.assertRaises(ValueError) as raised_exception:
@@ -100,13 +100,11 @@ class XmlHandlerTest(unittest.TestCase):
 
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "second": "2"})
-        assert self.xml_handler.get_all_entries_string() == '[<entry key="first">1</entry>, <entry key="second">2</entry>]'
+        self.assertEqual(self.xml_handler.get_all_entries_string(), '[<entry key="first">1</entry>, <entry key="second">2</entry>]')
 
     def test_update_xml_from_dict(self):
         self.xml_handler.update_entries_from_dict({"ready": "ready-new", "new": "new-value"})
-        assert self.xml_handler.get_all_entries_string() == '[<entry key="ready">ready-new</entry>, ' \
-                                                '<entry key="stuff">5</entry>, ' \
-                                                '<entry key="new">new-value</entry>]'
+        self.assertEqual(self.xml_handler.get_all_entries_string(), '[<entry key="ready">ready-new</entry>, <entry key="stuff">5</entry>, <entry key="new">new-value</entry>]')
 
 
     def get_ready_entry(self):
@@ -115,5 +113,3 @@ class XmlHandlerTest(unittest.TestCase):
     def get_stuff_entry(self):
         return self.xml_handler.find_entry_by_key("stuff")
 
-    def get_entries_count(self):
-        return len(self.xml_handler.get_all_entries())
