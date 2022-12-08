@@ -1,10 +1,10 @@
-import os.path
-import unittest
-
-import pandas_utility as pd_util
 from main.evaluation.evaluation_service import EvaluationService
 from main.request_adapter.scaler_wrapper import ScalerWrapper
 from sklearn.model_selection import train_test_split
+import pandas_utility as pd_util
+import unittest
+import os.path
+
 
 RESOURCES_PATH = "../../resources/"
 BIKES_PATH = "../../resources/bikes/"
@@ -50,6 +50,9 @@ class EvaluationServiceTest(unittest.TestCase):
                                 'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.01666142336216584,
                                 'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
                                 'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
+
+    def test_is_sane(self):
+        pass
 
     def test_report_performance(self):
         with open(THIRD_BIKE_PATH, "r") as file:
