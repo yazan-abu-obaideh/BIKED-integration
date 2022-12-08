@@ -13,6 +13,14 @@ class RequestAdapter:
         self.raise_if_empty_dict(bikeCad_file_entries)
         return self.convert_dict(bikeCad_file_entries)
 
+    def convert_dict(self, bikeCad_file_entries):
+        result_dict = self.parse_values(bikeCad_file_entries)
+        result_dict = self.calculate_composite_values(result_dict)
+        result_dict = self.map_to_model_input(result_dict)
+        self.handle_special_behavior(bikeCad_file_entries, result_dict)
+        self.convert_units(result_dict)
+        return result_dict
+
     def raise_if_empty_dict(self, bikeCad_file_entries):
         if len(bikeCad_file_entries) == 0:
             raise ValueError('Invalid BikeCAD file')
@@ -21,14 +29,6 @@ class RequestAdapter:
         self.xml_handler.set_xml(raw_xml)
         bikeCad_file_entries = self.xml_handler.get_entries_dict()
         return bikeCad_file_entries
-
-    def convert_dict(self, bikeCad_file_entries):
-        result_dict = self.parse_values(bikeCad_file_entries)
-        result_dict = self.calculate_composite_values(result_dict)
-        result_dict = self.map_to_model_input(result_dict)
-        self.handle_special_behavior(bikeCad_file_entries, result_dict)
-        self.convert_units(result_dict)
-        return result_dict
 
     def map_to_model_input(self, bikeCad_file_entries):
         result_dict = {}
