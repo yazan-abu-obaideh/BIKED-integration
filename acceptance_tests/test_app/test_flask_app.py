@@ -9,6 +9,7 @@ from time import sleep, time
 VALID_MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/FullModel1.xml")
 
 
+# TODO: find out why running these tests in debug mode causes failures (LMAO)
 class AppTest(unittest.TestCase):
     APP_PROCESS = None
 
