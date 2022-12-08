@@ -17,22 +17,25 @@ class AppTest(unittest.TestCase):
     APP_PROCESS = None
 
     def test_empty_request(self):
-        response = send_request("GET", "http://localhost:5000/evaluate")
+        response = send_request("GET", self.get_feature_url('evaluate'))
         self.assertEqual("Invalid BikeCAD file", response.json()["message"])
         self.assertEqual(BAD_REQUEST, response.status_code)
 
     def test_valid_evaluation_request(self):
         with open(VALID_MODEL_PATH, 'r') as file:
-            response = send_request("GET", "http://localhost:5000/evaluate", data=file)
+            response = send_request("GET", self.get_feature_url('evaluate'), data=file)
         self.assertIsNotNone(response.json())
         self.assertIs(type(response.json()), dict)
         self.assertEqual(OK, response.status_code)
 
     def test_valid_recommendation_request(self):
         with open(VALID_MODEL_PATH, 'r') as file:
-            response = send_request("GET", "http://localhost:5000/recommend", data=file)
+            response = send_request("GET", self.get_feature_url('recommend'), data=file)
         self.assertIsNotNone(response.text)
-        self.assertEqual(200, response.status_code)
+        self.assertEqual(OK, response.status_code)
+
+    def get_feature_url(self, feature):
+        return f"http://localhost:5000/{feature}"
 
     @classmethod
     def setUpClass(cls) -> None:
