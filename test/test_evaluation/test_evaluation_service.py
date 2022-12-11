@@ -1,3 +1,5 @@
+import threading
+
 from main.evaluation.evaluation_service import EvaluationService
 from main.request_processing.scaler_wrapper import ScalerWrapper
 from sklearn.model_selection import train_test_split
@@ -5,13 +7,10 @@ import main.pandas_utility as pd_util
 import unittest
 import os.path
 
-
 RESOURCES_PATH = "../../resources/"
 BIKES_PATH = "../../resources/bikes/"
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "labels.txt")
-FIRST_BIKE_PATH = os.path.join(os.path.dirname(__file__), BIKES_PATH + "FullModel1.xml")
-SECOND_BIKE_PATH = os.path.join(os.path.dirname(__file__), BIKES_PATH + "FullModel2.xml")
 THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), BIKES_PATH + "bike(1).xml")
 
 
@@ -52,27 +51,45 @@ class EvaluationServiceTest(unittest.TestCase):
                                 'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
 
     def test_is_sane(self):
-        pass
-
-    def test_report_performance(self):
         with open(THIRD_BIKE_PATH, "r") as file:
             xml_as_string = file.read()
-        xml_response = self.service.predict_from_xml(xml_as_string)
 
-        scaled_response = pd_util.get_dict_from_row(self.service._predict_from_row(self.x.iloc[:1]))
-        entry_response = self.result_scaler.unscale(scaled_response)
+        class Container:
+            def __init__(self):
+                self.value = None
 
-        report = ""
+        steel_container = Container()
+        aluminum_container = Container()
+        titanium_container = Container()
 
-        for key, value in xml_response.items():
-            report = self.add_to_report(key, report)
-            report = self.add_to_report(f"Xml value: {value}", report)
-            report = self.add_to_report(f"Entry value: {entry_response[key]}", report)
-            report = self.add_to_report(
-                f"Percent difference: {round(((value - entry_response[key]) / entry_response[key]) * 100, 3)}%", report)
-            report = self.add_to_report("*" * 5, report)
-        with open('performance_report.txt', "w") as file:
-            file.write(report)
+        def get_response(xml, response: Container):
+            response.value = self.service.predict_from_xml(xml)
+
+        threads = (threading.Thread(target=get_response, args=(xml_as_string, steel_container)),
+                   threading.Thread(target=get_response,
+                                    args=(xml_as_string.replace('STEEL', 'ALUMINUM'), aluminum_container)),
+                   threading.Thread(target=get_response,
+                                    args=(xml_as_string.replace('STEEL', 'TITANIUM'), titanium_container)))
+        for thread in threads:
+            thread.start()
+        for thread in threads:
+            thread.join()
+
+
+        self.assertEqual({'Sim 1 Dropout X Disp. Magnitude': 0.029957235500185614,
+                          'Sim 1 Dropout Y Disp. Magnitude': 0.07790622842881406,
+                          'Sim 1 Bottom Bracket X Disp. Magnitude': 0.03275826735789929,
+                          'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.05846974819694452,
+                          'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.00549791544536314,
+                          'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.04237875731802276,
+                          'Sim 3 Bottom Bracket X Rot. Magnitude': 0.0235212936142559,
+                          'Sim 1 Safety Factor (Inverted)': 10.920826994911602,
+                          'Sim 3 Safety Factor (Inverted)': 6.597837929979147,
+                          'Model Mass Magnitude': 4.984427699302505},
+                         steel_container.value)
+        self.assertTrue(steel_container.value['Model Mass Magnitude'] >
+                        titanium_container.value['Model Mass Magnitude'] >
+                        aluminum_container.value['Model Mass Magnitude'])
 
     def add_to_report(self, entry, report):
         report += entry + "\n"
