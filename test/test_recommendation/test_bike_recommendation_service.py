@@ -1,5 +1,3 @@
-import numpy
-
 from main.recommendation.bike_recommendation_service import BikeRecommendationService
 import unittest
 import os
