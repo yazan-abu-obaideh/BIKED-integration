@@ -90,10 +90,12 @@ class RequestAdapter:
         def get_average(entries):
             return get_sum(entries)/len(entries)
 
-        bbd = bikeCad_file_entries['BB textfield']
-        fcd = bikeCad_file_entries['FCD textfield']
-        fty = bbd
-        ftx = np.sqrt(fty ** 2 + fcd ** 2)
+        def get_geometric_average(entries):
+            entries_squares = [bikeCad_file_entries.get(entry, 0) ** 2 for entry in entries]
+            return np.power(sum(entries_squares), np.divide(1, len(entries)))
+
+        fty = bikeCad_file_entries['BB textfield']
+        ftx = get_geometric_average(['BB textfield', 'FCD textfield'])
         x = bikeCad_file_entries.get('FORKOR', 0)
         y = get_sum(['FORK0L', 'Head tube lower extension2', 'lower stack height'])
         ha = bikeCad_file_entries['Head angle'] * np.pi / 180
