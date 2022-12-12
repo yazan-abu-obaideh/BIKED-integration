@@ -82,19 +82,20 @@ class RequestAdapter:
             result_dict[key] = result_dict[key] / divider
 
     def calculate_composite_values(self, bikeCad_file_entries):
-        def get_average(entries):
+
+        def get_sum(entries):
             entries_values = [bikeCad_file_entries.get(entry, 0) for entry in entries]
-            return sum(entries_values)/len(entries)
+            return sum(entries_values)
+
+        def get_average(entries):
+            return get_sum(entries)/len(entries)
 
         bbd = bikeCad_file_entries['BB textfield']
         fcd = bikeCad_file_entries['FCD textfield']
         fty = bbd
         ftx = np.sqrt(fty ** 2 + fcd ** 2)
         x = bikeCad_file_entries.get('FORKOR', 0)
-        fkl = bikeCad_file_entries['FORK0L']
-        htlx = bikeCad_file_entries['Head tube lower extension2']
-        lsth = bikeCad_file_entries.get('lower stack height', 0)
-        y = fkl + htlx + lsth
+        y = get_sum(['FORK0L', 'Head tube lower extension2', 'lower stack height'])
         ha = bikeCad_file_entries['Head angle'] * np.pi / 180
         dtx = ftx - y * np.cos(ha) - x * np.sin(ha)
         dty = fty + y * np.sin(ha) + x * np.cos(ha)
