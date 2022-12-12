@@ -109,10 +109,13 @@ class RequestAdapter:
         ttfd2 = bikeCad_file_entries.get("Top tube front dia2", 0)
         ttd = (ttrd + ttrd2 + ttfd + + ttfd2) / 4
         bikeCad_file_entries['ttd'] = ttd
-        dtrd, dtrd2, dtfd, dtfd2 = bikeCad_file_entries['Down tube rear diameter'], bikeCad_file_entries.get(
-            'Down tube rear dia2', 0), \
-            bikeCad_file_entries['Down tube front diameter'], bikeCad_file_entries.get('Down tube front dia2', 0)
-        dtd = (dtrd + dtrd2 + dtfd + dtfd2) / 4
+
+        def get_average(entries):
+            entries_values = [bikeCad_file_entries.get(entry, 0) for entry in entries]
+            return sum(entries_values)/len(entries)
+
+        dtd = get_average(['Down tube rear diameter', 'Down tube rear dia2',
+                           'Down tube front dia2', 'Down tube front diameter'])
         bikeCad_file_entries['dtd'] = dtd
         bikeCad_file_entries['Wall thickness Bottom Bracket'] = 2.0
         bikeCad_file_entries['Wall thickness Head tube'] = 1.1
