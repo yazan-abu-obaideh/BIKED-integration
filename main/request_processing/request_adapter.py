@@ -87,6 +87,9 @@ class RequestAdapter:
             entries_values = [bikeCad_file_entries.get(entry, 0) for entry in entries]
             return sum(entries_values)
 
+        def convert_angle(entry):
+            return bikeCad_file_entries[entry] * np.pi / 180
+
         def get_average(entries):
             return get_sum(entries)/len(entries)
 
@@ -98,9 +101,10 @@ class RequestAdapter:
         ftx = get_geometric_average(['BB textfield', 'FCD textfield'])
         x = bikeCad_file_entries.get('FORKOR', 0)
         y = get_sum(['FORK0L', 'Head tube lower extension2', 'lower stack height'])
-        ha = bikeCad_file_entries['Head angle'] * np.pi / 180
+        ha = convert_angle('Head angle')
         dtx = ftx - y * np.cos(ha) - x * np.sin(ha)
         dty = fty + y * np.sin(ha) + x * np.cos(ha)
+
         bikeCad_file_entries['DT Length'] = np.sqrt(dtx ** 2 + dty ** 2)
 
         bikeCad_file_entries['csd'] = get_average(['Chain stay back diameter', 'Chain stay vertical diameter'])
