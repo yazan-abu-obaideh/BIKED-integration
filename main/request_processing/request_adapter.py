@@ -82,6 +82,10 @@ class RequestAdapter:
             result_dict[key] = result_dict[key] / divider
 
     def calculate_composite_values(self, bikeCad_file_entries):
+        def get_average(entries):
+            entries_values = [bikeCad_file_entries.get(entry, 0) for entry in entries]
+            return sum(entries_values)/len(entries)
+
         bbd = bikeCad_file_entries['BB textfield']
         fcd = bikeCad_file_entries['FCD textfield']
         fty = bbd
@@ -95,28 +99,17 @@ class RequestAdapter:
         dtx = ftx - y * np.cos(ha) - x * np.sin(ha)
         dty = fty + y * np.sin(ha) + x * np.cos(ha)
         bikeCad_file_entries['DT Length'] = np.sqrt(dtx ** 2 + dty ** 2)
-        csbd = bikeCad_file_entries['Chain stay back diameter']
-        csvd = bikeCad_file_entries['Chain stay vertical diameter']
-        csd = (csbd + csvd) / 2
-        bikeCad_file_entries['csd'] = csd
-        ssbd = bikeCad_file_entries['Seat stay bottom diameter']
-        sshr = bikeCad_file_entries["SEATSTAY_HR"]
-        ssd = (ssbd + sshr) / 2
-        bikeCad_file_entries['ssd'] = ssd
-        ttrd = bikeCad_file_entries.get('Top tube rear diameter', 0)
-        ttrd2 = bikeCad_file_entries.get("Top tube rear dia2", 0)
-        ttfd = bikeCad_file_entries['Top tube front diameter']
-        ttfd2 = bikeCad_file_entries.get("Top tube front dia2", 0)
-        ttd = (ttrd + ttrd2 + ttfd + + ttfd2) / 4
-        bikeCad_file_entries['ttd'] = ttd
 
-        def get_average(entries):
-            entries_values = [bikeCad_file_entries.get(entry, 0) for entry in entries]
-            return sum(entries_values)/len(entries)
+        bikeCad_file_entries['csd'] = get_average(['Chain stay back diameter', 'Chain stay vertical diameter'])
 
-        dtd = get_average(['Down tube rear diameter', 'Down tube rear dia2',
-                           'Down tube front dia2', 'Down tube front diameter'])
-        bikeCad_file_entries['dtd'] = dtd
+        bikeCad_file_entries['ssd'] = get_average(['Seat stay bottom diameter', 'SEATSTAY_HR'])
+
+        bikeCad_file_entries['ttd'] = get_average(['Top tube rear diameter', 'Top tube rear dia2',
+                                                   'Top tube front diameter', 'Top tube front dia2'])
+
+        bikeCad_file_entries['dtd'] = get_average(['Down tube rear diameter', 'Down tube rear dia2',
+                                                   'Down tube front dia2', 'Down tube front diameter'])
+
         bikeCad_file_entries['Wall thickness Bottom Bracket'] = 2.0
         bikeCad_file_entries['Wall thickness Head tube'] = 1.1
         return bikeCad_file_entries
