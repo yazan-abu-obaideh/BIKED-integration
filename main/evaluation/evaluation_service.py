@@ -40,13 +40,19 @@ class EvaluationService:
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
         # TODO: MAKE IT SO YOU FILL THE DEFAULT AFTER YOU SCALE
-        self.adapter.fill_default(bike_cad_dict)
         return self.predict_from_dict(bike_cad_dict)
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
+        defaulted_values = self.adapter.fill_default_and_return_defaulted_values(bike_cad_dict)
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
+        self.set_defaulted_values_to_scaled_mean(scaled_dict, defaulted_values)
         row = pd_util.get_row_from_dict(scaled_dict)
         return self.predict_from_row(row)
+
+    def set_defaulted_values_to_scaled_mean(self, bike_cad_dict, defaulted_values):
+        for value in defaulted_values:
+            if 'Material' not in value:
+                bike_cad_dict[value] = 0
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         scaled_result = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
@@ -65,11 +71,11 @@ class EvaluationService:
         return r2, mse, mae
 
     def get_labels(self):
-        unaltered_labels = list(self.predictor.labels.values)
+        labels = list(self.predictor.labels.values)
         for key, value in self.LABEL_REPLACEMENTS.items():
-            unaltered_labels.remove(key)
-            unaltered_labels.append(value)
-        return unaltered_labels
+            labels.remove(key)
+            labels.append(value)
+        return labels
 
     def get_data(self):
         return load_augmented_framed_dataset()

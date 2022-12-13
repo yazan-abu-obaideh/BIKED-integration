@@ -75,25 +75,20 @@ class EvaluationServiceTest(unittest.TestCase):
         for thread in threads:
             thread.join()
 
+        self.assertEqual(steel_container.value, {'Sim 1 Dropout X Disp. Magnitude': 0.03133767152123533,
+                                                 'Sim 1 Dropout Y Disp. Magnitude': 0.05843097911811291,
+                                                 'Sim 1 Bottom Bracket X Disp. Magnitude': 0.03333394633093304,
+                                                 'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.04690599138870623,
+                                                 'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.00491900486740717,
+                                                 'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.03766911482497084,
+                                                 'Sim 3 Bottom Bracket X Rot. Magnitude': 0.02156905929579709,
+                                                 'Sim 1 Safety Factor (Inverted)': 12.848316860648339,
+                                                 'Sim 3 Safety Factor (Inverted)': 6.39975520468601,
+                                                 'Model Mass Magnitude': 4.923525203840356})
 
-        self.assertEqual({'Sim 1 Dropout X Disp. Magnitude': 0.029957235500185614,
-                          'Sim 1 Dropout Y Disp. Magnitude': 0.07790622842881406,
-                          'Sim 1 Bottom Bracket X Disp. Magnitude': 0.03275826735789929,
-                          'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.05846974819694452,
-                          'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.00549791544536314,
-                          'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.04237875731802276,
-                          'Sim 3 Bottom Bracket X Rot. Magnitude': 0.0235212936142559,
-                          'Sim 1 Safety Factor (Inverted)': 10.920826994911602,
-                          'Sim 3 Safety Factor (Inverted)': 6.597837929979147,
-                          'Model Mass Magnitude': 4.984427699302505},
-                         steel_container.value)
         self.assertTrue(steel_container.value['Model Mass Magnitude'] >
                         titanium_container.value['Model Mass Magnitude'] >
                         aluminum_container.value['Model Mass Magnitude'])
-
-    def add_to_report(self, entry, report):
-        report += entry + "\n"
-        return report
 
     def test_can_predict_from_partial_request(self):
         self.sample_input = self.request_scaler.unscale(self.sample_input)

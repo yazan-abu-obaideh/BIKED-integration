@@ -59,10 +59,14 @@ class RequestAdapter:
         if result_dict["SSB_Include"] == 0:
             result_dict["SSB OD"] = 15.849
 
-    def fill_default(self, result_dict):
+    def fill_default_and_return_defaulted_values(self, result_dict) -> list:
+        defaulted_values = []
         for key, value in self.settings.default_values().items():
             if key not in result_dict:
                 result_dict[key] = value
+                defaulted_values.append(key)
+        return defaulted_values
+
 
     def parse_values(self, result_dict) -> dict:
         return {key: self.get_float_or_strip(value) for key, value in result_dict.items()}
