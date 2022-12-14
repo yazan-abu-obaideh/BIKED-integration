@@ -1,14 +1,14 @@
-import pandas as pd
-import numpy as np
-import main.pandas_utility as pd_util
 from main.recommendation.recommendation_service_settings import RecommendationSettings
 from main.request_processing.scaler_wrapper import ScalerWrapper
+import main.pandas_utility as pd_util
+import pandas as pd
+import numpy as np
 
 DISTANCE = 'distance_from_user_entry'
 
 
 class RecommendationService:
-    def __init__(self, data, settings:RecommendationSettings):
+    def __init__(self, data, settings: RecommendationSettings):
         self.data = data
         # TODO: USE the sheet provided
         self.settings = settings
@@ -19,14 +19,15 @@ class RecommendationService:
 
     def calculate_distances(self, user_entry_dict: dict):
         self.data: pd.DataFrame
-        filtered_user_entry = {key: value for key, value in user_entry_dict.items() if key in self.settings.include()}
-        user_entry_row = pd.Series(filtered_user_entry)
+        filtered_user_entry = self.get_wanted_entries(user_entry_dict)
 
         def distance_from_user_entry(row):
-            return self.get_distance_between(user_entry_row, row)
+            return self.get_distance_between(filtered_user_entry, row)
 
         self.data[DISTANCE] = self.data.apply(distance_from_user_entry, axis=1)
 
+    def get_wanted_entries(self, user_entry_dict):
+        return {key: value for key, value in user_entry_dict.items() if key in self.settings.include()}
 
     def get_distance_between(self, reference_entry, second_entry):
         try:
@@ -74,7 +75,7 @@ class RecommendationService:
         self.calculate_distances(user_entry)
         self.data: pd.DataFrame
         smallest_n = self.data.sort_values(by=DISTANCE)[:n]
-        responses = [pd_util.get_dict_from_row(smallest_n.iloc[i: i+1]) for i in range(n)]
+        responses = [pd_util.get_dict_from_row(smallest_n.iloc[i: i + 1]) for i in range(n)]
         self.remove_distance_column()
         return responses
 
