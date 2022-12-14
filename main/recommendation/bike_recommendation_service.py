@@ -7,14 +7,22 @@ import os
 
 class DefaultBikeSettings(RecommendationSettings):
     def __init__(self):
-        self.maybe = ["Head tube upper extension2", "Seat tube extension2", "Head tube lower extension2", "Wheel width rear", "Wheel width front", "Head tube type", "BB length", "Head tube diameter", "Wheel cut", "BB diameter", "Seat tube diameter", "Top tube type", "CHAINSTAYbrdgdia1", "CHAINSTAYbrdgshift", "SEATSTAYbrdgdia1", "SEATSTAYbrdgshift", "bottle SEATTUBE0 show", "bottle DOWNTUBE0 show", "Front Fender include", "Rear Fender include", "Display RACK"]
-        self.yes = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield", "FCD textfield", "Head angle", "Saddle height", "Head tube length textfield", "ERD rear", "Dropout spacing style", "BSD front", "ERD front", "BSD rear", "Fork type", "Stem kind", "Display AEROBARS", "Handlebar style", "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN", "Number of cogs", "Number of chainrings"]
+        self.maybe = ["Head tube upper extension2", "Seat tube extension2", "Head tube lower extension2",
+                      "Wheel width rear", "Wheel width front", "Head tube type", "BB length", "Head tube diameter",
+                      "Wheel cut", "BB diameter", "Seat tube diameter", "Top tube type", "CHAINSTAYbrdgdia1",
+                      "CHAINSTAYbrdgshift", "SEATSTAYbrdgdia1", "SEATSTAYbrdgshift", "bottle SEATTUBE0 show",
+                      "bottle DOWNTUBE0 show", "Front Fender include", "Rear Fender include", "Display RACK"]
+        self.yes = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield", "FCD textfield",
+                    "Head angle", "Saddle height", "Head tube length textfield", "ERD rear", "Dropout spacing style",
+                    "BSD front", "ERD front", "BSD rear", "Fork type", "Stem kind", "Display AEROBARS",
+                    "Handlebar style", "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN",
+                    "Number of cogs", "Number of chainrings"]
 
     def max_n(self) -> int:
         return 10
 
     def include(self) -> list:
-        return [value.strip().lower() for value in self.maybe + self.yes]
+        return  self.maybe + self.yes
 
     def weights(self) -> dict:
         maybe_weights = {key: 1 for key in self.maybe}
@@ -29,9 +37,14 @@ DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datas
 
 
 class BikeRecommendationService:
-    def __init__(self):
-        self.inner_service = RecommendationService(pd.read_csv(DEFAULT_DATASET), DefaultBikeSettings())
+    def __init__(self, settings: RecommendationSettings = DEFAULT_SETTINGS, data_file_path=DEFAULT_DATASET):
+        self.inner_service = RecommendationService(
+            pd.read_csv(data_file_path),
+            settings)
         self.xml_handler = XmlHandler()
+        self.log_initialization()
+
+    def log_initialization(self):
         num_not_included = 0
         for key in self.inner_service.settings.include():
             if key not in [value.lower() for value in list(self.inner_service.data.columns.values)]:

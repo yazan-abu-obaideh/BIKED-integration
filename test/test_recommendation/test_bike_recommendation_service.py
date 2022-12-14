@@ -11,4 +11,4 @@ class RecommendationServiceTest(unittest.TestCase):
 
     def test_get_closest_to(self):
         with open(VALID_MODEL_PATH, 'r') as file:
-            print(self.service.recommend_bike(file.read()))
+            self.service.recommend_bike(file.read())

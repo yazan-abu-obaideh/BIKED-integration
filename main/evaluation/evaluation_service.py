@@ -1,15 +1,15 @@
-import pandas as pd
-
-from main.request_processing.request_adapter import RequestAdapter
 from main.request_processing.request_adapter_settings import RequestAdapterSettings
-from main.evaluation.MultilabelPredictor import MultilabelPredictor
-from main.load_data import load_augmented_framed_dataset
-from main.request_processing.scaler_wrapper import ScalerWrapper
-import main.pandas_utility as pd_util
-
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-import os
+from main.evaluation.MultilabelPredictor import MultilabelPredictor
+from main.request_processing.request_adapter import RequestAdapter
+from main.request_processing.scaler_wrapper import ScalerWrapper
+from main.load_data import load_augmented_framed_dataset
+import main.pandas_utility as pd_util
+import pandas as pd
 import __main__
+import os
+
+
 
 RELATIVE_MODEL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
 CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
