@@ -17,6 +17,22 @@ class RecommendationService:
         #  the settings, the scaling and unscaling required - because this service CAN be concrete.
         #  Do this right and you won't have to change anything about this package if the dataset changes.
 
+    def get_closest_to(self, user_entry_dict):
+        return self.get_closest_n(user_entry_dict, 1)[0]
+
+    def get_closest_n(self, user_entry: dict, n: int):
+        self.validate(n, user_entry)
+
+        self.calculate_distances(user_entry)
+        smallest_n = self.data.sort_values(by=DISTANCE)[:n]
+        responses = [pd_util.get_dict_from_row(smallest_n.iloc[i: i + 1]) for i in range(n)]
+        self.remove_distance_column()
+        return responses
+
+    def validate(self, n, user_entry):
+        self.raise_if_invalid_number(n)
+        self.raise_if_invalid_entry(user_entry)
+
     def calculate_distances(self, user_entry_dict: dict):
         self.data: pd.DataFrame
         filtered_user_entry = self.get_wanted_entries(user_entry_dict)
@@ -49,6 +65,7 @@ class RecommendationService:
             deltas.append(self.weigh_delta((first_value - second_value), key))
         return deltas
 
+
     def weigh_delta(self, delta, key):
         return delta * (self.pre_normalize_weight(key))
 
@@ -64,20 +81,6 @@ class RecommendationService:
         reference_entry = {key: reference_entry[key] for key in sorted_keys}
         second_entry = {key: second_entry[key] for key in sorted_keys}
         return reference_entry, second_entry
-
-    def get_closest_to(self, user_entry_dict):
-        return self.get_closest_n(user_entry_dict, 1)[0]
-
-    def get_closest_n(self, user_entry: dict, n: int):
-        self.raise_if_invalid_number(n)
-        self.raise_if_invalid_entry(user_entry)
-
-        self.calculate_distances(user_entry)
-        self.data: pd.DataFrame
-        smallest_n = self.data.sort_values(by=DISTANCE)[:n]
-        responses = [pd_util.get_dict_from_row(smallest_n.iloc[i: i + 1]) for i in range(n)]
-        self.remove_distance_column()
-        return responses
 
     def remove_distance_column(self):
         self.data.drop(columns=DISTANCE, axis=1, inplace=True)
