@@ -35,7 +35,7 @@ class RequestAdapterTest(unittest.TestCase):
     def test_ramifications(self):
         self.assertEqual(self.result_dict["CSB OD"], 17.759)
 
-    def test_composite(self):
+    def test_calculates_composite_values(self):
         self.assertEqual(self.result_dict['DT OD'], 12.5)
 
     def get_BikeCad_file_as_raw_xml(self):
