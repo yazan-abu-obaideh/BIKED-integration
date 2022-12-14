@@ -4,6 +4,8 @@ from main.xml_handler import XmlHandler
 import pandas as pd
 import os
 
+from request_processing.scaler_wrapper import ScalerWrapper
+
 
 class DefaultBikeSettings(RecommendationSettings):
     def __init__(self):
@@ -38,8 +40,10 @@ DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datas
 
 class BikeRecommendationService:
     def __init__(self, settings: RecommendationSettings = DEFAULT_SETTINGS, data_file_path=DEFAULT_DATASET):
+        dataframe = pd.read_csv(data_file_path)
+        self.scaler = ScalerWrapper.build_from_dataframe(dataframe)
         self.inner_service = RecommendationService(
-            pd.read_csv(data_file_path),
+            dataframe,
             settings)
         self.xml_handler = XmlHandler()
         self.log_initialization()
@@ -57,12 +61,12 @@ class BikeRecommendationService:
     def recommend_bike(self, xml_user_entry: str):
         self.xml_handler.set_xml(xml_user_entry)
         user_entry_dict = self.xml_handler.get_entries_dict()
-        user_entry_dict = {key: self.enumerate(key, value) for key, value in user_entry_dict.items()}
+        user_entry_dict = {key: self.enumerate(value) for key, value in user_entry_dict.items()}
         closest_bike = self.inner_service.get_closest_n(user_entry_dict, 1)[0]
         self.xml_handler.set_entries_from_dict(closest_bike)
         return self.xml_handler.get_content_string()
 
-    def enumerate(self, key, value: str):
+    def enumerate(self, value: str):
         values_map = {
             'true': lambda x: 1,
             'false': lambda x: 0

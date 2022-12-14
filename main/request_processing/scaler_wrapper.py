@@ -10,28 +10,29 @@ class ScalerWrapper:
         self.columns_in_order = columns_in_order
 
     def scale(self, data: dict) -> dict:
-        return self.operate_on(data, self._scale_dataframe)
+        return self._operate_on(data, self._scale_dataframe)
 
     def unscale(self, data: dict) -> dict:
-        return self.operate_on(data, self._unscale_dataframe)
+        return self._operate_on(data, self._unscale_dataframe)
 
-    def operate_on(self, data: dict, function_on_data: callable):
+    def _operate_on(self, data: dict, operate: callable):
         data = self.reorder(data)
-        return pd_util.get_dict_from_row(function_on_data(data))
+        return pd_util.get_dict_from_row(operate(data))
 
     def _scale_dataframe(self, unscaled_data: pd.DataFrame):
-        scaled_values = self.scaler.transform(unscaled_data)
-        scaled_dataframe = self._rebuild_dataframe(scaled_values, unscaled_data)
-        return scaled_dataframe
+        return self._operate_on_dataframe(unscaled_data, self.scaler.transform)
+
+    def _unscale_dataframe(self, scaled_data: pd.DataFrame) -> pd.DataFrame:
+        return self._operate_on_dataframe(scaled_data, self.scaler.inverse_transform)
+
+    def _operate_on_dataframe(self, dataframe: pd.DataFrame, operation: callable):
+        new_values = operation(dataframe)
+        return self._rebuild_dataframe(new_values, dataframe)
 
     def _rebuild_dataframe(self, values, original_dataframe):
         return pd.DataFrame(values,
                             columns=original_dataframe.columns,
                             index=original_dataframe.index)
-
-    def _unscale_dataframe(self, scaled_data: pd.DataFrame) -> pd.DataFrame:
-        unscaled_values = self.scaler.inverse_transform(scaled_data)
-        return self._rebuild_dataframe(unscaled_values, scaled_data)
     @classmethod
     def build_from_dataframe(cls, data):
         scaler = StandardScaler()
