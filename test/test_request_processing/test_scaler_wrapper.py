@@ -1,10 +1,11 @@
+import os
 import unittest
 
+import pandas as pd
+
+import main.pandas_utility as pd_util
 from main.load_data import load_augmented_framed_dataset, one_hot_encode_material
 from main.request_processing.scaler_wrapper import ScalerWrapper
-import os
-import pandas as pd
-import main.pandas_utility as pd_util
 
 RESOURCES_FILE = os.path.join(os.path.dirname(__file__))
 RELATIVE_PATH = "../../resources/datasets/all_structural_data_aug.csv"
@@ -22,7 +23,7 @@ class TestScalerWrapper(unittest.TestCase):
 
     def test_identical_to_load_data_scaler(self):
         assert type(self.input_row) is pd.DataFrame
-        input_dict = pd_util.get_dict_from_row(self.input_row)
+        input_dict = self.get_input_dict()
         assert self.first_scaled == self.request_scaler.scale(input_dict)
 
     def test_order_does_not_matter(self):
@@ -53,12 +54,23 @@ class TestScalerWrapper(unittest.TestCase):
         self.assertEqual(first_unscaled, other_unscaled)
 
     def test_unscaling_works(self):
-        scaled_once = self.request_scaler.scale(pd_util.get_dict_from_row(self.input_row))
+        scaled_once = self.request_scaler.scale(self.get_input_dict())
         unscaled_once = self.request_scaler.unscale(scaled_once)
         unscaled_twice = self.request_scaler.unscale(self.request_scaler.scale(unscaled_once))
         scaled_twice = self.request_scaler.scale(unscaled_twice)
         for key in self.first_scaled.keys():
             self.assertAlmostEqual(scaled_twice[key], self.first_scaled[key], 10)
+
+    def get_input_dict(self):
+        return pd_util.get_dict_from_row(self.input_row)
+
+    def test_build_from_data(self):
+        data = {"x": [0, 1, 2], "y": [3, 4, 5]}
+        dataframe = pd.DataFrame.from_dict(data)
+        print(dataframe)
+        new_wrapper = ScalerWrapper.build_from_dataframe(dataframe)
+        scale = new_wrapper._scale_dataframe(dataframe)
+        print(scale)
 
     def prepare_input_row(self):
         input_row = self.raw_data[:1]

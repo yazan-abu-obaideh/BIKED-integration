@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import main.pandas_utility as pd_util
 from main.recommendation.recommendation_service_settings import RecommendationSettings
+from main.request_processing.scaler_wrapper import ScalerWrapper
 
 DISTANCE = 'distance_from_user_entry'
 

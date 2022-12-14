@@ -44,24 +44,23 @@ class BikeRecommendationService:
     def recommend_bike(self, xml_user_entry: str):
         self.xml_handler.set_xml(xml_user_entry)
         user_entry_dict = self.xml_handler.get_entries_dict()
-        self.warning = {}
         user_entry_dict = {key: self.enumerate(key, value) for key, value in user_entry_dict.items()}
         closest_bike = self.inner_service.get_closest_n(user_entry_dict, 1)[0]
         self.xml_handler.set_entries_from_dict(closest_bike)
         return self.xml_handler.get_content_string()
 
     def enumerate(self, key, value: str):
-        value = value.lower()
-        if value == 'true':
-            return 1
-        elif value == 'false':
+        values_map = {
+            'true': lambda x: 1,
+            'false': lambda x: 0
+        }
+        return values_map.get(value, self.parse_possible_float)(value)
+
+    def parse_possible_float(self, f) -> float:
+        try:
+            return float(f)
+        except ValueError:
             return 0
-        else:
-            try:
-                return float(value)
-            except ValueError:
-                self.warning[key] = value
-                return 0
 
 
 if __name__ == "__main__":
