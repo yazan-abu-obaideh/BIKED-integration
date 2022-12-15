@@ -39,7 +39,6 @@ class EvaluationService:
 
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
-        # TODO: MAKE IT SO YOU FILL THE DEFAULT AFTER YOU SCALE
         return self.predict_from_dict(bike_cad_dict)
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
@@ -83,8 +82,6 @@ class EvaluationService:
 
 class DefaultAdapterSettings(RequestAdapterSettings):
     def default_values(self) -> dict:
-        # TODO: use the mean in the dataset as the default value -
-        #  OR FILL IN THE DEFAULT VALUES AFTER SCALING
         # warn users when the supplied bikecad file has no materials field OR whenever the material vlaue is not
         # in steel, alum, titanium
         return {'Material=Steel': 0, 'Material=Aluminum': 0, 'Material=Titanium': 0, 'SSB_Include': 0,

@@ -10,12 +10,7 @@ DISTANCE = 'distance_from_user_entry'
 class RecommendationService:
     def __init__(self, data, settings: RecommendationSettings):
         self.data = data
-        # TODO: USE the sheet provided
         self.settings = settings
-
-        # TODO: make it so the distance service remains completely agnostic of the type of data,
-        #  the settings, the scaling and unscaling required - because this service CAN be concrete.
-        #  Do this right and you won't have to change anything about this package if the dataset changes.
 
     def get_closest_to(self, user_entry_dict):
         return self.get_closest_n(user_entry_dict, 1)[0]
