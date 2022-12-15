@@ -47,7 +47,11 @@ class RecommendationServiceTest(unittest.TestCase):
 
     def test_get_weighted_distance_between(self):
         self.service.settings.WEIGHTS = {"x": 10}
-        self.assertAlmostEqual(first=7, second=self.service.get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4}), places=6)
+        expected_distance = 7.0
+        actual_distance = self.service.get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4})
+        self.assertAlmostEqual(first=expected_distance,
+                               second=actual_distance,
+                               places=6)
 
     def test_can_get_distance_from_point(self):
         first = self.get_by_index(0)

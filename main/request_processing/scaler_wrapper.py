@@ -10,20 +10,20 @@ class ScalerWrapper:
         self.columns_in_order = columns_in_order
 
     def scale(self, data: dict) -> dict:
-        return self._operate_on(data, self._scale_dataframe)
+        return self._operate_on(data, self.scale_dataframe)
 
     def unscale(self, data: dict) -> dict:
-        return self._operate_on(data, self._unscale_dataframe)
+        return self._operate_on(data, self.unscale_dataframe)
+
+    def scale_dataframe(self, unscaled_data: pd.DataFrame):
+        return self._operate_on_dataframe(unscaled_data, self.scaler.transform)
+
+    def unscale_dataframe(self, scaled_data: pd.DataFrame) -> pd.DataFrame:
+        return self._operate_on_dataframe(scaled_data, self.scaler.inverse_transform)
 
     def _operate_on(self, data: dict, operate: callable):
         data = self.reorder(data)
         return pd_util.get_dict_from_row(operate(data))
-
-    def _scale_dataframe(self, unscaled_data: pd.DataFrame):
-        return self._operate_on_dataframe(unscaled_data, self.scaler.transform)
-
-    def _unscale_dataframe(self, scaled_data: pd.DataFrame) -> pd.DataFrame:
-        return self._operate_on_dataframe(scaled_data, self.scaler.inverse_transform)
 
     def _operate_on_dataframe(self, dataframe: pd.DataFrame, operation: callable):
         new_values = operation(dataframe)

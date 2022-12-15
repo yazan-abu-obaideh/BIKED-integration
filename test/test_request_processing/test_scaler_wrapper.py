@@ -69,7 +69,7 @@ class TestScalerWrapper(unittest.TestCase):
         dataframe = pd.DataFrame.from_dict(data)
         print(dataframe)
         new_wrapper = ScalerWrapper.build_from_dataframe(dataframe)
-        scale = new_wrapper._scale_dataframe(dataframe)
+        scale = new_wrapper.scale_dataframe(dataframe)
         print(scale)
 
     def prepare_input_row(self):
