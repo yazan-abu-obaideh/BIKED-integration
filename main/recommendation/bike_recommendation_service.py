@@ -66,17 +66,17 @@ class BikeRecommendationService:
         print(f"{max_num_included=}")
 
     def recommend_bike(self, xml_user_entry: str):
-        user_entry_dict = self.parse_xml_request(xml_user_entry)
-
-        defaulted = self.default_to_zero(user_entry_dict)
-
-        scaled_user_entry = self.scaler.scale(user_entry_dict)
-
-        self.default_to_mean(defaulted, scaled_user_entry)
-
+        scaled_user_entry = self.pre_process_request(xml_user_entry)
         closest_bike = self.inner_service.get_closest_n(scaled_user_entry, 1)[0]
         self.xml_handler.set_entries_from_dict(closest_bike)
         return self.xml_handler.get_content_string()
+
+    def pre_process_request(self, xml_user_entry):
+        user_entry_dict = self.parse_xml_request(xml_user_entry)
+        defaulted = self.default_to_zero(user_entry_dict)
+        scaled_user_entry = self.scaler.scale(user_entry_dict)
+        self.default_to_mean(defaulted, scaled_user_entry)
+        return scaled_user_entry
 
     def parse_xml_request(self, xml_user_entry):
         self.xml_handler.set_xml(xml_user_entry)
