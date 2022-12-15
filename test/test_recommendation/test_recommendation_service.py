@@ -51,7 +51,7 @@ class RecommendationServiceTest(unittest.TestCase):
         actual_distance = self.service.get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4})
         self.assertAlmostEqual(first=expected_distance,
                                second=actual_distance,
-                               places=6)
+                               places=14)
 
     def test_can_get_distance_from_point(self):
         first = self.get_by_index(0)
