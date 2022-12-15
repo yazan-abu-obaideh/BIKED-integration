@@ -41,6 +41,11 @@ DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../../resources/datas
 
 
 class BikeRecommendationService:
+    enumeration_function_map = {
+        'true': lambda x: 1,
+        'false': lambda x: 0
+    }
+
     def __init__(self, settings: RecommendationSettings = DEFAULT_SETTINGS, data_file_path=DEFAULT_DATASET):
         dataframe = pd.read_csv(data_file_path)
         dataframe.drop(columns=dataframe.columns.difference(settings.include()), inplace=True)
@@ -50,10 +55,6 @@ class BikeRecommendationService:
             settings)
         self.xml_handler = XmlHandler()
         self.log_initialization()
-        self.enumeration_function_map = {
-            'true': lambda x: 1,
-            'false': lambda x: 0
-        }
 
     def log_initialization(self):
         num_not_included = 0
@@ -81,7 +82,7 @@ class BikeRecommendationService:
     def parse_xml_request(self, xml_user_entry):
         self.xml_handler.set_xml(xml_user_entry)
         user_entry_dict = self.xml_handler.get_entries_dict()
-        return {key: self.enumerate(value) for key, value in user_entry_dict.items()}
+        return {key: self.attempt_enumerate(value) for key, value in user_entry_dict.items()}
 
     def default_to_mean(self, defaulted, scaled_user_entry):
         for key in defaulted:
@@ -95,8 +96,9 @@ class BikeRecommendationService:
                 defaulted.append(key)
         return defaulted
 
-    def enumerate(self, value: str):
-        function = self.enumeration_function_map.get(value, self.parse_optional_float)
+    def attempt_enumerate(self, value: str):
+        default_function = self.parse_optional_float
+        function = self.enumeration_function_map.get(value, default_function)
         return function(value)
 
     def parse_optional_float(self, f) -> float:
