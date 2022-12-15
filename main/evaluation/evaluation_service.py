@@ -26,8 +26,7 @@ class EvaluationService:
     LABEL_REPLACEMENTS.update({label: label + " Magnitude" for label in labels_magnitude})
 
     def __init__(self):
-        # TODO: investigate why this needs to be done
-        #  and what it implies
+        # TODO: investigate why this needs to be done and what it implies
         __main__.MultilabelPredictor = MultilabelPredictor
 
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
