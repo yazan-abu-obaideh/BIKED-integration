@@ -50,6 +50,12 @@ class EvaluationServiceTest(unittest.TestCase):
                                 'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
                                 'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
 
+    def test_raises_correct_exception(self):
+        with self.assertRaises(ValueError) as context:
+            self.service.predict_from_xml("")
+        self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
+
+
     def test_is_sane(self):
         with open(THIRD_BIKE_PATH, "r") as file:
             xml_as_string = file.read()

@@ -4,10 +4,12 @@ from main.evaluation.MultilabelPredictor import MultilabelPredictor
 from main.request_processing.request_adapter import RequestAdapter
 from main.request_processing.scaler_wrapper import ScalerWrapper
 from main.load_data import load_augmented_framed_dataset
+from main.xml_handler import XmlHandler
 import main.pandas_utility as pd_util
 import pandas as pd
 import __main__
 import os
+
 
 SCALED_MEAN = 0
 
@@ -33,12 +35,20 @@ class EvaluationService:
         self.adapter = RequestAdapter(DefaultAdapterSettings())
 
         x, y, input_scaler, output_scaler = self.get_data()
+        self.xml_handler = XmlHandler()
         self.request_scaler = ScalerWrapper(input_scaler, x.columns)
         self.response_scaler = ScalerWrapper(output_scaler, y.columns)
 
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
-        bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
-        return self.predict_from_dict(bike_cad_dict)
+        self.xml_handler.set_xml(bike_cad_xml)
+        entries = self.xml_handler.get_entries_dict()
+        self.raise_if_empty_dict(entries)
+        return self.predict_from_dict(self.adapter.convert_dict(entries))
+
+
+    def raise_if_empty_dict(self, bikeCad_file_entries):
+        if len(bikeCad_file_entries) == 0:
+            raise ValueError('Invalid BikeCAD file')
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         defaulted_values = self.adapter.fill_default_and_return_defaulted_values(bike_cad_dict)
