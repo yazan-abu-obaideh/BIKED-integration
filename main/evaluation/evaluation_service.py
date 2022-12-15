@@ -9,7 +9,7 @@ import pandas as pd
 import __main__
 import os
 
-
+SCALED_MEAN = 0
 
 RELATIVE_MODEL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
 CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
@@ -52,7 +52,7 @@ class EvaluationService:
     def set_defaulted_values_to_scaled_mean(self, bike_cad_dict, defaulted_values):
         for value in defaulted_values:
             if 'Material' not in value:
-                bike_cad_dict[value] = 0
+                bike_cad_dict[value] = SCALED_MEAN
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         scaled_result = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
