@@ -34,8 +34,8 @@ class EvaluationService:
         self.adapter = RequestAdapter(DefaultAdapterSettings())
 
         x, y, input_scaler, output_scaler = self.get_data()
-        self.response_scaler = ScalerWrapper(output_scaler, y.columns)
         self.request_scaler = ScalerWrapper(input_scaler, x.columns)
+        self.response_scaler = ScalerWrapper(output_scaler, y.columns)
 
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
         bike_cad_dict = self.adapter.convert_xml(bike_cad_xml)
