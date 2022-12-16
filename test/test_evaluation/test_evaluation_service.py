@@ -55,7 +55,6 @@ class EvaluationServiceTest(unittest.TestCase):
             self.service.predict_from_xml("")
         self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
 
-
     def test_is_sane(self):
         with open(THIRD_BIKE_PATH, "r") as file:
             xml_as_string = file.read()
@@ -121,12 +120,11 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_can_predict_singular_row(self):
         model_input = self.get_first_row(self.x)
         prediction = self.service.predict_from_row(model_input)
+        # TODO: the assertion below is misplaced. pd_utils should have their own tests.
         self.assertEqual(pd_util.get_dict_from_row(model_input), self.sample_input)
-        self.assertEqual(prediction,
-                         self.expected_output)
+        self.assertEqual(prediction, self.expected_output)
         model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
-        self.assertEqual(self.service.predict_from_row(model_input_from_dict),
-                         self.expected_output)
+        self.assertEqual(self.service.predict_from_row(model_input_from_dict), self.expected_output)
 
     def test_order_does_not_matter(self):
         input_in_different_order = {key: self.sample_input[key]

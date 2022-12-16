@@ -65,10 +65,11 @@ class EvaluationService:
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         scaled_result = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
+        scaled_result = {self.LABEL_REPLACEMENTS.get(key, key): value for key, value in scaled_result.items()}
         return self.ensure_magnitude(self.response_scaler.unscale(scaled_result))
 
     def _predict_from_row(self, pd_row: pd.DataFrame) -> pd.DataFrame:
-        return self.predictor.predict(pd_row).rename(columns=self.LABEL_REPLACEMENTS)
+        return self.predictor.predict(pd_row)
 
     def ensure_magnitude(self, scaled_result):
         return {key: abs(value) for key, value in scaled_result.items()}
