@@ -19,7 +19,8 @@ CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
 
 
 class EvaluationService:
-    labels_inverted = ["Sim 1 Safety Factor", "Sim 3 Safety Factor"]
+    labels_inverted = ["Sim 1 Safety Factor",
+                       "Sim 3 Safety Factor"]
     labels_magnitude = ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
                         'Sim 1 Bottom Bracket Y Disp.', 'Sim 2 Bottom Bracket Z Disp.', 'Sim 3 Bottom Bracket Y Disp.',
                         'Sim 3 Bottom Bracket X Rot.', 'Model Mass']
