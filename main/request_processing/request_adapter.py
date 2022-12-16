@@ -11,8 +11,9 @@ class RequestAdapter:
     def convert_dict(self, bikeCad_file_entries):
         result_dict = self.parse_values(bikeCad_file_entries)
         result_dict = self.calculate_composite_values(result_dict)
+        self.one_hot_encode(result_dict)
         result_dict = self.map_to_model_input(result_dict)
-        self.handle_special_behavior(bikeCad_file_entries["MATERIAL"], result_dict)
+        self.handle_special_behavior(result_dict)
         self.convert_units(result_dict)
         return result_dict
 
@@ -28,13 +29,12 @@ class RequestAdapter:
     def valid_model_key(self, model_key):
         return model_key in self.settings.default_values().keys()
 
-    def handle_special_behavior(self, materials_entry, result_dict):
-        self.one_hot_encode(result_dict, materials_entry)
+    def handle_special_behavior(self, result_dict):
         self.handle_keys_whose_presence_indicates_their_value(result_dict)
         self.handle_ramifications(result_dict)
 
-    def one_hot_encode(self, result_dict, materials_entry: str):
-        result_dict[f"Material={materials_entry.lower().title()}"] = 1
+    def one_hot_encode(self, result_dict):
+        result_dict[f"Material={result_dict['MATERIAL'].lower().title()}"] = 1
 
     def handle_keys_whose_presence_indicates_their_value(self, result_dict):
         for key in self.settings.keys_whose_presence_indicates_their_value():
@@ -55,8 +55,8 @@ class RequestAdapter:
         return defaulted_values
 
 
-    def parse_values(self, result_dict) -> dict:
-        return {key: self.get_float_or_strip(value) for key, value in result_dict.items()}
+    def parse_values(self, input_dict) -> dict:
+        return {key: self.get_float_or_strip(value) for key, value in input_dict.items()}
 
     def get_float_or_strip(self, value):
         try:
