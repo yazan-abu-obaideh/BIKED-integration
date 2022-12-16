@@ -12,17 +12,16 @@ SCALED_MEAN = 0
 
 
 class DefaultBikeSettings(RecommendationSettings):
-    def __init__(self):
-        self.maybe = ["Head tube upper extension2", "Seat tube extension2", "Head tube lower extension2",
-                      "Wheel width rear", "Wheel width front", "Head tube type", "BB length", "Head tube diameter",
-                      "Wheel cut", "BB diameter", "Seat tube diameter", "Top tube type", "CHAINSTAYbrdgdia1",
-                      "CHAINSTAYbrdgshift", "SEATSTAYbrdgdia1", "SEATSTAYbrdgshift", "bottle SEATTUBE0 show",
-                      "bottle DOWNTUBE0 show", "Front Fender include", "Rear Fender include", "Display RACK"]
-        self.yes = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield", "FCD textfield",
-                    "Head angle", "Saddle height", "Head tube length textfield", "ERD rear", "Dropout spacing style",
-                    "BSD front", "ERD front", "BSD rear", "Fork type", "Stem kind", "Display AEROBARS",
-                    "Handlebar style", "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN",
-                    "Number of cogs", "Number of chainrings"]
+    maybe = ["Head tube upper extension2", "Seat tube extension2", "Head tube lower extension2",
+             "Wheel width rear", "Wheel width front", "Head tube type", "BB length", "Head tube diameter",
+             "Wheel cut", "BB diameter", "Seat tube diameter", "Top tube type", "CHAINSTAYbrdgdia1",
+             "CHAINSTAYbrdgshift", "SEATSTAYbrdgdia1", "SEATSTAYbrdgshift", "bottle SEATTUBE0 show",
+             "bottle DOWNTUBE0 show", "Front Fender include", "Rear Fender include", "Display RACK"]
+    yes = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield", "FCD textfield",
+           "Head angle", "Saddle height", "Head tube length textfield", "ERD rear", "Dropout spacing style",
+           "BSD front", "ERD front", "BSD rear", "Fork type", "Stem kind", "Display AEROBARS",
+           "Handlebar style", "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN",
+           "Number of cogs", "Number of chainrings"]
 
     def max_n(self) -> int:
         return 10
@@ -106,7 +105,3 @@ class BikeRecommendationService:
             return float(f)
         except ValueError:
             return 0
-
-
-if __name__ == "__main__":
-    service = BikeRecommendationService()
