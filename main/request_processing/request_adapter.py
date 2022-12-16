@@ -2,6 +2,7 @@ from main.xml_handler import XmlHandler
 from main.request_processing.request_adapter_settings import RequestAdapterSettings
 import numpy as np
 
+MILLIMETERS_TO_METERS_FACTOR = 1000
 
 class RequestAdapter:
     def __init__(self, settings: RequestAdapterSettings):
@@ -14,7 +15,7 @@ class RequestAdapter:
         self.one_hot_encode(result_dict)
         result_dict = self.map_to_model_input(result_dict)
         self.handle_special_behavior(result_dict)
-        self.convert_units(result_dict)
+        self.convert_millimeters_to_meters(result_dict)
         return result_dict
 
 
@@ -64,13 +65,11 @@ class RequestAdapter:
         except ValueError:
             return str(value).strip()
 
-    def convert_units(self, result_dict):
-        for key, divider in self.settings.unit_conversion_division_dict().items():
-            self.convert_unit_if_valid_key(divider, key, result_dict)
-
-    def convert_unit_if_valid_key(self, divider, key, result_dict):
-        if key in result_dict:
-            result_dict[key] = result_dict[key] / divider
+    def convert_millimeters_to_meters(self, result_dict):
+        keys = result_dict.keys()
+        for key in self.settings.millimeters_to_meters():
+            if key in keys:
+                result_dict[key] = result_dict[key] / MILLIMETERS_TO_METERS_FACTOR
 
     def calculate_composite_values(self, bikeCad_file_entries):
 

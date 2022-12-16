@@ -19,5 +19,5 @@ class RequestAdapterSettings:
         pass
 
     @abstractmethod
-    def unit_conversion_division_dict(self) -> dict:
+    def millimeters_to_meters(self) -> list:
         pass

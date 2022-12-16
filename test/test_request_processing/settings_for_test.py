@@ -5,8 +5,8 @@ class Settings(RequestAdapterSettings):
     """THIS IS NOT DUPLICATION. The test settings just so happen to match the real settings because we have not done the
     requisite work on the real settings just yet."""
 
-    def unit_conversion_division_dict(self):
-        return {'CS F': 1000}
+    def millimeters_to_meters(self):
+        return ['CS F']
 
     def default_values(self) -> dict:
         return {'Material=Steel': 0, 'Material=Aluminum': 0, 'Material=Titanium': 0, 'SSB_Include': 0,

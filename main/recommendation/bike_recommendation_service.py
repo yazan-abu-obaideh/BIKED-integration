@@ -63,7 +63,8 @@ class BikeRecommendationService:
         desired = self.inner_service.settings.include()
         actual = self.inner_service.data.columns.values
         if not set(desired).issubset(set(actual)):
-            logging.log(level=logging.CRITICAL, msg="WARNING: invalid settings")
+            logging.log(level=logging.CRITICAL,
+                        msg="WARNING: BikeRecommendationService configured incorrectly. Invalid settings")
 
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)

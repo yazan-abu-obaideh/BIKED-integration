@@ -1,8 +1,8 @@
-from main.recommendation.recommendation_service_settings import RecommendationSettings
-from main.request_processing.scaler_wrapper import ScalerWrapper
-import main.pandas_utility as pd_util
-import pandas as pd
 import numpy as np
+import pandas as pd
+
+import main.pandas_utility as pd_util
+from main.recommendation.recommendation_service_settings import RecommendationSettings
 
 DISTANCE = 'distance_from_user_entry'
 
