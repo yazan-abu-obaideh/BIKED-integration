@@ -25,8 +25,8 @@ class RequestAdapterTest(unittest.TestCase):
         self.assertEqual(self.result_dict["Material=Steel"], 1)
         self.assertEqual(self.result_dict["CSB_Include"], 0)
 
-    def test_scaled(self):
-        self.assertEqual(self.result_dict["CS F"], 0.5)
+    def test_units_converted(self):
+        self.assertEqual(self.result_dict["CS F"], 0.05)
 
     def test_ramifications(self):
         self.assertEqual(self.result_dict["CSB OD"], 17.759)

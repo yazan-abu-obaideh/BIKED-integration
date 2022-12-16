@@ -6,7 +6,7 @@ class Settings(RequestAdapterSettings):
     requisite work on the real settings just yet."""
 
     def unit_conversion_division_dict(self):
-        return {'CS F': 100}
+        return {'CS F': 1000}
 
     def default_values(self) -> dict:
         return {'Material=Steel': 0, 'Material=Aluminum': 0, 'Material=Titanium': 0, 'SSB_Include': 0,
