@@ -66,9 +66,9 @@ class RequestAdapter:
             return str(value).strip()
 
     def convert_millimeters_to_meters(self, result_dict):
-        keys = result_dict.keys()
+        available_keys = result_dict.keys()
         for key in self.settings.millimeters_to_meters():
-            if key in keys:
+            if key in available_keys:
                 result_dict[key] = result_dict[key] / MILLIMETERS_TO_METERS_FACTOR
 
     def calculate_composite_values(self, bikeCad_file_entries):
