@@ -12,7 +12,7 @@ class RequestAdapter:
         result_dict = self.parse_values(bikeCad_file_entries)
         result_dict = self.calculate_composite_values(result_dict)
         result_dict = self.map_to_model_input(result_dict)
-        self.handle_special_behavior(bikeCad_file_entries, result_dict)
+        self.handle_special_behavior(bikeCad_file_entries["MATERIAL"], result_dict)
         self.convert_units(result_dict)
         return result_dict
 
@@ -28,8 +28,8 @@ class RequestAdapter:
     def valid_model_key(self, model_key):
         return model_key in self.settings.default_values().keys()
 
-    def handle_special_behavior(self, bikeCad_file_entries, result_dict):
-        self.one_hot_encode(result_dict, bikeCad_file_entries["MATERIAL"])
+    def handle_special_behavior(self, materials_entry, result_dict):
+        self.one_hot_encode(result_dict, materials_entry)
         self.handle_keys_whose_presence_indicates_their_value(result_dict)
         self.handle_ramifications(result_dict)
 
