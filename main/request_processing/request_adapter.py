@@ -1,23 +1,36 @@
+from typing import Callable, List
+
 from main.xml_handler import XmlHandler
 from main.request_processing.request_adapter_settings import RequestAdapterSettings
 import numpy as np
 
 MILLIMETERS_TO_METERS_FACTOR = 1000
 
+
+class RequestPipeline:
+
+    def __init__(self, pipeline: List[Callable[[dict], dict]]):
+        self.pipeline = pipeline
+
+    def pass_through(self, request: dict) -> dict:
+        for function in self.pipeline:
+            request = function(request)
+        return request
+
+
 class RequestAdapter:
     def __init__(self, settings: RequestAdapterSettings):
         self.xml_handler = XmlHandler()
         self.settings = settings
+        self.pipeline = RequestPipeline([self.parse_values,
+                                         self.calculate_composite_values,
+                                         self.one_hot_encode,
+                                         self.map_to_model_input,
+                                         self.handle_special_behavior,
+                                         self.convert_millimeters_to_meters])
 
     def convert_dict(self, bikeCad_file_entries):
-        result_dict = self.parse_values(bikeCad_file_entries)
-        result_dict = self.calculate_composite_values(result_dict)
-        self.one_hot_encode(result_dict)
-        result_dict = self.map_to_model_input(result_dict)
-        self.handle_special_behavior(result_dict)
-        self.convert_millimeters_to_meters(result_dict)
-        return result_dict
-
+        return self.pipeline.pass_through(bikeCad_file_entries)
 
     def map_to_model_input(self, bikeCad_file_entries):
         result_dict = {}
@@ -33,9 +46,11 @@ class RequestAdapter:
     def handle_special_behavior(self, result_dict):
         self.handle_keys_whose_presence_indicates_their_value(result_dict)
         self.handle_ramifications(result_dict)
+        return result_dict
 
     def one_hot_encode(self, result_dict):
         result_dict[f"Material={result_dict['MATERIAL'].lower().title()}"] = 1
+        return result_dict
 
     def handle_keys_whose_presence_indicates_their_value(self, result_dict):
         for key in self.settings.keys_whose_presence_indicates_their_value():
@@ -55,7 +70,6 @@ class RequestAdapter:
                 defaulted_values.append(key)
         return defaulted_values
 
-
     def parse_values(self, input_dict) -> dict:
         return {key: self.get_float_or_strip(value) for key, value in input_dict.items()}
 
@@ -70,6 +84,7 @@ class RequestAdapter:
         for key in self.settings.millimeters_to_meters():
             if key in available_keys:
                 result_dict[key] = result_dict[key] / MILLIMETERS_TO_METERS_FACTOR
+        return result_dict
 
     def calculate_composite_values(self, bikeCad_file_entries):
 
@@ -81,7 +96,7 @@ class RequestAdapter:
             return bikeCad_file_entries[entry] * np.pi / 180
 
         def get_average(entries):
-            return get_sum(entries)/len(entries)
+            return get_sum(entries) / len(entries)
 
         def get_geometric_average(entries):
             entries_squares = [bikeCad_file_entries.get(entry, 0) ** 2 for entry in entries]
