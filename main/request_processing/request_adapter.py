@@ -1,21 +1,10 @@
-from typing import Callable, List
-
 from main.xml_handler import XmlHandler
 from main.request_processing.request_adapter_settings import RequestAdapterSettings
 import numpy as np
 
+from main.request_processing.request_pipeline import RequestPipeline
+
 MILLIMETERS_TO_METERS_FACTOR = 1000
-
-
-class RequestPipeline:
-
-    def __init__(self, pipeline: List[Callable[[dict], dict]]):
-        self.pipeline = pipeline
-
-    def pass_through(self, request: dict) -> dict:
-        for function in self.pipeline:
-            request = function(request)
-        return request
 
 
 class RequestAdapter:
@@ -32,7 +21,7 @@ class RequestAdapter:
     def convert_dict(self, bikeCad_file_entries):
         return self.pipeline.pass_through(bikeCad_file_entries)
 
-    def map_to_model_input(self, bikeCad_file_entries):
+    def map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
         result_dict = {}
         for key, value in bikeCad_file_entries.items():
             model_key = self.settings.bikeCad_to_model_map().get(key, key)
@@ -43,12 +32,12 @@ class RequestAdapter:
     def valid_model_key(self, model_key):
         return model_key in self.settings.default_values().keys()
 
-    def handle_special_behavior(self, result_dict):
+    def handle_special_behavior(self, result_dict: dict) -> dict:
         self.handle_keys_whose_presence_indicates_their_value(result_dict)
         self.handle_ramifications(result_dict)
         return result_dict
 
-    def one_hot_encode(self, result_dict):
+    def one_hot_encode(self, result_dict: dict) -> dict:
         result_dict[f"Material={result_dict['MATERIAL'].lower().title()}"] = 1
         return result_dict
 
@@ -70,7 +59,7 @@ class RequestAdapter:
                 defaulted_values.append(key)
         return defaulted_values
 
-    def parse_values(self, input_dict) -> dict:
+    def parse_values(self, input_dict: dict) -> dict:
         return {key: self.get_float_or_strip(value) for key, value in input_dict.items()}
 
     def get_float_or_strip(self, value):
@@ -79,14 +68,14 @@ class RequestAdapter:
         except ValueError:
             return str(value).strip()
 
-    def convert_millimeters_to_meters(self, result_dict):
+    def convert_millimeters_to_meters(self, result_dict: dict) -> dict:
         available_keys = result_dict.keys()
         for key in self.settings.millimeters_to_meters():
             if key in available_keys:
                 result_dict[key] = result_dict[key] / MILLIMETERS_TO_METERS_FACTOR
         return result_dict
 
-    def calculate_composite_values(self, bikeCad_file_entries):
+    def calculate_composite_values(self, bikeCad_file_entries: dict) -> dict:
 
         def get_sum(entries):
             entries_values = [bikeCad_file_entries.get(entry, 0) for entry in entries]

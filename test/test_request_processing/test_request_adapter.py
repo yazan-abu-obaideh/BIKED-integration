@@ -16,7 +16,10 @@ class RequestAdapterTest(unittest.TestCase):
         self.result_dict = self.adapter.convert_dict(self.x.get_entries_dict())
 
     def test_can_transform(self):
-        self.assertTrue(self.result_dict["TT Thickness"] == 5 != self.adapter.settings.default_values()['TT Thickness'])
+        actual = self.result_dict["TT Thickness"]
+        default_value = self.adapter.settings.default_values()['TT Thickness']
+        self.assertEqual(5, actual)
+        self.assertNotEqual(5, default_value)
 
     def test_does_ignore(self):
         self.assertTrue("irrelevant" not in self.result_dict.keys())

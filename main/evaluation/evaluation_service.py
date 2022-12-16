@@ -1,3 +1,5 @@
+from typing import List
+
 from main.request_processing.request_adapter_settings import RequestAdapterSettings
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from main.evaluation.MultilabelPredictor import MultilabelPredictor
@@ -127,10 +129,10 @@ class DefaultAdapterSettings(RequestAdapterSettings):
                 'CHAINSTAYbrdgCheck': 'CSB_Include', 'SEATSTAYbrdgCheck': 'SSB_Include',
                 'SEATSTAYbrdgdia1': 'SSB OD', 'CHAINSTAYbrdgdia1': 'CSB OD'}
 
-    def keys_whose_presence_indicates_their_value(self) -> list:
+    def keys_whose_presence_indicates_their_value(self) -> List[str]:
         return ["CSB_Include", "SSB_Include"]
 
-    def raise_exception_if_missing(self) -> list:
+    def raise_exception_if_missing(self) -> List[str]:
         return []
 
     def millimeters_to_meters(self):
