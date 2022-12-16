@@ -2,6 +2,8 @@ from main.recommendation.bike_recommendation_service import BikeRecommendationSe
 from main.evaluation.evaluation_service import EvaluationService
 from flask import Flask, request, make_response
 
+BAD_REQUEST = 400
+
 UTF_8 = "utf-8"
 
 app = Flask(__name__)
@@ -12,7 +14,7 @@ recommendation_service = BikeRecommendationService()
 @app.errorhandler(ValueError)
 def handle_value_error(e):
     response_json = {"message": f"{e}"}
-    return make_response(response_json, 400)
+    return make_response(response_json, BAD_REQUEST)
 
 
 @app.route("/evaluate")
