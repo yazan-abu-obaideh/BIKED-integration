@@ -56,6 +56,7 @@ class BikeRecommendationService:
             self.scaler.scale_dataframe(dataframe),
             settings)
         self.xml_handler = XmlHandler()
+        # TODO: aspect-oriented programming.
         self.log_initialization()
 
     def log_initialization(self):
