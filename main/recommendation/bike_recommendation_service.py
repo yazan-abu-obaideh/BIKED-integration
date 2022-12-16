@@ -1,3 +1,5 @@
+import logging
+
 from main.recommendation.recommendation_service_settings import RecommendationSettings
 from main.recommendation.recommendation_service import RecommendationService
 from main.xml_handler import XmlHandler
@@ -57,14 +59,10 @@ class BikeRecommendationService:
         self.log_initialization()
 
     def log_initialization(self):
-        num_not_included = 0
-        for key in self.inner_service.settings.include():
-            if key not in self.inner_service.data.columns.values:
-                print(key)
-                num_not_included += 1
-        print(f"{num_not_included=}")
-        max_num_included = len(self.inner_service.settings.include())
-        print(f"{max_num_included=}")
+        desired = self.inner_service.settings.include()
+        actual = self.inner_service.data.columns.values
+        if not set(desired).issubset(set(actual)):
+            logging.log(level=logging.CRITICAL, msg="WARNING: invalid settings")
 
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)
