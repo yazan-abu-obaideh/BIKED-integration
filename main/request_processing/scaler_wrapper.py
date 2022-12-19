@@ -22,10 +22,10 @@ class ScalerWrapper:
         return self._operate_on_dataframe(scaled_data, self.scaler.inverse_transform)
 
     def _operate_on(self, data: dict, operate: callable):
-        data = self.reorder(data)
-        return pd_util.get_dict_from_row(operate(data))
+        return pd_util.get_dict_from_row(operate(pd_util.get_row_from_dict(data)))
 
     def _operate_on_dataframe(self, dataframe: pd.DataFrame, operation: callable):
+        dataframe = self.reorder_dataframe(dataframe)
         new_values = operation(dataframe)
         return self._rebuild_dataframe(new_values, dataframe)
 
