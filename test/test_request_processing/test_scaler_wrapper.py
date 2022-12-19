@@ -27,7 +27,7 @@ class TestScalerWrapper(unittest.TestCase):
     def test_identical_to_load_data_scaler(self):
         self.assertIs(type(self.input_row), pd.DataFrame)
         input_dict = self.get_input_dict()
-        assert self.first_scaled == self.request_scaler.scale(input_dict)
+        self.assertEqual(self.first_scaled, self.request_scaler.scale(input_dict))
 
     def test_order_does_not_matter(self):
         unordered = {'Material=Steel': 0.8271449363608141, 'Material=Aluminum': -0.46507861303022335,
