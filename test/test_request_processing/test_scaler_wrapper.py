@@ -15,7 +15,6 @@ class TestScalerWrapper(unittest.TestCase):
 
     def setUp(self) -> None:
         self.raw_data = pd.read_csv(os.path.join(RESOURCES_FILE, RELATIVE_PATH), index_col=0)
-        # x, y, x_scaler, y_scaler
         self.scaled_data, _, scaler, _ = load_augmented_framed_dataset()
         self.request_scaler = ScalerWrapper(scaler, self.scaled_data.columns)
         self.input_row = self.prepare_input_row()
