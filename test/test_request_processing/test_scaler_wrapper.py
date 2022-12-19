@@ -27,7 +27,7 @@ class TestScalerWrapper(unittest.TestCase):
         assert self.first_scaled == self.request_scaler.scale(input_dict)
 
     def test_order_does_not_matter(self):
-        something = {'Material=Steel': 0.8271449363608141, 'Material=Aluminum': -0.46507861303022335,
+        unordered = {'Material=Steel': 0.8271449363608141, 'Material=Aluminum': -0.46507861303022335,
                      'Material=Titanium': -0.5440697275169644, 'SSB_Include': -0.9450147617557437,
                      'CSB_Include': -0.9323228669601348, 'CS Length': 0.41901291964455895,
                      'BB Drop': 0.6850895496264587,
@@ -45,11 +45,11 @@ class TestScalerWrapper(unittest.TestCase):
                      'BB Thickness': -0.8350274604180904, 'HT Thickness': 0.6610529908788535,
                      'ST Thickness': -0.4744145107322768,
                      'DT Thickness': -0.8176505921283834, 'DT Length': 0.4384846712626987}
-        first_unscaled = self.request_scaler.unscale(something)
-        keys_sorted = sorted(something.keys())
-        some_other_thing = {key: something[key] for key in keys_sorted}
-        other_unscaled = self.request_scaler.unscale(some_other_thing)
-        self.assertEqual(first_unscaled, other_unscaled)
+        unordered_unscaled = self.request_scaler.unscale(unordered)
+        keys_sorted = sorted(unordered.keys())
+        ordered = {key: unordered[key] for key in keys_sorted}
+        ordered_unscaled = self.request_scaler.unscale(ordered)
+        self.assertEqual(unordered_unscaled, ordered_unscaled)
 
     def test_unscaling_works(self):
         scaled_once = self.request_scaler.scale(self.get_input_dict())
