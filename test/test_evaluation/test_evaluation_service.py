@@ -7,11 +7,8 @@ import main.pandas_utility as pd_util
 import unittest
 import os.path
 
-RESOURCES_PATH = "../../resources/"
-BIKES_PATH = "../../resources/bikes/"
-
-LABELS_PATH = os.path.join(os.path.dirname(__file__), RESOURCES_PATH + "labels.txt")
-THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), BIKES_PATH + "bike(1).xml")
+LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
+THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/bike(1).xml")
 
 
 class EvaluationServiceTest(unittest.TestCase):
