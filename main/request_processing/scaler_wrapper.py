@@ -25,23 +25,23 @@ class ScalerWrapper:
         return pd_util.get_dict_from_row(operate(pd_util.get_row_from_dict(data)))
 
     def _operate_on_dataframe(self, dataframe: pd.DataFrame, operation: callable) -> pd.DataFrame:
-        dataframe = self.reorder_dataframe(dataframe)
+        dataframe, missing_columns = self.reorder_dataframe(dataframe)
         new_values = operation(dataframe)
-        return self._rebuild_dataframe(new_values, dataframe)
+        return self._rebuild_dataframe(new_values, dataframe, missing_columns)
 
-    def _rebuild_dataframe(self, values, original_dataframe):
+    def _rebuild_dataframe(self, values, original_dataframe, missing_columns):
         return pd.DataFrame(values,
                             columns=original_dataframe.columns,
-                            index=original_dataframe.index)
+                            index=original_dataframe.index).drop(columns=missing_columns)
+
     @classmethod
     def build_from_dataframe(cls, data):
         scaler = StandardScaler()
         scaler.fit(data)
         return ScalerWrapper(scaler, data.columns)
 
-
-    def reorder(self, data):
-        return self.reorder_dataframe(pd_util.get_row_from_dict(data))
-
     def reorder_dataframe(self, dataframe):
-        return dataframe[self.columns_in_order]
+        missing_columns = [column for column in self.columns_in_order if column not in dataframe.columns.values]
+        for missing_column in missing_columns:
+            dataframe[missing_column] = 0
+        return dataframe[self.columns_in_order], missing_columns

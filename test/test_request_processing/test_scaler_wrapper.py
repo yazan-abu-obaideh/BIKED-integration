@@ -25,7 +25,7 @@ class TestScalerWrapper(unittest.TestCase):
         pass
 
     def test_identical_to_load_data_scaler(self):
-        assert type(self.input_row) is pd.DataFrame
+        self.assertIs(type(self.input_row), pd.DataFrame)
         input_dict = self.get_input_dict()
         assert self.first_scaled == self.request_scaler.scale(input_dict)
 
