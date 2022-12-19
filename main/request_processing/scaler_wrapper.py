@@ -41,5 +41,7 @@ class ScalerWrapper:
 
 
     def reorder(self, data):
-        data = pd_util.get_row_from_dict(data)[self.columns_in_order]
-        return data
+        return self.reorder_dataframe(pd_util.get_row_from_dict(data))
+
+    def reorder_dataframe(self, dataframe):
+        return dataframe[self.columns_in_order]
