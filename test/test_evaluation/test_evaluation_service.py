@@ -8,7 +8,7 @@ import unittest
 import os.path
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
-THIRD_BIKE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/bike(1).xml")
+BIKE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/bike(1).xml")
 
 
 class EvaluationServiceTest(unittest.TestCase):
@@ -53,7 +53,7 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
 
     def test_is_sane(self):
-        with open(THIRD_BIKE_PATH, "r") as file:
+        with open(BIKE_PATH, "r") as file:
             xml_as_string = file.read()
 
         class Container:
