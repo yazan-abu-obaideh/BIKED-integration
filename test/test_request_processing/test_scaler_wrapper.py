@@ -21,6 +21,9 @@ class TestScalerWrapper(unittest.TestCase):
         self.input_row = self.prepare_input_row()
         self.first_scaled = self.scaled_data.iloc[0].to_dict()
 
+    def test_can_scale_incomplete_data(self):
+        pass
+
     def test_identical_to_load_data_scaler(self):
         assert type(self.input_row) is pd.DataFrame
         input_dict = self.get_input_dict()
@@ -63,12 +66,23 @@ class TestScalerWrapper(unittest.TestCase):
         return pd_util.get_dict_from_row(self.input_row)
 
     def test_build_from_data(self):
-        data = {"x": [0, 1, 2], "y": [3, 4, 5]}
-        dataframe = pd.DataFrame.from_dict(data)
-        print(dataframe)
+        dataframe, new_wrapper = self.build_new_scaler_wrapper()
+        self.assertNotEqual(dataframe["x"].mean(), 0)
+        scaled = new_wrapper.scale_dataframe(dataframe)
+        self.assertEqual(scaled["x"].mean(), 0)
+
+    def test_can_scale_incomplete_request(self):
+        _, new_wrapper = self.build_new_scaler_wrapper()
+        scaled = new_wrapper.scale({"x": 1})
+        self.assertEqual(scaled["x"], 0)
+
+    def build_new_scaler_wrapper(self):
+        dataframe = pd.DataFrame.from_dict(self.mock_data())
         new_wrapper = ScalerWrapper.build_from_dataframe(dataframe)
-        scale = new_wrapper.scale_dataframe(dataframe)
-        print(scale)
+        return dataframe, new_wrapper
+
+    def mock_data(self):
+        return {"x": [0, 1, 2], "y": [3, 4, 5]}
 
     def prepare_input_row(self):
         input_row = self.raw_data[:1]
