@@ -54,16 +54,15 @@ class EvaluationService:
             raise ValueError('Invalid BikeCAD file')
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
-        defaulted_values = self.adapter.fill_default_and_return_defaulted_values(bike_cad_dict)
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
-        self.set_defaulted_values_to_scaled_mean(scaled_dict, defaulted_values)
+        self.set_defaulted_values_to_scaled_mean(scaled_dict)
         row = pd_util.get_row_from_dict(scaled_dict)
         return self.predict_from_row(row)
 
-    def set_defaulted_values_to_scaled_mean(self, bike_cad_dict, defaulted_values):
-        for value in defaulted_values:
-            if 'Material' not in value:
-                bike_cad_dict[value] = SCALED_MEAN
+    def set_defaulted_values_to_scaled_mean(self, bike_cad_dict):
+        for key in self.adapter.settings.default_values().keys():
+            if key not in bike_cad_dict:
+                bike_cad_dict[key] = SCALED_MEAN
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         scaled_result = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
