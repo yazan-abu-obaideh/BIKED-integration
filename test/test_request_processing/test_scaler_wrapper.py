@@ -46,11 +46,9 @@ class TestScalerWrapper(unittest.TestCase):
                      'ST Thickness': -0.4744145107322768,
                      'DT Thickness': -0.8176505921283834, 'DT Length': 0.4384846712626987}
         first_unscaled = self.request_scaler.unscale(something)
-        print(first_unscaled)
         keys_sorted = sorted(something.keys())
         some_other_thing = {key: something[key] for key in keys_sorted}
         other_unscaled = self.request_scaler.unscale(some_other_thing)
-        print(other_unscaled)
         self.assertEqual(first_unscaled, other_unscaled)
 
     def test_unscaling_works(self):
