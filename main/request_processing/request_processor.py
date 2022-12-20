@@ -14,8 +14,8 @@ class RequestProcessor:
         # TODO: ensure adherence to T -> T
         self.pipeline = RequestPipeline([self.parse_values,
                                          self.calculate_composite_values,
-                                         self.map_to_model_input,
                                          self.one_hot_encode,
+                                         self.map_to_model_input,
                                          self.handle_special_behavior,
                                          self.convert_millimeter_values_to_meters])
 
@@ -29,7 +29,7 @@ class RequestProcessor:
 
     def map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
         keys_map = self.settings.bikeCad_to_model_map()
-        valid_keys = list(self.settings.expected_input_keys()) + ["MATERIAL"]
+        valid_keys = list(self.settings.expected_input_keys())
         return {keys_map.get(key, key): value
                 for key, value in bikeCad_file_entries.items()
                 if keys_map.get(key, key) in valid_keys}
