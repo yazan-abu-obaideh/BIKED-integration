@@ -16,7 +16,7 @@ class RequestAdapter:
                                          self.one_hot_encode,
                                          self.map_to_model_input,
                                          self.handle_special_behavior,
-                                         self.convert_millimeters_to_meters])
+                                         self.convert_millimeter_values_to_meters])
 
     def convert_dict(self, bikeCad_file_entries):
         return self.pipeline.pass_through(bikeCad_file_entries)
@@ -60,12 +60,16 @@ class RequestAdapter:
         except ValueError:
             return str(value).strip()
 
-    def convert_millimeters_to_meters(self, result_dict: dict) -> dict:
-        available_keys = result_dict.keys()
-        for key in self.settings.millimeters_to_meters():
-            if key in available_keys:
-                result_dict[key] = result_dict[key] / MILLIMETERS_TO_METERS_FACTOR
+    def convert_millimeter_values_to_meters(self, result_dict: dict) -> dict:
+        for key in self.should_be_converted(result_dict):
+            result_dict[key] = self.convert_millimeter_value_to_meters(result_dict[key])
         return result_dict
+
+    def should_be_converted(self, _dict):
+        return (key for key in self.settings.millimeters_to_meters() if key in _dict.keys())
+
+    def convert_millimeter_value_to_meters(self, original_value):
+        return original_value / MILLIMETERS_TO_METERS_FACTOR
 
     def calculate_composite_values(self, bikeCad_file_entries: dict) -> dict:
 
