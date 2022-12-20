@@ -92,11 +92,20 @@ class EvaluationServiceTest(unittest.TestCase):
                         titanium_container.value['Model Mass Magnitude'] >
                         aluminum_container.value['Model Mass Magnitude'])
 
-    def test_can_predict_from_partial_request(self):
+    def test_can_predict_from_partial_dict(self):
         partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                            'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
                            'BB Drop': 0.19327064177679704}
         self.assertIsNotNone(self.service.predict_from_dict(partial_request))
+
+    def test_cannot_predict_from_partial_row(self):
+        incomplete_model_input = pd_util.get_row_from_dict(
+            {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
+             "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
+             "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
+             "BB Drop": 0.19327064177679704})
+        self.assertRaises(KeyError, self.service.predict_from_row,
+                          incomplete_model_input)
 
     def test_can_get_labels(self):
         self.assertEqual({"Sim 1 Dropout X Disp. Magnitude",
@@ -131,18 +140,6 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertEqual(self.service.predict_from_dict(self.sample_input),
                          self.service.predict_from_dict(input_in_different_order))
 
-    def test_input_shape(self):
-        self.assertEqual(list(self.x.columns.values), self.get_input_labels())
-
-    def test_cannot_predict_from_partial_row(self):
-        incomplete_model_input = pd_util.get_row_from_dict(
-            {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
-             "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
-             "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
-             "BB Drop": 0.19327064177679704})
-        self.assertRaises(KeyError, self.service.predict_from_row,
-                          incomplete_model_input)
-
     def assert_correct_metrics(self, predictions, actual):
         r2, mean_square_error, mean_absolute_error = self.service.get_metrics(predictions,
                                                                               actual)
@@ -167,7 +164,3 @@ class EvaluationServiceTest(unittest.TestCase):
                                                             test_size=0.2,
                                                             random_state=1950)
         return x_test, y_test
-
-    def get_input_labels(self):
-        with open(LABELS_PATH, "r") as file:
-            return [line.strip() for line in file.readlines()]
