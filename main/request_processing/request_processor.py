@@ -11,6 +11,7 @@ class RequestProcessor:
     def __init__(self, settings: RequestProcessorSettings):
         self.xml_handler = XmlHandler()
         self.settings = settings
+        # TODO: ensure adherence to T -> T
         self.pipeline = RequestPipeline([self.parse_values,
                                          self.calculate_composite_values,
                                          self.map_to_model_input,
