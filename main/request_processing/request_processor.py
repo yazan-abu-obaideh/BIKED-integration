@@ -27,12 +27,11 @@ class RequestProcessor:
         return self.pipeline.pass_through(bikeCad_file_entries)
 
     def map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
-        result_dict = {}
-        for key, value in bikeCad_file_entries.items():
-            model_key = self.settings.bikeCad_to_model_map().get(key, key)
-            if model_key in self.settings.default_values().keys() or model_key == "MATERIAL":
-                result_dict[model_key] = value
-        return result_dict
+        keys_map = self.settings.bikeCad_to_model_map()
+        valid_keys = list(self.settings.default_values().keys()) + ["MATERIAL"]
+        return {keys_map.get(key, key): value
+                for key, value in bikeCad_file_entries.items()
+                if keys_map.get(key, key) in valid_keys}
 
     def handle_special_behavior(self, result_dict: dict) -> dict:
         self.handle_keys_whose_presence_indicates_their_value(result_dict)
