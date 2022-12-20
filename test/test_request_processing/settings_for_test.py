@@ -1,7 +1,7 @@
-from main.request_processing.request_adapter_settings import RequestAdapterSettings
+from main.request_processing.request_processor_settings import RequestProcessorSettings
 
 
-class Settings(RequestAdapterSettings):
+class Settings(RequestProcessorSettings):
     """THIS IS NOT DUPLICATION. The test settings just so happen to match the real settings because we have not done the
     requisite work on the real settings just yet."""
 

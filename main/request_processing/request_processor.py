@@ -1,5 +1,5 @@
 from main.xml_handler import XmlHandler
-from main.request_processing.request_adapter_settings import RequestAdapterSettings
+from main.request_processing.request_processor_settings import RequestProcessorSettings
 import numpy as np
 
 from main.request_processing.request_pipeline import RequestPipeline
@@ -7,8 +7,8 @@ from main.request_processing.request_pipeline import RequestPipeline
 MILLIMETERS_TO_METERS_FACTOR = 1000
 
 
-class RequestAdapter:
-    def __init__(self, settings: RequestAdapterSettings):
+class RequestProcessor:
+    def __init__(self, settings: RequestProcessorSettings):
         self.xml_handler = XmlHandler()
         self.settings = settings
         self.pipeline = RequestPipeline([self.parse_values,
@@ -17,6 +17,11 @@ class RequestAdapter:
                                          self.map_to_model_input,
                                          self.handle_special_behavior,
                                          self.convert_millimeter_values_to_meters])
+
+    def convert_xml(self, xml: str):
+        self.xml_handler.set_xml(xml)
+        request_dict = self.xml_handler.get_entries_dict()
+        return self.convert_dict(request_dict)
 
     def convert_dict(self, bikeCad_file_entries):
         return self.pipeline.pass_through(bikeCad_file_entries)

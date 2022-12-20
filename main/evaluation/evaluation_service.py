@@ -1,9 +1,9 @@
 from typing import List
 
-from main.request_processing.request_adapter_settings import RequestAdapterSettings
+from main.request_processing.request_processor_settings import RequestProcessorSettings
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from main.evaluation.MultilabelPredictor import MultilabelPredictor
-from main.request_processing.request_adapter import RequestAdapter
+from main.request_processing.request_adapter import RequestProcessor
 from main.request_processing.scaler_wrapper import ScalerWrapper
 from main.load_data import load_augmented_framed_dataset
 from main.xml_handler import XmlHandler
@@ -35,7 +35,7 @@ class EvaluationService:
         __main__.MultilabelPredictor = MultilabelPredictor
 
         self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
-        self.adapter = RequestAdapter(DefaultAdapterSettings())
+        self.adapter = RequestProcessor(DefaultAdapterSettings())
 
         x, y, input_scaler, output_scaler = self.get_data()
         self.xml_handler = XmlHandler()
@@ -94,7 +94,7 @@ class EvaluationService:
         return load_augmented_framed_dataset()
 
 
-class DefaultAdapterSettings(RequestAdapterSettings):
+class DefaultAdapterSettings(RequestProcessorSettings):
     def default_values(self) -> dict:
         # warn users when the supplied bikecad file has no materials field OR whenever the material vlaue is not
         # in steel, alum, titanium

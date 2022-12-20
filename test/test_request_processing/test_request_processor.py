@@ -1,17 +1,17 @@
 import os.path
 import unittest
 from main.xml_handler import XmlHandler
-from main.request_processing.request_adapter import RequestAdapter
+from main.request_processing.request_adapter import RequestProcessor
 from test.test_request_processing.settings_for_test import Settings
 
 RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/test-assets/SimpleModel1.xml")
 
 
-class RequestAdapterTest(unittest.TestCase):
+class RequestProcessorTest(unittest.TestCase):
     def setUp(self) -> None:
         self.x = XmlHandler()
         self.bikeCad_file = self.get_BikeCad_file_as_raw_xml()
-        self.adapter = RequestAdapter(Settings())
+        self.adapter = RequestProcessor(Settings())
         self.x.set_xml(self.bikeCad_file)
         self.result_dict = self.adapter.convert_dict(self.x.get_entries_dict())
 

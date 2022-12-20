@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class RequestAdapterSettings:
+class RequestProcessorSettings:
     @abstractmethod
     def default_values(self) -> dict:
         pass
