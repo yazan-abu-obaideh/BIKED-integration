@@ -92,6 +92,12 @@ class EvaluationServiceTest(unittest.TestCase):
                         titanium_container.value['Model Mass Magnitude'] >
                         aluminum_container.value['Model Mass Magnitude'])
 
+        # TODO: assert an increase in tube thickness would (probably) result in a decrease in the inverted safety factor
+        # TDOO: assert an increase in tube thickness should increase the mass
+        # TDOO: assert an increase in diameters (except bottom bracket) should increase the mass
+        # TODO: assert that the model behaves reasonably well on data it wasn't trained on
+
+
     def test_can_predict_from_partial_dict(self):
         partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                            'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
