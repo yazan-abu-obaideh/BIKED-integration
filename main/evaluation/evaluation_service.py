@@ -12,23 +12,23 @@ import pandas as pd
 import __main__
 import os
 
-
 SCALED_MEAN = 0
 
 RELATIVE_MODEL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
 CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
                                      RELATIVE_MODEL_PATH)
 
+labels_inverted = ["Sim 1 Safety Factor",
+                   "Sim 3 Safety Factor"]
+labels_magnitude = ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
+                    'Sim 1 Bottom Bracket Y Disp.', 'Sim 2 Bottom Bracket Z Disp.', 'Sim 3 Bottom Bracket Y Disp.',
+                    'Sim 3 Bottom Bracket X Rot.', 'Model Mass']
+
+LABEL_REPLACEMENTS = {label: label + " (Inverted)" for label in labels_inverted}
+LABEL_REPLACEMENTS.update({label: label + " Magnitude" for label in labels_magnitude})
+
 
 class EvaluationService:
-    labels_inverted = ["Sim 1 Safety Factor",
-                       "Sim 3 Safety Factor"]
-    labels_magnitude = ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
-                        'Sim 1 Bottom Bracket Y Disp.', 'Sim 2 Bottom Bracket Z Disp.', 'Sim 3 Bottom Bracket Y Disp.',
-                        'Sim 3 Bottom Bracket X Rot.', 'Model Mass']
-
-    LABEL_REPLACEMENTS = {label: label + " (Inverted)" for label in labels_inverted}
-    LABEL_REPLACEMENTS.update({label: label + " Magnitude" for label in labels_magnitude})
 
     def __init__(self):
         # TODO: investigate why this needs to be done and what it implies
@@ -48,7 +48,6 @@ class EvaluationService:
         self.raise_if_empty_dict(entries)
         return self.predict_from_dict(self.adapter.convert_dict(entries))
 
-
     def raise_if_empty_dict(self, bikeCad_file_entries):
         if len(bikeCad_file_entries) == 0:
             raise ValueError('Invalid BikeCAD file')
@@ -66,7 +65,7 @@ class EvaluationService:
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         scaled_result = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
-        scaled_result = {self.LABEL_REPLACEMENTS.get(key, key): value for key, value in scaled_result.items()}
+        scaled_result = {LABEL_REPLACEMENTS.get(key, key): value for key, value in scaled_result.items()}
         return self.ensure_magnitude(self.response_scaler.unscale(scaled_result))
 
     def _predict_from_row(self, pd_row: pd.DataFrame) -> pd.DataFrame:
@@ -83,7 +82,7 @@ class EvaluationService:
 
     def get_labels(self):
         labels = list(self.predictor.labels.values)
-        for key, value in self.LABEL_REPLACEMENTS.items():
+        for key, value in LABEL_REPLACEMENTS.items():
             labels.remove(key)
             labels.append(value)
         return labels
@@ -140,5 +139,3 @@ class DefaultAdapterSettings(RequestAdapterSettings):
                 'ST Length', 'BB Length', 'Dropout Offset', 'SSB OD', 'CSB OD', 'SSB Offset',
                 'CSB Offset', 'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness',
                 'BB Thickness', 'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
-
-

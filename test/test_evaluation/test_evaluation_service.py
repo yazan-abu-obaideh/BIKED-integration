@@ -93,8 +93,10 @@ class EvaluationServiceTest(unittest.TestCase):
                         aluminum_container.value['Model Mass Magnitude'])
 
     def test_can_predict_from_partial_request(self):
-        self.sample_input = self.request_scaler.unscale(self.sample_input)
-        print(self.service.predict_from_dict(self.sample_input))
+        partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
+                           'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
+                           'BB Drop': 0.19327064177679704}
+        self.assertIsNotNone(self.service.predict_from_dict(partial_request))
 
     def test_can_get_labels(self):
         self.assertEqual({"Sim 1 Dropout X Disp. Magnitude",
