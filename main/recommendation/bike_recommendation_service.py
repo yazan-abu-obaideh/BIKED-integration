@@ -63,7 +63,8 @@ class BikeRecommendationService:
         actual = self.inner_service.data.columns.values
         if not set(desired).issubset(set(actual)):
             logging.log(level=logging.CRITICAL,
-                        msg="WARNING: BikeRecommendationService configured incorrectly. Invalid settings")
+                        msg="WARNING: BikeRecommendationService configured incorrectly." +
+                            " Columns included in the settings do not match dataset columns.")
 
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)
@@ -73,9 +74,8 @@ class BikeRecommendationService:
 
     def pre_process_request(self, xml_user_entry):
         user_entry_dict = self.parse_xml_request(xml_user_entry)
-        defaulted = self.default_to_zero(user_entry_dict)
         scaled_user_entry = self.scaler.scale(user_entry_dict)
-        self.default_to_mean(defaulted, scaled_user_entry)
+        scaled_user_entry = self.default_to_mean(scaled_user_entry)
         return scaled_user_entry
 
     def parse_xml_request(self, xml_user_entry):
@@ -83,9 +83,11 @@ class BikeRecommendationService:
         user_entry_dict = self.xml_handler.get_entries_dict()
         return {key: self.attempt_enumerate(value) for key, value in user_entry_dict.items()}
 
-    def default_to_mean(self, defaulted, scaled_user_entry):
-        for key in defaulted:
-            scaled_user_entry[key] = SCALED_MEAN
+    def default_to_mean(self, scaled_user_entry):
+        for key in self.inner_service.settings.include():
+            if key not in scaled_user_entry:
+                scaled_user_entry[key] = SCALED_MEAN
+        return scaled_user_entry
 
     def default_to_zero(self, user_entry_dict):
         defaulted = []
