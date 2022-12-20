@@ -15,9 +15,7 @@ class RequestProcessorTest(unittest.TestCase):
 
     def test_can_transform(self):
         actual = self.result_dict["TT Thickness"]
-        default_value = self.processor.settings.default_values()['TT Thickness']
         self.assertEqual(5, actual)
-        self.assertNotEqual(5, default_value)
 
     def test_does_ignore(self):
         self.assertTrue("irrelevant" not in self.result_dict.keys())

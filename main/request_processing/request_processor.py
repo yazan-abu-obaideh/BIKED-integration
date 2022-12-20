@@ -29,7 +29,7 @@ class RequestProcessor:
 
     def map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
         keys_map = self.settings.bikeCad_to_model_map()
-        valid_keys = list(self.settings.default_values().keys()) + ["MATERIAL"]
+        valid_keys = list(self.settings.expected_input_keys()) + ["MATERIAL"]
         return {keys_map.get(key, key): value
                 for key, value in bikeCad_file_entries.items()
                 if keys_map.get(key, key) in valid_keys}

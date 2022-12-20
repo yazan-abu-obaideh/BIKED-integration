@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 class RequestProcessorSettings:
     @abstractmethod
-    def default_values(self) -> dict:
+    def expected_input_keys(self) -> list:
         pass
 
     @abstractmethod
