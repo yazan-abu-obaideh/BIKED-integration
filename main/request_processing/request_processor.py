@@ -13,8 +13,8 @@ class RequestProcessor:
         self.settings = settings
         self.pipeline = RequestPipeline([self.parse_values,
                                          self.calculate_composite_values,
-                                         self.one_hot_encode,
                                          self.map_to_model_input,
+                                         self.one_hot_encode,
                                          self.handle_special_behavior,
                                          self.convert_millimeter_values_to_meters])
 
@@ -30,12 +30,9 @@ class RequestProcessor:
         result_dict = {}
         for key, value in bikeCad_file_entries.items():
             model_key = self.settings.bikeCad_to_model_map().get(key, key)
-            if self.valid_model_key(model_key):
+            if model_key in self.settings.default_values().keys() or model_key == "MATERIAL":
                 result_dict[model_key] = value
         return result_dict
-
-    def valid_model_key(self, model_key):
-        return model_key in self.settings.default_values().keys()
 
     def handle_special_behavior(self, result_dict: dict) -> dict:
         self.handle_keys_whose_presence_indicates_their_value(result_dict)
