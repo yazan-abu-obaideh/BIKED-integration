@@ -3,7 +3,7 @@ from typing import List
 from main.request_processing.request_processor_settings import RequestProcessorSettings
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 from main.evaluation.MultilabelPredictor import MultilabelPredictor
-from main.request_processing.request_adapter import RequestProcessor
+from main.request_processing.request_processor import RequestProcessor
 from main.request_processing.scaler_wrapper import ScalerWrapper
 from main.load_data import load_augmented_framed_dataset
 from main.xml_handler import XmlHandler
