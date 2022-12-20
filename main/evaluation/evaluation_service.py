@@ -59,9 +59,12 @@ class EvaluationService:
         return self.predict_from_row(row)
 
     def set_defaulted_values_to_scaled_mean(self, bike_cad_dict):
-        for key in self.adapter.settings.default_values().keys():
-            if key not in bike_cad_dict:
-                bike_cad_dict[key] = SCALED_MEAN
+        defaulted_keys = self.get_defaulted_keys(bike_cad_dict)
+        for key in defaulted_keys:
+            bike_cad_dict[key] = SCALED_MEAN
+
+    def get_defaulted_keys(self, bike_cad_dict):
+        return (key for key in self.adapter.settings.default_values().keys() if key not in bike_cad_dict)
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         scaled_result = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
