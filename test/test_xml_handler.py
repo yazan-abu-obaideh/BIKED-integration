@@ -10,8 +10,8 @@ class XmlHandlerTest(unittest.TestCase):
         with open(file_path, "r") as file:
             self.xml_handler = XmlHandler()
             self.xml_handler.set_xml(file.read())
-        self.ENTRY_TAG = self.xml_handler.ENTRY_TAG
-        self.ENTRY_KEY = self.xml_handler.ENTRY_KEY
+        self.ENTRY_TAG = self.xml_handler.XML_TAG
+        self.ENTRY_KEY = self.xml_handler.ATTRIBUTE
         self.PARENT_TAG = self.xml_handler.PARENT_TAG
 
     def test_xml_tree_contains_entries(self):

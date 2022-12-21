@@ -31,12 +31,8 @@ LABEL_REPLACEMENTS.update({label: label + " Magnitude" for label in labels_magni
 class EvaluationService:
 
     def __init__(self):
-        # TODO: investigate why this needs to be done and what it implies
-        __main__.MultilabelPredictor = MultilabelPredictor
-
-        self.predictor = MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
+        self.predictor = self.load_pickled_predictor()
         self.adapter = RequestProcessor(DefaultAdapterSettings())
-
         x, y, input_scaler, output_scaler = self.get_data()
         self.xml_handler = XmlHandler()
         self.request_scaler = ScalerWrapper(input_scaler, x.columns)
@@ -92,6 +88,14 @@ class EvaluationService:
 
     def get_data(self):
         return load_augmented_framed_dataset()
+
+    def load_pickled_predictor(self):
+        self.prepare_pickle()
+        return MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
+
+    def prepare_pickle(self):
+        # TODO: investigate why this needs to be done and what it implies
+        __main__.MultilabelPredictor = MultilabelPredictor
 
 
 class DefaultAdapterSettings(RequestProcessorSettings):
