@@ -122,7 +122,8 @@ class EvaluationServiceTest(unittest.TestCase):
                           "Sim 3 Bottom Bracket Y Disp. Magnitude",
                           "Sim 3 Bottom Bracket X Rot. Magnitude",
                           "Sim 1 Safety Factor (Inverted)",
-                          "Sim 3 Safety Factor (Inverted)", "Model Mass Magnitude"},
+                          "Sim 3 Safety Factor (Inverted)",
+                          "Model Mass Magnitude"},
                          set(self.service.get_labels()))
 
     def test_model_and_scalers_loaded(self):
