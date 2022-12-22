@@ -50,22 +50,25 @@ class EvaluationService:
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
-        self.set_defaulted_values_to_scaled_mean(scaled_dict)
+        scaled_dict = self.set_empty_values_to_scaled_mean(scaled_dict)
         row = pd_util.get_row_from_dict(scaled_dict)
         return self.predict_from_row(row)
 
-    def set_defaulted_values_to_scaled_mean(self, bike_cad_dict):
-        defaulted_keys = self.get_defaulted_keys(bike_cad_dict)
+    def set_empty_values_to_scaled_mean(self, bike_cad_dict):
+        defaulted_keys = self.get_empty_keys(bike_cad_dict)
         for key in defaulted_keys:
             bike_cad_dict[key] = SCALED_MEAN
+        return bike_cad_dict
 
-    def get_defaulted_keys(self, bike_cad_dict):
+    def get_empty_keys(self, bike_cad_dict):
         return (key for key in self.adapter.settings.expected_input_keys() if key not in bike_cad_dict)
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
-        scaled_result = pd_util.get_dict_from_row(self._predict_from_row(pd_row))
+        predictions_row = self._predict_from_row(pd_row)
+        scaled_result = pd_util.get_dict_from_row(predictions_row)
         scaled_result = {LABEL_REPLACEMENTS.get(key, key): value for key, value in scaled_result.items()}
-        return self.ensure_magnitude(self.response_scaler.unscale(scaled_result))
+        unscaled_result = self.response_scaler.unscale(scaled_result)
+        return self.ensure_magnitude(unscaled_result)
 
     def _predict_from_row(self, pd_row: pd.DataFrame) -> pd.DataFrame:
         return self.predictor.predict(pd_row)
