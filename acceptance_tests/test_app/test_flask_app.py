@@ -49,7 +49,7 @@ class AppTest(unittest.TestCase):
 
     @classmethod
     def handle_time_out(cls, start_time):
-        if AppTest.has_timed_out(start_time):
+        if AppTest.more_than_x_seconds_since(start_time, x=5):
             AppTest.APP_PROCESS.terminate()
             raise SystemError("Timed out waiting for app to start")
 
@@ -66,5 +66,5 @@ class AppTest(unittest.TestCase):
         app.run(port=5000)
 
     @staticmethod
-    def has_timed_out(start_time):
-        return (time() - start_time) > 5
+    def more_than_x_seconds_since(start_time, x):
+        return (time() - start_time) > x
