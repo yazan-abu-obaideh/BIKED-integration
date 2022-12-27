@@ -8,7 +8,7 @@ import unittest
 import os.path
 
 LABELS_PATH = os.path.join(os.path.dirname(__file__), "../../resources/labels.txt")
-BIKE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/bike(1).xml")
+BIKE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/test-assets/bikes/bike(1).xml")
 
 
 class EvaluationServiceTest(unittest.TestCase):

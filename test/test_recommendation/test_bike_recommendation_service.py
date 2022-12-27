@@ -2,7 +2,7 @@ from main.recommendation.bike_recommendation_service import BikeRecommendationSe
 import unittest
 import os
 
-VALID_MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../resources/bikes/FullModel1.xml")
+VALID_MODEL_PATH = os.path.join(os.path.dirname(__file__), "../../resources/test-assets/bikes/FullModel1.xml")
 
 
 class RecommendationServiceTest(unittest.TestCase):
