@@ -44,10 +44,14 @@ class AppTest(unittest.TestCase):
         AppTest.APP_PROCESS.start()
         start_time = time()
         while AppTest.site_not_up():
-            if AppTest.has_timed_out(start_time):
-                AppTest.APP_PROCESS.terminate()
-                raise SystemError("Timed out waiting for app to start")
+            cls.handle_time_out(start_time)
             sleep(0.5)
+
+    @classmethod
+    def handle_time_out(cls, start_time):
+        if AppTest.has_timed_out(start_time):
+            AppTest.APP_PROCESS.terminate()
+            raise SystemError("Timed out waiting for app to start")
 
     @classmethod
     def tearDownClass(cls) -> None:
