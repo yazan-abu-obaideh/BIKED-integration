@@ -11,6 +11,10 @@ evaluation_service = EvaluationService()
 recommendation_service = BikeRecommendationService()
 
 
+def get_xml(_request) -> str:
+    return _request.data.decode(UTF_8)
+
+
 @app.errorhandler(ValueError)
 def handle_value_error(e):
     response_json = {"message": f"{e}"}
@@ -19,14 +23,13 @@ def handle_value_error(e):
 
 @app.route("/evaluate")
 def evaluate_design():
-    request_as_raw_xml = request.data.decode(UTF_8)
-    return evaluation_service.predict_from_xml(request_as_raw_xml)
+    return evaluation_service.predict_from_xml(get_xml(request))
 
 
 @app.route("/recommend")
 def recommend_similar():
-    request_as_raw_xml = request.data.decode(UTF_8)
-    return recommendation_service.recommend_bike(request_as_raw_xml)
+    return recommendation_service.recommend_bike(get_xml(request))
+
 
 @app.route("/health")
 def get_health():
