@@ -4,7 +4,7 @@ import unittest
 from main.request_processing.request_processor import RequestProcessor
 from test.test_request_processing.settings_for_test import Settings
 
-RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/test-assets/SimpleModel1.xml")
+RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../resources/SimpleModel1.xml")
 
 
 class RequestProcessorTest(unittest.TestCase):

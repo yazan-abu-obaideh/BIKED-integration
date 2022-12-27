@@ -8,7 +8,7 @@ import os
 
 
 TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__),
-                                          "../../resources/test-assets/simple_distance_set.csv")
+                                          "../resources/simple_distance_set.csv")
 
 
 class RecommendationServiceTest(unittest.TestCase):

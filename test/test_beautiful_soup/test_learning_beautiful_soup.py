@@ -2,7 +2,7 @@ import unittest
 from bs4 import BeautifulSoup
 import os
 
-RESOURCE_FILE_PATH = os.path.join(os.path.dirname(__file__), "../../resources/test-assets/test.xml")
+RESOURCE_FILE_PATH = os.path.join(os.path.dirname(__file__), "../resources/test.xml")
 
 
 class BSAndLxmlLearningTest(unittest.TestCase):
