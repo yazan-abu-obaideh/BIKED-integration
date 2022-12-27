@@ -89,14 +89,6 @@ class BikeRecommendationService:
                 scaled_user_entry[key] = SCALED_MEAN
         return scaled_user_entry
 
-    def default_to_zero(self, user_entry_dict):
-        defaulted = []
-        for key in self.inner_service.settings.include():
-            if key not in user_entry_dict:
-                user_entry_dict[key] = 0
-                defaulted.append(key)
-        return defaulted
-
     def attempt_enumerate(self, value: str):
         default_function = self.parse_optional_float
         function = self.enumeration_function_map.get(value, default_function)
