@@ -1,8 +1,20 @@
 import os.path
 import unittest
+from main.resource_paths import *
 
 
-MODEL_NAME = "ag-20220911_073209"
 class ResourcesTester(unittest.TestCase):
-    def model_exists(self):
-        self.assertTrue(os.path.isdir(""))
+    def test_model_exists(self):
+        self.assert_directory_exists(MODEL_PATH)
+
+    def test_recommendation_dataset_exists(self):
+        self.assert_file_exists(RECOMMENDATION_DATASET_PATH)
+
+    def test_structural_dataset_exists(self):
+        self.assert_file_exists(ALL_STRUCTURAL_DATASET)
+
+    def assert_directory_exists(self, directory_path):
+        self.assertTrue(os.path.isdir(directory_path))
+
+    def assert_file_exists(self, filepath):
+        self.assertTrue(os.path.isfile(filepath))
