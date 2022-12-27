@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    <!--Will the request adapter ignore me?-->
+    <entry key="irrelevant">I don't matter</entry>
+    <!--Will the request adapter change the key and read the value?-->
+    <entry key="Wall thickness Top tube">5</entry>
+    <!--Will the request adapter handle this special case?-->
+    <entry key="MATERIAL">STEEL</entry>
+    <!--Will the request adapter warn about this value?-->
+    <entry key="test-warning">-1</entry>
+    <!--Will the request adapter convert this value from cm to m?-->
+    <entry key="Chain stay position on BB">50</entry>
+    <!--Will the request adapter raise an exception if I'm missing?-->
+    <entry key="must-have">10</entry>
+    <!--MATH?-->
+    <entry key='BB textfield'>10</entry>
+    <entry key='FCD textfield'>10</entry>
+    <entry key='FORKOR'>10</entry>
+    <entry key='FORK0L'>10</entry>
+    <entry key='Head tube lower extension2'>10</entry>
+    <entry key='lower stack height'>10</entry>
+    <entry key='Head angle'>10</entry>
+    <entry key='DT Length'>10</entry>
+    <entry key='Chain stay back diameter'>10</entry>
+    <entry key='Chain stay vertical diameter'>10</entry>
+    <entry key='csd'>10</entry>
+    <entry key='Seat stay bottom diameter'>10</entry>
+    <entry key='SEATSTAY_HR'>10</entry>
+    <entry key='ssd'>10</entry>
+    <entry key='Top tube rear diameter'>10</entry>
+    <entry key='Top tube rear dia2'>15</entry>
+    <entry key='Top tube front diameter'>10</entry>
+    <entry key='Top tube front dia2'>15</entry>
+    <entry key='Down tube rear diameter'>15</entry>
+    <entry key='Down tube rear dia2'>10</entry>
+    <entry key='Down tube front diameter'>10</entry>
+    <entry key='Down tube front dia2'>15</entry>
+</properties>
