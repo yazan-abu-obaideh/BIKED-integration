@@ -4,9 +4,9 @@ from main.recommendation.recommendation_service_settings import RecommendationSe
 from main.recommendation.recommendation_service import RecommendationService
 from main.xml_handler import XmlHandler
 import pandas as pd
-import os
 
 from request_processing.scaler_wrapper import ScalerWrapper
+from main.resource_paths import RECOMMENDATION_DATASET_PATH
 
 SCALED_MEAN = 0
 
@@ -38,7 +38,6 @@ class DefaultBikeSettings(RecommendationSettings):
 
 
 DEFAULT_SETTINGS = DefaultBikeSettings()
-DEFAULT_DATASET = os.path.join(os.path.dirname(__file__), "../resources/generated/BIKED_recommend.csv")
 
 
 class BikeRecommendationService:
@@ -47,7 +46,8 @@ class BikeRecommendationService:
         'false': lambda x: 0
     }
 
-    def __init__(self, settings: RecommendationSettings = DEFAULT_SETTINGS, data_file_path=DEFAULT_DATASET):
+    def __init__(self, settings: RecommendationSettings = DEFAULT_SETTINGS,
+                 data_file_path=RECOMMENDATION_DATASET_PATH):
         dataframe = pd.read_csv(data_file_path)
         dataframe.drop(columns=dataframe.columns.difference(settings.include()), inplace=True)
         self.scaler = ScalerWrapper.build_from_dataframe(dataframe)

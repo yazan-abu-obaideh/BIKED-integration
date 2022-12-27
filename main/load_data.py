@@ -4,14 +4,12 @@ Created on Sun Jul 10 12:05:43 2022
 
 @author: Lyle
 """
-import os.path
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 from sklearn.preprocessing import StandardScaler
-import os
 
-FILE_PATH = os.path.dirname(__file__)
+from main.resource_paths import ALL_STRUCTURAL_DATASET
 
 
 def one_hot_encode_material(data):
@@ -25,7 +23,7 @@ def one_hot_encode_material(data):
 
 
 def load_augmented_framed_dataset():
-    reg_data = pd.read_csv(os.path.join(FILE_PATH, "resources/all_structural_data_aug.csv"), index_col=0)
+    reg_data = pd.read_csv(ALL_STRUCTURAL_DATASET, index_col=0)
 
     x = reg_data.iloc[:, :-11]
 
