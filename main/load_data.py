@@ -25,7 +25,7 @@ def one_hot_encode_material(data):
 
 
 def load_augmented_framed_dataset():
-    reg_data = pd.read_csv(os.path.join(FILE_PATH, "../resources/datasets/all_structural_data_aug.csv"), index_col=0)
+    reg_data = pd.read_csv(os.path.join(FILE_PATH, "resources/all_structural_data_aug.csv"), index_col=0)
 
     x = reg_data.iloc[:, :-11]
 

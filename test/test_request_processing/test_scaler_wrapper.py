@@ -8,7 +8,7 @@ from main.load_data import load_augmented_framed_dataset, one_hot_encode_materia
 from main.request_processing.scaler_wrapper import ScalerWrapper
 
 RESOURCES_FILE = os.path.join(os.path.dirname(__file__))
-RELATIVE_PATH = "../../resources/datasets/all_structural_data_aug.csv"
+RELATIVE_PATH = "../../main/resources/all_structural_data_aug.csv"
 
 
 class TestScalerWrapper(unittest.TestCase):
