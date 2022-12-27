@@ -1,12 +1,12 @@
 import logging
 
-from main.recommendation.recommendation_service_settings import RecommendationSettings
-from main.recommendation.recommendation_service import RecommendationService
-from main.xml_handler import XmlHandler
 import pandas as pd
 
-from request_processing.scaler_wrapper import ScalerWrapper
+from main.recommendation.recommendation_service import RecommendationService
+from main.recommendation.recommendation_service_settings import RecommendationSettings
+from main.request_processing.scaler_wrapper import ScalerWrapper
 from main.resource_paths import RECOMMENDATION_DATASET_PATH
+from main.xml_handler import XmlHandler
 
 SCALED_MEAN = 0
 
