@@ -1,22 +1,20 @@
+import __main__
 from typing import List
 
-from main.request_processing.request_processor_settings import RequestProcessorSettings
-from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
-from main.evaluation.MultilabelPredictor import MultilabelPredictor
-from main.request_processing.request_processor import RequestProcessor
-from main.request_processing.scaler_wrapper import ScalerWrapper
-from main.load_data import load_augmented_framed_dataset
-from main.xml_handler import XmlHandler
-import main.pandas_utility as pd_util
 import pandas as pd
-import __main__
-import os
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
+
+import main.pandas_utility as pd_util
+from main.evaluation.MultilabelPredictor import MultilabelPredictor
+from main.load_data import load_augmented_framed_dataset
+from main.request_processing.request_processor import RequestProcessor
+from main.request_processing.request_processor_settings import RequestProcessorSettings
+from main.request_processing.scaler_wrapper import ScalerWrapper
+from main.resource_paths import MODEL_PATH
+from main.xml_handler import XmlHandler
 
 SCALED_MEAN = 0
 
-RELATIVE_MODEL_PATH = "../../resources/models/Trained Models/AutogluonModels/ag-20220911_073209/"
-CONSISTENT_MODEL_PATH = os.path.join(os.path.dirname(__file__),
-                                     RELATIVE_MODEL_PATH)
 
 labels_inverted = ["Sim 1 Safety Factor",
                    "Sim 3 Safety Factor"]
@@ -94,7 +92,7 @@ class EvaluationService:
 
     def load_pickled_predictor(self):
         self.prepare_pickle()
-        return MultilabelPredictor.load(os.path.abspath(CONSISTENT_MODEL_PATH))
+        return MultilabelPredictor.load(MODEL_PATH)
 
     def prepare_pickle(self):
         # TODO: investigate why this needs to be done and what it implies
