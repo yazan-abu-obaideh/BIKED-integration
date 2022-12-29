@@ -1,30 +1,10 @@
-import enum
 import unittest
-
+from sample_request import request
 from main.evaluation.evaluation_service import DefaultAdapterSettings, EvaluationService
 
 SAFETY_3_INVERTED = 'Sim 3 Safety Factor (Inverted)'
 
 SAFETY_1_INVERTED = 'Sim 1 Safety Factor (Inverted)'
-
-#         self.expected_output = {'Model Mass Magnitude': 3.189100876474357,
-#                                 'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.012939156170363236,
-#                                 'Sim 1 Dropout X Disp. Magnitude': 0.011111431121145088,
-#                                 'Sim 1 Bottom Bracket X Disp. Magnitude': 0.012183772767391373,
-#                                 'Sim 1 Dropout Y Disp. Magnitude': 0.021787148423259715,
-#                                 'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0023485019730819755,
-#                                 'Sim 3 Bottom Bracket X Rot. Magnitude': 0.0063891630717543306,
-#                                 'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.01666142336216584,
-#                                 'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
-#                                 'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
-#         return ['Material=Steel', 'Material=Aluminum', 'Material=Titanium',
-#                 'SSB_Include', 'CSB_Include', 'CS Length', 'BB Drop',
-#                 'Stack', 'SS E', 'ST Angle', 'BB OD', 'TT OD', 'HT OD',
-#                 'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F', 'HT LX', 'ST UX',
-#                 'HT UX', 'HT Angle', 'HT Length', 'ST Length', 'BB Length',
-#                 'Dropout Offset', 'SSB OD', 'CSB OD', 'SSB Offset', 'CSB Offset',
-#                 'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
-#                 'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
 
 SIM_1_DEFLECTIONS = ['Sim 1 Bottom Bracket Y Disp. Magnitude',
                      'Sim 1 Dropout X Disp. Magnitude',
@@ -35,30 +15,43 @@ SIM_3_DEFLECTIONS = ['Sim 3 Bottom Bracket X Rot. Magnitude',
                      'Sim 3 Bottom Bracket Y Disp. Magnitude']
 DEFLECTIONS = SIM_1_DEFLECTIONS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS
 
-DIAMETERS = ['BB OD', 'TT OD', 'HT OD', 'DT OD', 'CS OD', 'SS OD', 'ST OD', 'SSB OD', 'CSB OD']
-THICKNESS = ['SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness', 'HT Thickness', 'ST Thickness',
-             'DT Thickness']
-DOWN_TUBE_LENGTH = ['DT Length']
-SAFETY_INVERTED = [SAFETY_1_INVERTED, SAFETY_3_INVERTED]
-MODEL_MASS = ['Model Mass Magnitude']
+DIAMETER_PARAMETERS = ['BB OD', 'TT OD', 'HT OD', 'DT OD', 'CS OD', 'SS OD', 'ST OD', 'SSB OD', 'CSB OD']
+THICKNESS_PARAMETERS = ['SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness', 'HT Thickness', 'ST Thickness',
+                        'DT Thickness']
+DOWN_TUBE_LENGTH_PARAMETERS = ['DT Length']
+SAFETY_INVERTED_PARAMETERS = [SAFETY_1_INVERTED, SAFETY_3_INVERTED]
+MODEL_MASS_PARAMETERS = ['Model Mass Magnitude']
 
 CHAIN_STAY_BRIDGE = ['CSB_Include']
 SEAT_STAY_BRIDGE = ['SSB_Include']
 STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 
-PROPORTIONAL = {
-    DIAMETERS: MODEL_MASS,
-    DOWN_TUBE_LENGTH: MODEL_MASS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS,
-    STAY_BRIDGES: SAFETY_3_INVERTED
-}
 
-INVERSELY_PROPORTIONAL = {
-    DIAMETERS: [SAFETY_INVERTED, SIM_2_DEFLECTIONS, SIM_3_DEFLECTIONS],
-    STAY_BRIDGES:
-        SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude']
-}
+def build_inner_dict(keys, values):
+    return {"keys": keys, "values": values}
+
+
+PROPORTIONAL = [
+    build_inner_dict(DIAMETER_PARAMETERS, MODEL_MASS_PARAMETERS),
+    build_inner_dict(DOWN_TUBE_LENGTH_PARAMETERS, MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS),
+    build_inner_dict(STAY_BRIDGES, SAFETY_3_INVERTED)
+]
+
+INVERSELY_PROPORTIONAL = [
+    build_inner_dict(DIAMETER_PARAMETERS, [SAFETY_INVERTED_PARAMETERS, SIM_2_DEFLECTIONS, SIM_3_DEFLECTIONS]),
+    build_inner_dict(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude'])
+]
 
 
 class ModelAcceptanceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.service = EvaluationService()
+
+    def test_alter_request(self):
+        alter_request = self.alter_request(request, MODEL_MASS_PARAMETERS, [5])
+        self.assertEqual(alter_request[MODEL_MASS_PARAMETERS[0]], 5)
+
+    def alter_request(self, request_, keys_to_alter, new_values):
+        for key, value in zip(keys_to_alter, new_values):
+            request_[key] = value
+        return request_
