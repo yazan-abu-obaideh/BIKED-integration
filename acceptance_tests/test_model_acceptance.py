@@ -3,6 +3,10 @@ import unittest
 
 from main.evaluation.evaluation_service import DefaultAdapterSettings, EvaluationService
 
+SAFETY_3_INVERTED = 'Sim 3 Safety Factor (Inverted)'
+
+SAFETY_1_INVERTED = 'Sim 1 Safety Factor (Inverted)'
+
 #         self.expected_output = {'Model Mass Magnitude': 3.189100876474357,
 #                                 'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.012939156170363236,
 #                                 'Sim 1 Dropout X Disp. Magnitude': 0.011111431121145088,
@@ -34,19 +38,23 @@ DEFLECTIONS = SIM_1_DEFLECTIONS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS
 DIAMETERS = ['BB OD', 'TT OD', 'HT OD', 'DT OD', 'CS OD', 'SS OD', 'ST OD', 'SSB OD', 'CSB OD']
 THICKNESS = ['SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness', 'HT Thickness', 'ST Thickness',
              'DT Thickness']
-SAFETY_INVERTED = ['Sim 1 Safety Factor (Inverted)', 'Sim 3 Safety Factor (Inverted)']
+DOWN_TUBE_LENGTH = ['DT Length']
+SAFETY_INVERTED = [SAFETY_1_INVERTED, SAFETY_3_INVERTED]
 MODEL_MASS = ['Model Mass Magnitude']
 
 CHAIN_STAY_BRIDGE = ['CSB_Include']
 SEAT_STAY_BRIDGE = ['SSB_Include']
+STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 
 PROPORTIONAL = {
-    DIAMETERS: [MODEL_MASS]
+    DIAMETERS: MODEL_MASS,
+    DOWN_TUBE_LENGTH: MODEL_MASS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS,
+    STAY_BRIDGES: SAFETY_3_INVERTED
 }
 
 INVERSELY_PROPORTIONAL = {
     DIAMETERS: [SAFETY_INVERTED, SIM_2_DEFLECTIONS, SIM_3_DEFLECTIONS],
-    CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE:
+    STAY_BRIDGES:
         SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude']
 }
 
