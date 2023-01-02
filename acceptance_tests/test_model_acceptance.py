@@ -27,19 +27,36 @@ SEAT_STAY_BRIDGE = ['SSB_Include']
 STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 
 
-def build_inner_dict(keys, values):
-    return {"keys": keys, "values": values}
+class Relationship:
+    pass
 
 
-PROPORTIONAL = [
-    build_inner_dict(DIAMETER_PARAMETERS, MODEL_MASS_PARAMETERS),
-    build_inner_dict(DOWN_TUBE_LENGTH_PARAMETERS, MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS),
-    build_inner_dict(STAY_BRIDGES, SAFETY_3_INVERTED)
+PROPORTIONAL = Relationship()
+INVERSE = Relationship()
+
+
+class RelationshipModel:
+    def __init__(self, keys, affected_values, relationship: Relationship):
+        self.keys = keys
+        self.affected_values = affected_values
+        self.relationship = relationship
+
+
+def build_inner_dict(keys, values, relationship):
+    return RelationshipModel(keys, values, relationship)
+
+
+PROPORTIONAL_LIST = [
+    build_inner_dict(DIAMETER_PARAMETERS,
+                     MODEL_MASS_PARAMETERS, PROPORTIONAL),
+    build_inner_dict(DOWN_TUBE_LENGTH_PARAMETERS,
+                     (MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS), PROPORTIONAL),
+    build_inner_dict(STAY_BRIDGES, SAFETY_3_INVERTED, PROPORTIONAL)
 ]
 
-INVERSELY_PROPORTIONAL = [
-    build_inner_dict(DIAMETER_PARAMETERS, [SAFETY_INVERTED_PARAMETERS, SIM_2_DEFLECTIONS, SIM_3_DEFLECTIONS]),
-    build_inner_dict(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude'])
+INVERSE_LIST = [
+    build_inner_dict(DIAMETER_PARAMETERS, [SAFETY_INVERTED_PARAMETERS, SIM_2_DEFLECTIONS, SIM_3_DEFLECTIONS], INVERSE),
+    build_inner_dict(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude'], INVERSE)
 ]
 
 
@@ -53,6 +70,12 @@ class ModelAcceptanceTest(unittest.TestCase):
     def test_alter_request(self):
         altered_request = self.alter_request(request, MODEL_MASS_PARAMETERS, [5])
         self.assertEqual(altered_request[MODEL_MASS_PARAMETERS[0]], 5)
+
+    def test_lists_built_correctly(self):
+        for relationship_model in PROPORTIONAL_LIST:
+            self.assertEqual(relationship_model.relationship, PROPORTIONAL)
+        for relationship_model in INVERSE_LIST:
+            self.assertEqual(relationship_model.relationship, INVERSE)
 
     def alter_request(self, request_, keys_to_alter, new_values):
         for key, value in zip(keys_to_alter, new_values):
