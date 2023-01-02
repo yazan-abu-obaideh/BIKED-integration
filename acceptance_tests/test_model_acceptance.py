@@ -44,12 +44,15 @@ INVERSELY_PROPORTIONAL = [
 
 
 class ModelAcceptanceTest(unittest.TestCase):
+
+    # TODO: we're going to want to report on the performance of the model - we want counts of failing bikes
+    # and we want to know by how much they're failing relative to the passing bikes
     def setUp(self) -> None:
         self.service = EvaluationService()
 
     def test_alter_request(self):
-        alter_request = self.alter_request(request, MODEL_MASS_PARAMETERS, [5])
-        self.assertEqual(alter_request[MODEL_MASS_PARAMETERS[0]], 5)
+        altered_request = self.alter_request(request, MODEL_MASS_PARAMETERS, [5])
+        self.assertEqual(altered_request[MODEL_MASS_PARAMETERS[0]], 5)
 
     def alter_request(self, request_, keys_to_alter, new_values):
         for key, value in zip(keys_to_alter, new_values):
