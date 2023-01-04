@@ -21,10 +21,10 @@ class RobotQaDepartment(unittest.TestCase):
         self.inverse_relationships.append(relationship)
 
     def execute_assertions(self):
-        self.execute_proportional(self.proportional_relationships, self.assertGreater)
-        self.execute_proportional(self.inverse_relationships, self.assertLess)
+        self.execute_for(self.proportional_relationships, self.assertGreater)
+        self.execute_for(self.inverse_relationships, self.assertLess)
 
-    def execute_proportional(self, relationships: list, assertion_function: callable):
+    def execute_for(self, relationships: list, assertion_function: callable):
         for relationship in relationships:
             for key in relationship.request_params:
                 for value in relationship.affected_response_parameters:
