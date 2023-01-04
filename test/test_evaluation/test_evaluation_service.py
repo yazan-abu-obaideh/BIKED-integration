@@ -154,7 +154,7 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertLess(mean_absolute_error, 0.055)
 
     def first_row_index(self, dataframe):
-        return dataframe.index.values[0]
+        return dataframe.index.affected_values[0]
 
     def get_first_row(self, dataframe):
         return dataframe[dataframe.index == self.first_row_index(dataframe)]
