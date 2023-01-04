@@ -68,7 +68,7 @@ class RecommendationServiceTest(unittest.TestCase):
         return pd_util.get_dict_from_row(self.dataset[self.dataset.index == index])
 
     def assertCorrectMatch(self, row, response, expected_distance):
-        for entry in row.keys():
+        for entry in row.request_params():
             self.assertEqual(row[entry], response[entry])
         self.assertEqual(response[DISTANCE], expected_distance)
 

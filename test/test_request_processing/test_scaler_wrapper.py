@@ -58,7 +58,7 @@ class TestScalerWrapper(unittest.TestCase):
         unscaled_once = self.request_scaler.unscale(scaled_once)
         unscaled_twice = self.request_scaler.unscale(self.request_scaler.scale(unscaled_once))
         scaled_twice = self.request_scaler.scale(unscaled_twice)
-        for key in self.first_scaled.keys():
+        for key in self.first_scaled.request_params():
             self.assertAlmostEqual(scaled_twice[key], self.first_scaled[key], 10)
 
     def get_input_dict(self):

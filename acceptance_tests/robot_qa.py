@@ -2,9 +2,9 @@ import unittest
 
 
 class Relationship:
-    def __init__(self, keys: list, affected_values: list):
-        self.keys = keys
-        self.affected_values = affected_values
+    def __init__(self, request_parameters: list, affected_values: list):
+        self.request_params = request_parameters
+        self.affected_response_parameters = affected_values
 
 
 class RobotQaDepartment(unittest.TestCase):
@@ -26,8 +26,8 @@ class RobotQaDepartment(unittest.TestCase):
 
     def execute_proportional(self, relationships: list, assertion_function: callable):
         for relationship in relationships:
-            for key in relationship.keys:
-                for value in relationship.affected_values:
+            for key in relationship.request_params:
+                for value in relationship.affected_response_parameters:
                     base_request = self.request()
                     old_response = self.processing_function(base_request)
                     base_request[key] += 1
@@ -44,7 +44,7 @@ class RobotQaTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.robot_qa = RobotQaDepartment(self.process)
-        self.robot_qa.add_proportional_relationship(Relationship(keys=['a1', 'a2', 'd2'], affected_values=['sum']))
+        self.robot_qa.add_proportional_relationship(Relationship(request_parameters=['a1', 'a2', 'd2'], affected_values=['sum']))
         self.robot_qa.add_proportional_relationship(Relationship(['d1', 'a1'], ['division']))
         self.robot_qa.add_inverse_relationship(Relationship(['d2', 'a2'], ['division']))
 
