@@ -52,8 +52,14 @@ class RobotQaTest(unittest.TestCase):
         request = self.robot_qa.request()
         self.assertIsNot(request, self.robot_qa.request())
 
-    def test_qa(self):
+    def test_qa_passes(self):
         self.robot_qa.execute_assertions()
+
+    def test_qa_catches_errors(self):
+        self.robot_qa.processing_function = lambda x: {"sum": x['a1'] + x['a2'] + x['d2'],
+                                                       "division": (x['d2'] + x['a1'])/(x['d2'] + x['a2'])}
+        with self.assertRaises(expected_exception=AssertionError) as context:
+            self.robot_qa.execute_assertions()
 
     def request(self):
         return {
