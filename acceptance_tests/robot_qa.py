@@ -1,3 +1,4 @@
+import copy
 import unittest
 
 
@@ -11,6 +12,7 @@ class RobotQaDepartment(unittest.TestCase):
     def __init__(self, processing_function):
         super().__init__()
         self.processing_function = processing_function
+        self.__immutable_request = None
         self.proportional_relationships = []
         self.inverse_relationships = []
 
@@ -28,36 +30,45 @@ class RobotQaDepartment(unittest.TestCase):
         for relationship in relationships:
             for key in relationship.request_params:
                 for value in relationship.affected_response_parameters:
-                    base_request = self.request()
+                    base_request = self.get_request()
                     old_response = self.processing_function(base_request)
                     base_request[key] += 1
                     assertion_function(self.processing_function(base_request)[value], old_response[value])
 
-    def request(self):
-        return {
-            "a1": 5, "a2": 10,
-            "d1": 10, "d2": 2
-        }
+    def get_request(self):
+        return copy.deepcopy(self.__immutable_request)
+
+    def set_request(self, param):
+        self.__immutable_request = param
 
 
 class RobotQaTest(unittest.TestCase):
 
     def setUp(self) -> None:
         self.robot_qa = RobotQaDepartment(self.process)
-        self.robot_qa.add_proportional_relationship(Relationship(request_parameters=['a1', 'a2', 'd2'], affected_values=['sum']))
+        self.robot_qa.set_request({
+            "a1": 6, "a2": 10,
+            "d1": 10, "d2": 2
+        })
+        self.robot_qa.add_proportional_relationship(
+            Relationship(request_parameters=['a1', 'a2', 'd2'], affected_values=['sum']))
         self.robot_qa.add_proportional_relationship(Relationship(['d1', 'a1'], ['division']))
         self.robot_qa.add_inverse_relationship(Relationship(['d2', 'a2'], ['division']))
 
     def test_request_immutable(self):
-        request = self.robot_qa.request()
-        self.assertIsNot(request, self.robot_qa.request())
+        request = self.robot_qa.get_request()
+        self.assertIsNot(request, self.robot_qa.get_request())
+        self.assertEqual({
+            "a1": 6, "a2": 10,
+            "d1": 10, "d2": 2
+        }, request)
 
     def test_qa_passes(self):
         self.robot_qa.execute_assertions()
 
     def test_qa_catches_errors(self):
         self.robot_qa.processing_function = lambda x: {"sum": x['a1'] + x['a2'] + x['d2'],
-                                                       "division": (x['d2'] + x['a1'])/(x['d2'] + x['a2'])}
+                                                       "division": (x['d2'] + x['a1']) / (x['d2'] + x['a2'])}
         with self.assertRaises(expected_exception=AssertionError) as context:
             self.robot_qa.execute_assertions()
 
