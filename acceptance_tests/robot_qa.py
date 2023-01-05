@@ -28,12 +28,15 @@ class RobotQaDepartment(unittest.TestCase):
 
     def __execute_for(self, relationships: list, assertion_function: callable):
         for relationship in relationships:
-            for key in relationship.request_params:
-                for value in relationship.affected_response_parameters:
-                    base_request = self.get_request()
-                    old_response = self.processing_function(base_request)
-                    base_request[key] += 1
-                    assertion_function(self.processing_function(base_request)[value], old_response[value])
+            self.__process_relationship(relationship, assertion_function)
+
+    def __process_relationship(self, relationship, assertion_function):
+        for key in relationship.request_params:
+            for value in relationship.affected_response_parameters:
+                base_request = self.get_request()
+                old_response = self.processing_function(base_request)
+                base_request[key] += 1
+                assertion_function(self.processing_function(base_request)[value], old_response[value])
 
     def get_request(self):
         mutable_request = copy.deepcopy(self.base_request)
