@@ -12,7 +12,7 @@ class RobotQaDepartment(unittest.TestCase):
     def __init__(self, processing_function):
         super().__init__()
         self.processing_function = processing_function
-        self.__immutable_request = None
+        self.base_request = None
         self.proportional_relationships = []
         self.inverse_relationships = []
 
@@ -36,10 +36,11 @@ class RobotQaDepartment(unittest.TestCase):
                     assertion_function(self.processing_function(base_request)[value], old_response[value])
 
     def get_request(self):
-        return copy.deepcopy(self.__immutable_request)
+        mutable_request = copy.deepcopy(self.base_request)
+        return mutable_request
 
-    def set_request(self, param):
-        self.__immutable_request = param
+    def set_request(self, base_request):
+        self.base_request = base_request
 
 
 class RobotQaTest(unittest.TestCase):
@@ -55,7 +56,7 @@ class RobotQaTest(unittest.TestCase):
         self.robot_qa.add_proportional_relationship(Relationship(['d1', 'a1'], ['division']))
         self.robot_qa.add_inverse_relationship(Relationship(['d2', 'a2'], ['division']))
 
-    def test_request_immutable(self):
+    def test_base_request_constant(self):
         request = self.robot_qa.get_request()
         self.assertIsNot(request, self.robot_qa.get_request())
         self.assertEqual({
