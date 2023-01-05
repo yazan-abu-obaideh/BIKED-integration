@@ -8,6 +8,12 @@ class Relationship:
         self.affected_response_parameters = affected_values
 
 
+class Attempt:
+    def __init__(self):
+        self.successful = False
+        self.assertion = None
+
+
 class RobotQaDepartment(unittest.TestCase):
     def __init__(self, processing_function):
         super().__init__()
