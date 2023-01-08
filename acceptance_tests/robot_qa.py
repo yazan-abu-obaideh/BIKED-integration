@@ -17,6 +17,7 @@ class Attempt:
 class RobotQaDepartment(unittest.TestCase):
     def __init__(self, processing_function):
         super().__init__()
+        self.successful_executions = []
         self.reported_errors = []
         self.processing_function = processing_function
         self.base_request = None
@@ -32,18 +33,20 @@ class RobotQaDepartment(unittest.TestCase):
     def execute_assertions(self):
         self.__execute_for(self.proportional_relationships, self.report_assertGreater)
         self.__execute_for(self.inverse_relationships, self.report_assertLess)
+        return self.successful_executions, self.reported_errors
 
     def report_assertGreater(self, a, b):
-        self.report_assert(self.assertGreater, a, b)
+        return self.does_pass(self.assertGreater, a, b)
 
     def report_assertLess(self, a, b):
-        self.report_assert(self.assertLess, a, b)
+        return self.does_pass(self.assertLess, a, b)
 
-    def report_assert(self, assertion_function, a, b):
+    def does_pass(self, assertion_function, a, b):
         try:
             assertion_function(a, b)
-        except AssertionError as error:
-            self.reported_errors.append(error)
+            return True
+        except AssertionError:
+            return False
 
     def get_request(self):
         mutable_request = copy.deepcopy(self.base_request)
@@ -62,7 +65,13 @@ class RobotQaDepartment(unittest.TestCase):
                 base_request = self.get_request()
                 old_response = self.processing_function(base_request)
                 base_request[key] += 1
-                assertion_function(self.processing_function(base_request)[value], old_response[value])
+                passed = assertion_function(self.processing_function(base_request)[value], old_response[value])
+                if passed:
+                    self.successful_executions.append({"request_param": key,
+                                                       "response_param": value})
+                else:
+                    self.reported_errors.append({"request_param": key,
+                                                 "response_param": value})
 
 
 class RobotQaTest(unittest.TestCase):
@@ -87,14 +96,16 @@ class RobotQaTest(unittest.TestCase):
         }, request)
 
     def test_qa_passes(self):
-        self.robot_qa.execute_assertions()
-        self.assertEqual(len(self.robot_qa.reported_errors), 0)
+        successful, errors = self.robot_qa.execute_assertions()
+        self.assertEqual(len(successful), 7)
+        self.assertEqual(len(errors), 0)
 
     def test_qa_reports_errors(self):
         self.robot_qa.processing_function = lambda x: {"sum": x['a1'] + x['a2'] + x['d2'],
                                                        "division": (x['d2'] + x['a1']) / (x['d2'] + x['a2'])}
         self.assertEqual(len(self.robot_qa.reported_errors), 0)
         self.robot_qa.execute_assertions()
+        self.assertEqual(len(self.robot_qa.successful_executions), 5)
         self.assertEqual(len(self.robot_qa.reported_errors), 2)
 
     def request(self):
