@@ -30,12 +30,13 @@ STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 
 service = EvaluationService()
 
-qa = RobotQaDepartment(processing_function=service.predict_from_dict)
+
+qa = RobotQaDepartment(processing_function=service.predict_from_dict, preprocessing_function=service.adapter.convert_dict)
 
 SETTINGS = DefaultAdapterSettings()
 reversed_map = {value: key for key, value in SETTINGS.bikeCad_to_model_map().items()}
 def build_relationship(request_parameters, response_parameters):
-    return Relationship(request_parameters=[reversed_map[key] for key in request_parameters], affected_values=response_parameters)
+    return Relationship(request_parameters=[key for key in request_parameters], affected_values=response_parameters)
 
 
 qa.add_proportional_relationship(build_relationship(DIAMETER_PARAMETERS, MODEL_MASS_PARAMETERS))
