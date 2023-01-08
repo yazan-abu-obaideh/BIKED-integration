@@ -15,8 +15,9 @@ class Attempt:
 
 
 class RobotQaDepartment(unittest.TestCase):
-    def __init__(self, processing_function):
+    def __init__(self, processing_function, preprocessing_function):
         super().__init__()
+        self.preprocessing_function = preprocessing_function
         self.successful_executions = []
         self.reported_errors = []
         self.processing_function = processing_function
@@ -62,7 +63,7 @@ class RobotQaDepartment(unittest.TestCase):
     def __process_relationship(self, relationship, assertion_function):
         for key in relationship.request_params:
             for value in relationship.affected_response_parameters:
-                base_request = self.get_request()
+                base_request = self.preprocessing_function(self.get_request())
                 old_response = self.processing_function(base_request)
                 base_request[key] = float(base_request[key]) + 1
                 passed = assertion_function(self.processing_function(base_request)[value], old_response[value])
@@ -77,7 +78,7 @@ class RobotQaDepartment(unittest.TestCase):
 class RobotQaTest(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.robot_qa = RobotQaDepartment(self.process)
+        self.robot_qa = RobotQaDepartment(self.process, lambda x: x)
         self.robot_qa.set_request({
             "a1": 6, "a2": 10,
             "d1": 10, "d2": 2
