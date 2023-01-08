@@ -1,6 +1,8 @@
 import unittest
 from sample_request import request
-from main.evaluation.evaluation_service import DefaultAdapterSettings, EvaluationService
+from main.evaluation.evaluation_service import EvaluationService
+from acceptance_tests.robot_qa import RobotQaDepartment
+from acceptance_tests.robot_qa import Relationship
 
 SAFETY_3_INVERTED = 'Sim 3 Safety Factor (Inverted)'
 
@@ -26,58 +28,27 @@ CHAIN_STAY_BRIDGE = ['CSB_Include']
 SEAT_STAY_BRIDGE = ['SSB_Include']
 STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 
+service = EvaluationService()
 
-class Relationship:
-    pass
+qa = RobotQaDepartment(processing_function=service.predict_from_dict)
 
+qa.add_proportional_relationship(
+    Relationship(request_parameters=DIAMETER_PARAMETERS, affected_values=MODEL_MASS_PARAMETERS))
+qa.add_proportional_relationship(
+    Relationship(request_parameters=DOWN_TUBE_LENGTH_PARAMETERS,
+                 affected_values=MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
+qa.add_proportional_relationship(
+    Relationship(request_parameters=STAY_BRIDGES, affected_values=[SAFETY_3_INVERTED]))
 
-PROPORTIONAL = Relationship()
-INVERSE = Relationship()
+qa.add_inverse_relationship(Relationship(DIAMETER_PARAMETERS, SAFETY_INVERTED_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
+qa.add_inverse_relationship(Relationship(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude']))
 
-
-class RelationshipModel:
-    def __init__(self, keys, affected_values, relationship: Relationship):
-        self.keys = keys
-        self.affected_values = affected_values
-        self.relationship = relationship
-
-
-def build_inner_dict(keys, values, relationship):
-    return RelationshipModel(keys, values, relationship)
-
-
-PROPORTIONAL_LIST = [
-    build_inner_dict(DIAMETER_PARAMETERS,
-                     MODEL_MASS_PARAMETERS, PROPORTIONAL),
-    build_inner_dict(DOWN_TUBE_LENGTH_PARAMETERS,
-                     (MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS), PROPORTIONAL),
-    build_inner_dict(STAY_BRIDGES, SAFETY_3_INVERTED, PROPORTIONAL)
-]
-
-INVERSE_LIST = [
-    build_inner_dict(DIAMETER_PARAMETERS, [SAFETY_INVERTED_PARAMETERS, SIM_2_DEFLECTIONS, SIM_3_DEFLECTIONS], INVERSE),
-    build_inner_dict(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude'], INVERSE)
-]
 
 
 class ModelAcceptanceTest(unittest.TestCase):
+    def test_acceptance(self):
+        qa.set_request(request)
+        qa.execute_assertions()
+        print(qa.successful_executions)
+        print(qa.reported_errors)
 
-    # TODO: we're going to want to report on the performance of the model - we want counts of failing bikes
-    # and we want to know by how much they're failing relative to the passing bikes
-    def setUp(self) -> None:
-        self.service = EvaluationService()
-
-    def test_alter_request(self):
-        altered_request = self.alter_request(request, MODEL_MASS_PARAMETERS, [5])
-        self.assertEqual(altered_request[MODEL_MASS_PARAMETERS[0]], 5)
-
-    def test_lists_built_correctly(self):
-        for relationship_model in PROPORTIONAL_LIST:
-            self.assertEqual(relationship_model.relationship, PROPORTIONAL)
-        for relationship_model in INVERSE_LIST:
-            self.assertEqual(relationship_model.relationship, INVERSE)
-
-    def alter_request(self, request_, keys_to_alter, new_values):
-        for key, value in zip(keys_to_alter, new_values):
-            request_[key] = value
-        return request_
