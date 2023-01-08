@@ -18,7 +18,7 @@ class RequestProcessorTest(unittest.TestCase):
         self.assertEqual(5, actual)
 
     def test_does_ignore(self):
-        self.assertTrue("irrelevant" not in self.result_dict.request_params())
+        self.assertTrue("irrelevant" not in self.result_dict)
 
     def test_special_behavior(self):
         self.assertEqual(self.result_dict["Material=Steel"], 1)
