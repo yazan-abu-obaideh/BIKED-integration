@@ -88,6 +88,7 @@ class RobotQaTest(unittest.TestCase):
 
     def test_qa_passes(self):
         self.robot_qa.execute_assertions()
+        self.assertEqual(len(self.robot_qa.reported_errors), 0)
 
     def test_qa_reports_errors(self):
         self.robot_qa.processing_function = lambda x: {"sum": x['a1'] + x['a2'] + x['d2'],
