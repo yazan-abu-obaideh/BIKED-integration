@@ -1,6 +1,6 @@
 import unittest
 from sample_request import request
-from main.evaluation.evaluation_service import EvaluationService
+from main.evaluation.evaluation_service import EvaluationService, DefaultAdapterSettings
 from acceptance_tests.robot_qa import RobotQaDepartment
 from acceptance_tests.robot_qa import Relationship
 
@@ -32,16 +32,18 @@ service = EvaluationService()
 
 qa = RobotQaDepartment(processing_function=service.predict_from_dict)
 
-qa.add_proportional_relationship(
-    Relationship(request_parameters=DIAMETER_PARAMETERS, affected_values=MODEL_MASS_PARAMETERS))
-qa.add_proportional_relationship(
-    Relationship(request_parameters=DOWN_TUBE_LENGTH_PARAMETERS,
-                 affected_values=MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
-qa.add_proportional_relationship(
-    Relationship(request_parameters=STAY_BRIDGES, affected_values=[SAFETY_3_INVERTED]))
+SETTINGS = DefaultAdapterSettings()
+reversed_map = {value: key for key, value in SETTINGS.bikeCad_to_model_map().items()}
+def build_relationship(request_parameters, response_parameters):
+    return Relationship(request_parameters=[reversed_map[key] for key in request_parameters], affected_values=response_parameters)
 
-qa.add_inverse_relationship(Relationship(DIAMETER_PARAMETERS, SAFETY_INVERTED_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
-qa.add_inverse_relationship(Relationship(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude']))
+
+qa.add_proportional_relationship(build_relationship(DIAMETER_PARAMETERS, MODEL_MASS_PARAMETERS))
+qa.add_proportional_relationship(build_relationship(DOWN_TUBE_LENGTH_PARAMETERS, MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
+qa.add_proportional_relationship(build_relationship(STAY_BRIDGES, [SAFETY_3_INVERTED]))
+
+qa.add_inverse_relationship(build_relationship(DIAMETER_PARAMETERS, SAFETY_INVERTED_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
+qa.add_inverse_relationship(build_relationship(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude']))
 
 
 

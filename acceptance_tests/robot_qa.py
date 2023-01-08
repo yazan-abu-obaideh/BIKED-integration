@@ -64,7 +64,7 @@ class RobotQaDepartment(unittest.TestCase):
             for value in relationship.affected_response_parameters:
                 base_request = self.get_request()
                 old_response = self.processing_function(base_request)
-                base_request[key] += 1
+                base_request[key] = float(base_request[key]) + 1
                 passed = assertion_function(self.processing_function(base_request)[value], old_response[value])
                 if passed:
                     self.successful_executions.append({"request_param": key,
