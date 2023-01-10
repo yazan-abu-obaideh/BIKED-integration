@@ -48,6 +48,7 @@ class BikeRecommendationService:
 
     def __init__(self, settings: RecommendationSettings = DEFAULT_SETTINGS,
                  data_file_path=RECOMMENDATION_DATASET_PATH):
+        # LOAD INDICES
         dataframe = pd.read_csv(data_file_path)
         dataframe.drop(columns=dataframe.columns.difference(settings.include()), inplace=True)
         self.scaler = ScalerWrapper.build_from_dataframe(dataframe)

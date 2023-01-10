@@ -195,7 +195,7 @@ request = {'LOWEROUTLINETOPTUBE2 color GREEN': '0', 'LOWEROUTLINETOPTUBE1 color 
            'DECAL_Font styleTOPTUBE1': '2', 'SEATSTAYLENGTH show': 'false', 'RACK_EYELET_ANGLE offset': '95.0',
            'NOTES color GREEN': '0', 'nCSAUXr offsetX': '0.0', 'SEATTUBECY2': '0.0', 'BOTTLE_BOSS2Bb offset': '0.0',
            'SEATTUBECY1': '50.0', 'TIRES color GREEN': '0', 'CHAINSTAYENDZ show': 'false',
-           'Seat tube diameter textfield': '34.0', 'SADDLETIP_TO_BRAKE_HOOD_PROJECTED offset': '0.0',
+           'Seat tube diameter': '34.0', 'SADDLETIP_TO_BRAKE_HOOD_PROJECTED offset': '0.0',
            'EXTLINES color ALPHA': '255', 'SEATTUBEC offset': '0.0', 'BOTTLE_BOSS2Ab show': 'false',
            'NOTES color IMAGEaspectR': 'false', 'nSEATSTAY_J show': 'false', 'BOTTLE_BOSS1B offsetX': '0.0',
            'BOTTLE_TOPS color IMAGEaspectR': 'false', 'HBAREXTEND offsetX': '0.0',
