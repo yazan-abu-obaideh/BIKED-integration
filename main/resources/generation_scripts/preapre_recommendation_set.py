@@ -11,6 +11,6 @@ yes = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield"
        "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN", "Number of cogs",
        "Number of chainrings"]
 
-data = pd.read_csv("BIKED_raw.csv")
+data = pd.read_csv("../large/BIKED_raw.csv", index_col=0)
 data.drop(columns=data.columns.difference(yes + maybe), inplace=True)
 data.to_csv("BIKED_recommend.csv")
