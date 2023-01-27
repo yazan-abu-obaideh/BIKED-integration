@@ -1,4 +1,5 @@
 import logging
+import os.path
 
 import pandas as pd
 
@@ -100,3 +101,9 @@ class BikeRecommendationService:
             return float(f)
         except ValueError:
             return 0
+
+    def grab_bike_file(self, bike_index):
+        with open(os.path.join(os.path.dirname(__file__),
+                               f"../resources/large/bikecad files/({bike_index}).bcad"),
+                  "r") as file:
+            return file.read()
