@@ -18,21 +18,20 @@ class RecommendationService:
     def get_closest_index_to(self, user_entry_dict):
         return self.get_closest_n_indexes(user_entry_dict, 1)[0]
 
-
     def get_closest_n(self, user_entry: dict, n: int):
-        self.validate(n, user_entry)
+        return self.__get_closest(n, user_entry,
+                                  lambda smallest_n_rows:
+                                  [pd_util.get_dict_from_row(smallest_n_rows.iloc[i: i + 1]) for i in range(n)])
 
-        self.calculate_distances(user_entry)
-        smallest_n = self.data.sort_values(by=DISTANCE)[:n]
-        responses = [pd_util.get_dict_from_row(smallest_n.iloc[i: i + 1]) for i in range(n)]
-        self.remove_distance_column()
-        return responses
     def get_closest_n_indexes(self, user_entry: dict, n: int):
-        self.validate(n, user_entry)
+        return self.__get_closest(n, user_entry, lambda smallest_n_rows:
+        [smallest_n_rows.index[i] for i in range(n)])
 
+    def __get_closest(self, n, user_entry, response_builder):
+        self.validate(n, user_entry)
         self.calculate_distances(user_entry)
         smallest_n = self.data.sort_values(by=DISTANCE)[:n]
-        responses = [smallest_n.index[i] for i in range(n)]
+        responses = response_builder(smallest_n)
         self.remove_distance_column()
         return responses
 
@@ -71,7 +70,6 @@ class RecommendationService:
         for (key, first_value), (_, second_value) in zip(first_entry.items(), second_entry.items()):
             deltas.append(self.weigh_delta((first_value - second_value), key))
         return deltas
-
 
     def weigh_delta(self, delta, key):
         return delta * (self.pre_normalize_weight(key))
