@@ -15,12 +15,24 @@ class RecommendationService:
     def get_closest_to(self, user_entry_dict):
         return self.get_closest_n(user_entry_dict, 1)[0]
 
+    def get_closest_index_to(self, user_entry_dict):
+        return self.get_closest_n_indexes(user_entry_dict, 1)[0]
+
+
     def get_closest_n(self, user_entry: dict, n: int):
         self.validate(n, user_entry)
 
         self.calculate_distances(user_entry)
         smallest_n = self.data.sort_values(by=DISTANCE)[:n]
         responses = [pd_util.get_dict_from_row(smallest_n.iloc[i: i + 1]) for i in range(n)]
+        self.remove_distance_column()
+        return responses
+    def get_closest_n_indexes(self, user_entry: dict, n: int):
+        self.validate(n, user_entry)
+
+        self.calculate_distances(user_entry)
+        smallest_n = self.data.sort_values(by=DISTANCE)[:n]
+        responses = [smallest_n.index[i] for i in range(n)]
         self.remove_distance_column()
         return responses
 

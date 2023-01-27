@@ -5,8 +5,6 @@ import pandas as pd
 import unittest
 import os
 
-
-
 TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__),
                                           "../resources/simple_distance_set.csv")
 
@@ -33,6 +31,16 @@ class RecommendationServiceTest(unittest.TestCase):
 
     def test_order_does_not_matter(self):
         self.assertEqual(self.service.get_distance_between({"x": 1, "y": 0}, {"y": 0, "x": 1}), 0)
+
+    def test_get_closest_indexes(self):
+        user_entry = {"x": 1, "y": 1, "z": 1}
+
+        self.assertEqual(3, self.service.get_closest_index_to(user_entry))
+
+        n_indexes = self.service.get_closest_n_indexes(user_entry, n=2)
+
+        self.assertEqual(3, n_indexes[0])
+        self.assertEqual(4, n_indexes[1])
 
     def test_get_closest_n(self):
         user_entry = {"x": 1, "y": 1, "z": 1}
@@ -63,7 +71,6 @@ class RecommendationServiceTest(unittest.TestCase):
         self.assertCorrectMatch(last, self.service.get_closest_to(second_user_entry),
                                 expected_distance=0.07141428428542856)
 
-
     def get_by_index(self, index):
         return pd_util.get_dict_from_row(self.dataset[self.dataset.index == index])
 
@@ -76,7 +83,7 @@ class RecommendationServiceTest(unittest.TestCase):
 class TestSettings(RecommendationSettings):
     MAX_N = 5
     WEIGHTS = {}
-    INCLUDE=["x", "y", "z"]
+    INCLUDE = ["x", "y", "z"]
 
     def include(self) -> list:
         return self.INCLUDE
