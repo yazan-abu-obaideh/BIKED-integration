@@ -50,6 +50,9 @@ class RecommendationServiceTest(unittest.TestCase):
         self.assertCorrectMatch(self.get_by_index(4),
                                 second_response, expected_distance=0)
 
+    def test_replace_non_numerical_with_default(self):
+        assert False
+
     def test_get_distance_between(self):
         self.assertEqual(5, self.service.get_distance_between({"x": 0, "y": 0}, {"x": 3, "y": 4}))
 
