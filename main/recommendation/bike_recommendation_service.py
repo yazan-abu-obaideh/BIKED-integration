@@ -54,7 +54,7 @@ class BikeRecommendationService:
         dataframe.drop(columns=dataframe.columns.difference(settings.include()), inplace=True)
         self.scaler = ScalerWrapper.build_from_dataframe(dataframe)
         self.inner_service = RecommendationService(
-            self.scaler.scale_dataframe(dataframe).fillna(value=0),
+            self.scaler.scale_dataframe(dataframe).fillna(value=SCALED_MEAN),
             settings)
         self.xml_handler = XmlHandler()
         # TODO: aspect-oriented programming.
