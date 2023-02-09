@@ -17,6 +17,9 @@ class RecommendationServiceTest(unittest.TestCase):
             recommended_bike = self.service.recommend_bike(bike_in_request)
         self.assertEqual(bike_in_request, recommended_bike)
 
+    def test_replace_with_default(self):
+        assert False
+
     def test_grab_bike_file(self):
         bike_file = self.service.grab_bike_file(1)
         self.xml_handler.set_xml(bike_file)
