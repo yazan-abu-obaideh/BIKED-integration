@@ -19,4 +19,4 @@ for filename in os.listdir("../large/bikecad files"):
         dataframe = pd.concat([pd_util.get_row_from_dict(entries_dict), dataframe])
 
 generated_dataframe = dataframe.set_index(FILENAME_KEY)
-generated_dataframe.to_csv("RECOMMENDATION_SET.csv")
+generated_dataframe.to_csv(path_or_buf="../generated/BIKED_recommend.csv")
