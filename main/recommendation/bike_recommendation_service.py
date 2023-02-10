@@ -9,6 +9,10 @@ from main.request_processing.scaler_wrapper import ScalerWrapper
 from main.resource_paths import RECOMMENDATION_DATASET_PATH
 from main.xml_handler import XmlHandler
 
+INVALID_TO_NAN = 'coerce'
+
+FILENAME = 'filename'
+
 SCALED_MEAN = 0
 
 
@@ -49,20 +53,25 @@ class BikeRecommendationService:
 
     def __init__(self, settings: RecommendationSettings = DEFAULT_SETTINGS,
                  data_file_path=RECOMMENDATION_DATASET_PATH):
-        # LOAD INDICES
-        dataframe = pd.read_csv(data_file_path)
-        dataframe.set_index('filename', inplace=True)
-        dataframe.drop(columns=dataframe.columns.difference(settings.include() + ['filename']), inplace=True)
-        for column in dataframe.columns.values:
-            if column != "filename":
-                dataframe[column] = pd.to_numeric(dataframe[column], errors='coerce')
-        self.scaler = ScalerWrapper.build_from_dataframe(dataframe)
-        self.inner_service = RecommendationService(
-            self.scaler.scale_dataframe(dataframe).fillna(value=SCALED_MEAN),
-            settings)
+        self.scaler = None
+        prepared_dataframe = self.prepare_dataframe_and_scaler(data_file_path, settings)
+        self.inner_service = RecommendationService(prepared_dataframe, settings)
         self.xml_handler = XmlHandler()
         # TODO: aspect-oriented programming.
         self.log_initialization()
+
+    def prepare_dataframe_and_scaler(self, data_file_path, settings):
+        dataframe = pd.read_csv(data_file_path)
+        dataframe.set_index(FILENAME, inplace=True)
+        dataframe.drop(columns=dataframe.columns.difference(settings.include() + [FILENAME]), inplace=True)
+        self.to_numeric_except_index(dataframe)
+        self.scaler = ScalerWrapper.build_from_dataframe(dataframe)
+        return self.scaler.scale_dataframe(dataframe).fillna(value=SCALED_MEAN)
+
+    def to_numeric_except_index(self, dataframe):
+        for column in dataframe.columns.values:
+            if column != FILENAME:
+                dataframe[column] = pd.to_numeric(dataframe[column], errors=INVALID_TO_NAN)
 
     def log_initialization(self):
         desired = self.inner_service.settings.include()
@@ -98,6 +107,7 @@ class BikeRecommendationService:
         default_function = lambda x: float(x)
         function = self.enumeration_function_map.get(value, default_function)
         return function(value)
+
     def default_to_mean(self, scaled_user_entry):
         for key in self.inner_service.settings.include():
             if key not in scaled_user_entry:
