@@ -33,9 +33,9 @@ class XmlHandlerTest(unittest.TestCase):
         stuff_entry = self.get_stuff_entry()
         ready_entry = self.get_ready_entry()
         none_entry = self.xml_handler.find_entry_by_key("does not exist")
-        assert ready_entry.__str__() == '<entry key="ready">3</entry>'
-        assert stuff_entry.__str__() == '<entry key="stuff">5</entry>'
-        assert none_entry is None
+        self.assertEqual(ready_entry.__str__(), '<entry key="ready">3</entry>')
+        self.assertEqual(stuff_entry.__str__(), '<entry key="stuff">5</entry>')
+        self.assertIsNone(none_entry)
 
     def test_can_update_entry(self):
         new_stuff_key = "new_stuff"
