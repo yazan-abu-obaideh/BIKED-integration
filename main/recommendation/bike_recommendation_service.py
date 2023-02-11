@@ -1,4 +1,3 @@
-import logging
 import os.path
 
 import pandas as pd
@@ -57,8 +56,7 @@ class BikeRecommendationService:
         prepared_dataframe = self.prepare_dataframe_and_scaler(data_file_path, settings)
         self.inner_service = RecommendationService(prepared_dataframe, settings)
         self.xml_handler = XmlHandler()
-        # TODO: aspect-oriented programming.
-        self.log_initialization()
+        self.raise_if_invalid_configuration()
 
     def prepare_dataframe_and_scaler(self, data_file_path, settings):
         dataframe = pd.read_csv(data_file_path)
@@ -73,13 +71,12 @@ class BikeRecommendationService:
             if column != FILENAME:
                 dataframe[column] = pd.to_numeric(dataframe[column], errors=INVALID_TO_NAN)
 
-    def log_initialization(self):
+    def raise_if_invalid_configuration(self):
         desired = self.inner_service.settings.include()
         actual = self.inner_service.data.columns.values
         if not set(desired).issubset(set(actual)):
-            logging.log(level=logging.CRITICAL,
-                        msg="WARNING: BikeRecommendationService configured incorrectly." +
-                            " Columns included in the settings do not match dataset columns.")
+            raise SystemError("BikeRecommendationService configured incorrectly. "
+                              "Columns included in the settings do not match dataset columns.")
 
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)
