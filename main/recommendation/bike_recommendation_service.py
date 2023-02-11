@@ -8,7 +8,7 @@ from main.request_processing.scaler_wrapper import ScalerWrapper
 from main.resource_paths import RECOMMENDATION_DATASET_PATH
 from main.xml_handler import XmlHandler
 
-INVALID_TO_NAN = 'coerce'
+SET_INVALID_TO_NAN = 'coerce'
 
 FILENAME = 'filename'
 
@@ -69,7 +69,7 @@ class BikeRecommendationService:
     def to_numeric_except_index(self, dataframe):
         for column in dataframe.columns.values:
             if column != FILENAME:
-                dataframe[column] = pd.to_numeric(dataframe[column], errors=INVALID_TO_NAN)
+                dataframe[column] = pd.to_numeric(dataframe[column], errors=SET_INVALID_TO_NAN)
 
     def raise_if_invalid_configuration(self):
         desired = self.inner_service.settings.include()

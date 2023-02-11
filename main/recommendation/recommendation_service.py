@@ -19,19 +19,18 @@ class RecommendationService:
         return self.get_closest_n_indexes(user_entry_dict, 1)[0]
 
     def get_closest_n(self, user_entry: dict, n: int):
-        return self.__get_closest(n, user_entry,
-                                  lambda smallest_n_rows:
-                                  [pd_util.get_dict_from_row(smallest_n_rows.iloc[i: i + 1]) for i in range(n)])
+        return self.__get_closest(user_entry, n, lambda closest_n_rows:
+        [pd_util.get_dict_from_row(closest_n_rows.iloc[i: i + 1]) for i in range(n)])
 
     def get_closest_n_indexes(self, user_entry: dict, n: int):
-        return self.__get_closest(n, user_entry, lambda smallest_n_rows:
-        [smallest_n_rows.index[i] for i in range(n)])
+        return self.__get_closest(user_entry, n, lambda closest_n_rows:
+        [closest_n_rows.index[i] for i in range(n)])
 
-    def __get_closest(self, n, user_entry, response_builder):
+    def __get_closest(self, user_entry: dict, n: int, response_builder: callable):
         self.validate(n, user_entry)
         self.calculate_distances(user_entry)
-        smallest_n = self.data.sort_values(by=DISTANCE)[:n]
-        responses = response_builder(smallest_n)
+        closest_n = self.data.sort_values(by=DISTANCE)[:n]
+        responses = response_builder(closest_n)
         self.remove_distance_column()
         return responses
 
