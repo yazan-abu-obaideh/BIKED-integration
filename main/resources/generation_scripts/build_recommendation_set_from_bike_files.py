@@ -10,8 +10,9 @@ include = DefaultBikeSettings().include()
 dataframe = pd.DataFrame(columns=include + [FILENAME_KEY]).set_index(FILENAME_KEY)
 xml_handler = XmlHandler()
 
-for filename in os.listdir("../large/bikecad files"):
-    with open(f"../large/bikecad files/{filename}", "r") as file:
+bike_files_dir_path = "../large/bikecad files"
+for filename in os.listdir(bike_files_dir_path):
+    with open(f"{bike_files_dir_path}/{filename}", "r") as file:
         xml_handler.set_xml(file.read())
         entries_dict = xml_handler.get_entries_dict()
         entries_dict = {key: value for key, value in entries_dict.items() if key in include}
