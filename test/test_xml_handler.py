@@ -107,13 +107,14 @@ class XmlHandlerTest(unittest.TestCase):
 
     def test_fill_entries_from_dict(self):
         self.xml_handler.set_entries_from_dict({"first": "1", "third": "3"})
-        self.assertEqual(self.xml_handler.get_all_entries_string(),
-                         '[<entry key="first">1</entry>, <entry key="third">3</entry>]')
+        self.assertEqual('[<entry key="first">1</entry>, <entry key="third">3</entry>]',
+                         self.xml_handler.get_all_entries_string())
 
     def test_update_xml_from_dict(self):
         self.xml_handler.update_entries_from_dict({"ready": "ready-new", "new": "new-value"})
-        self.assertEqual(self.xml_handler.get_all_entries_string(),
-                         '[<entry key="ready">ready-new</entry>, <entry key="stuff">5</entry>, <entry key="new">new-value</entry>]')
+        self.assertEqual(
+            '[<entry key="ready">ready-new</entry>, <entry key="stuff">5</entry>, <entry key="new">new-value</entry>]',
+            self.xml_handler.get_all_entries_string())
 
     def get_ready_entry(self):
         return self.xml_handler.find_entry_by_key("ready")
