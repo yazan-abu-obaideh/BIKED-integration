@@ -103,7 +103,7 @@ class BikeRecommendationService:
     def attempt_enumerate(self, value: str):
         default_function = lambda x: float(x)
         function = self.enumeration_function_map.get(value, default_function)
-        return function(value)
+        return function(value.lower())
 
     def default_to_mean(self, scaled_user_entry):
         for key in self.inner_service.settings.include():
