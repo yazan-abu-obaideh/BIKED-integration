@@ -33,8 +33,8 @@ class XmlHandlerTest(unittest.TestCase):
         stuff_entry = self.get_stuff_entry()
         ready_entry = self.get_ready_entry()
         none_entry = self.xml_handler.find_entry_by_key("does not exist")
-        self.assertEqual(ready_entry.__str__(), '<entry key="ready">3</entry>')
-        self.assertEqual(stuff_entry.__str__(), '<entry key="stuff">5</entry>')
+        self.assertEqual('<entry key="ready">3</entry>', ready_entry.__str__())
+        self.assertEqual('<entry key="stuff">5</entry>', stuff_entry.__str__())
         self.assertIsNone(none_entry)
 
     def test_can_update_entry(self):
@@ -42,21 +42,22 @@ class XmlHandlerTest(unittest.TestCase):
         new_ready_key = "new_ready"
         self.xml_handler.update_entry_key(self.get_stuff_entry(), new_stuff_key)
         self.xml_handler.update_entry_key(self.get_ready_entry(), new_ready_key)
-        assert self.xml_handler.get_all_entries_string() == \
-               f'[<entry key="{new_ready_key}">3</entry>, <entry key="{new_stuff_key}">5</entry>]'
+        self.assertEqual(f'[<entry key="{new_ready_key}">3</entry>, <entry key="{new_stuff_key}">5</entry>]',
+                         self.xml_handler.get_all_entries_string())
 
     def test_can_update_value(self):
         new_stuff_value = "NEW VALUE"
         self.xml_handler.update_entry_value(self.get_stuff_entry(), new_stuff_value)
-        assert self.xml_handler.get_all_entries_string() == \
-               f'[<entry key="ready">3</entry>, <entry key="stuff">{new_stuff_value}</entry>]'
+        self.assertEqual(f'[<entry key="ready">3</entry>, <entry key="stuff">{new_stuff_value}</entry>]',
+                         self.xml_handler.get_all_entries_string())
 
     def test_modifying_copy_does_not_modify_original(self):
         original_entries = self.xml_handler.get_all_entries_string()
         copy = self.xml_handler.copy_first_entry()
         self.xml_handler.update_entry_value(copy, "DUMMY")
         self.xml_handler.update_entry_key(copy, "DUMMY")
-        assert self.xml_handler.get_all_entries_string() == original_entries
+        self.assertEqual(original_entries,
+                         self.xml_handler.get_all_entries_string())
 
     def test_end_to_end(self):
         expected_final_content = \
@@ -79,9 +80,10 @@ class XmlHandlerTest(unittest.TestCase):
 
     def test_remove_entry(self):
         self.xml_handler.remove_entry(self.get_stuff_entry())
-        assert self.xml_handler.get_all_entries_string() == '[<entry key="ready">3</entry>]'
+        self.assertEqual('[<entry key="ready">3</entry>]',
+                         self.xml_handler.get_all_entries_string())
         self.xml_handler.remove_entry(self.get_ready_entry())
-        assert self.xml_handler.get_entries_count() == 0
+        self.assertEqual(0, self.xml_handler.get_entries_count())
 
     def test_remove_all_entries(self):
         self.xml_handler.remove_all_entries()
@@ -95,7 +97,8 @@ class XmlHandlerTest(unittest.TestCase):
         handler = XmlHandler()
         handler.set_entries_from_dict({num: num for num in range(3)})
         self.assertEqual('''<?xml version="1.0" encoding="utf-8"?>
-<properties><entry key="0">0</entry><entry key="1">1</entry><entry key="2">2</entry></properties>''' , handler.get_content_string())
+<properties><entry key="0">0</entry><entry key="1">1</entry><entry key="2">2</entry></properties>''',
+                         handler.get_content_string())
 
     def test_set_xml_does_not_throw(self):
         garbage = "fewfwefew"
