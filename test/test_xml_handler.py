@@ -87,7 +87,7 @@ class XmlHandlerTest(unittest.TestCase):
 
     def test_remove_all_entries(self):
         self.xml_handler.remove_all_entries()
-        assert self.xml_handler.get_entries_count() == 0
+        self.assertEqual(0, self.xml_handler.get_entries_count())
 
     def test_empty_xml(self):
         self.xml_handler.set_xml("")
