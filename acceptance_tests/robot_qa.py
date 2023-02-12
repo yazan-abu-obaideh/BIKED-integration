@@ -45,9 +45,14 @@ class RobotQaDepartment(unittest.TestCase):
     def does_pass(self, assertion_function, a, b):
         try:
             assertion_function(a, b)
+            self.log_message("passed")
             return True
         except AssertionError:
+            self.log_message("failed")
             return False
+
+    def log_message(self, result):
+        print(f"Assertion RESULT".replace("RESULT", result))
 
     def get_request(self):
         mutable_request = copy.deepcopy(self.base_request)
