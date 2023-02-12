@@ -1,11 +1,11 @@
-import threading
+import os.path
+import unittest
 
+from sklearn.model_selection import train_test_split
+
+import main.pandas_utility as pd_util
 from main.evaluation.evaluation_service import EvaluationService
 from main.request_processing.scaler_wrapper import ScalerWrapper
-from sklearn.model_selection import train_test_split
-import main.pandas_utility as pd_util
-import unittest
-import os.path
 
 BIKE_PATH = os.path.join(os.path.dirname(__file__), "../resources/bikes/bike(1).xml")
 
