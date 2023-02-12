@@ -75,6 +75,8 @@ class RequestProcessor:
 
     def calculate_composite_values(self, bikeCad_file_entries: dict) -> dict:
 
+        # TODO: homie this is essentially a bloated anonymous class. This is bad. Fix this.
+
         def get_sum(entries):
             entries_values = [bikeCad_file_entries.get(entry, 0) for entry in entries]
             return sum(entries_values)
