@@ -6,6 +6,8 @@ from app import app
 from requests import request as send_request
 from time import sleep, time
 
+GET = "GET"
+
 OK = 200
 BAD_REQUEST = 400
 
@@ -18,20 +20,20 @@ class AppTest(unittest.TestCase):
     APP_PROCESS = None
 
     def test_empty_request(self):
-        response = send_request("GET", self.get_feature_url('evaluate'))
+        response = send_request(GET, self.get_feature_url('evaluate'))
         self.assertEqual("Invalid BikeCAD file", response.json()["message"])
         self.assertEqual(BAD_REQUEST, response.status_code)
 
     def test_valid_evaluation_request(self):
         with open(VALID_MODEL_PATH, 'r') as file:
-            response = send_request("GET", self.get_feature_url('evaluate'), data=file)
+            response = send_request(GET, self.get_feature_url('evaluate'), data=file)
         self.assertIsNotNone(response.json())
         self.assertIs(type(response.json()), dict)
         self.assertEqual(OK, response.status_code)
 
     def test_valid_recommendation_request(self):
         with open(VALID_MODEL_PATH, 'r') as file:
-            response = send_request("GET", self.get_feature_url('recommend'), data=file)
+            response = send_request(GET, self.get_feature_url('recommend'), data=file)
         self.assertIsNotNone(response.text)
         self.assertEqual(OK, response.status_code)
 
@@ -59,7 +61,7 @@ class AppTest(unittest.TestCase):
 
     @staticmethod
     def site_not_up():
-        return send_request("GET", "http://localhost:5000/health").text != "UP"
+        return send_request(GET, "http://localhost:5000/health").text != "UP"
 
     @staticmethod
     def run_app():
