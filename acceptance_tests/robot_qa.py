@@ -104,10 +104,10 @@ class RobotQaTest(unittest.TestCase):
     def test_qa_reports_errors(self):
         self.robot_qa.processing_function = lambda x: {"sum": x['a1'] + x['a2'] + x['d2'],
                                                        "division": (x['d2'] + x['a1']) / (x['d2'] + x['a2'])}
-        self.assertEqual(len(self.robot_qa.reported_errors), 0)
+        self.assertEqual(0, len(self.robot_qa.reported_errors))
         self.robot_qa.execute_assertions()
-        self.assertEqual(len(self.robot_qa.successful_executions), 5)
-        self.assertEqual(len(self.robot_qa.reported_errors), 2)
+        self.assertEqual(5, len(self.robot_qa.successful_executions))
+        self.assertEqual(2, len(self.robot_qa.reported_errors))
 
     def request(self):
         return {
