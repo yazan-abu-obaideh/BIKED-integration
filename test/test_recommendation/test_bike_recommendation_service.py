@@ -16,6 +16,11 @@ class RecommendationServiceTest(unittest.TestCase):
         recommended_bike = self.service.recommend_bike(bike_in_request)
         self.assertEqual(bike_in_request, recommended_bike)
 
+    def test_raise_if_empty_request(self):
+        def recommend_invalid():
+            self.service.recommend_bike("")
+        self.assertRaises(ValueError, recommend_invalid)
+
     def __grab_bike_xml(self):
         with open(VALID_MODEL_PATH, 'r') as file:
             return file.read()

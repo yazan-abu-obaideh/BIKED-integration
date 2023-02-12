@@ -91,7 +91,10 @@ class BikeRecommendationService:
 
     def parse_xml_request(self, xml_user_entry):
         self.xml_handler.set_xml(xml_user_entry)
-        user_entry_dict = self.xml_handler.get_entries_dict()
+        user_entry_dict = {key: value for key, value in self.xml_handler.get_entries_dict().items()
+                           if key in self.inner_service.settings.include()}
+        if len(user_entry_dict) == 0:
+            raise ValueError("Invalid BikeCAD file")
         keys = list(user_entry_dict.keys())
         for key in keys:
             try:
