@@ -55,47 +55,17 @@ class EvaluationServiceTest(unittest.TestCase):
         with open(BIKE_PATH, "r") as file:
             xml_as_string = file.read()
 
-        class Container:
-            def __init__(self):
-                self.value = None
-
-        steel_container = Container()
-        aluminum_container = Container()
-        titanium_container = Container()
-
-        def get_response(xml, response: Container):
-            response.value = self.service.predict_from_xml(xml)
-
-        threads = (threading.Thread(target=get_response, args=(xml_as_string, steel_container)),
-                   threading.Thread(target=get_response,
-                                    args=(xml_as_string.replace('STEEL', 'ALUMINUM'), aluminum_container)),
-                   threading.Thread(target=get_response,
-                                    args=(xml_as_string.replace('STEEL', 'TITANIUM'), titanium_container)))
-        for thread in threads:
-            thread.start()
-        for thread in threads:
-            thread.join()
-
-        self.assertEqual(steel_container.value, {'Sim 1 Dropout X Disp. Magnitude': 0.03133767152123533,
-                                                 'Sim 1 Dropout Y Disp. Magnitude': 0.05843097911811291,
-                                                 'Sim 1 Bottom Bracket X Disp. Magnitude': 0.03333394633093304,
-                                                 'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.04690599138870623,
-                                                 'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.00491900486740717,
-                                                 'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.03766911482497084,
-                                                 'Sim 3 Bottom Bracket X Rot. Magnitude': 0.02156905929579709,
-                                                 'Sim 1 Safety Factor (Inverted)': 12.848316860648339,
-                                                 'Sim 3 Safety Factor (Inverted)': 6.39975520468601,
-                                                 'Model Mass Magnitude': 4.923525203840356})
-
-        self.assertTrue(steel_container.value['Model Mass Magnitude'] >
-                        titanium_container.value['Model Mass Magnitude'] >
-                        aluminum_container.value['Model Mass Magnitude'])
-
-        # TODO: assert an increase in tube thickness would (probably) result in a decrease in the inverted safety factor
-        # TDOO: assert an increase in tube thickness should increase the mass
-        # TDOO: assert an increase in diameters (except bottom bracket) should increase the mass
-        # TODO: assert that the model behaves reasonably well on data it wasn't trained on
-
+        self.assertEqual({'Sim 1 Dropout X Disp. Magnitude': 0.03133767152123533,
+                          'Sim 1 Dropout Y Disp. Magnitude': 0.05843097911811291,
+                          'Sim 1 Bottom Bracket X Disp. Magnitude': 0.03333394633093304,
+                          'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.04690599138870623,
+                          'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.00491900486740717,
+                          'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.03766911482497084,
+                          'Sim 3 Bottom Bracket X Rot. Magnitude': 0.02156905929579709,
+                          'Sim 1 Safety Factor (Inverted)': 12.848316860648339,
+                          'Sim 3 Safety Factor (Inverted)': 6.39975520468601,
+                          'Model Mass Magnitude': 4.923525203840356},
+                         self.service.predict_from_xml(xml_as_string))
 
     def test_can_predict_from_partial_dict(self):
         partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,

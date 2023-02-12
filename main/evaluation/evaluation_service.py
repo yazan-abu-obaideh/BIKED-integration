@@ -48,11 +48,11 @@ class EvaluationService:
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
-        scaled_dict = self.set_empty_values_to_scaled_mean(scaled_dict)
+        scaled_dict = self.default_to_mean(scaled_dict)
         row = pd_util.get_row_from_dict(scaled_dict)
         return self.predict_from_row(row)
 
-    def set_empty_values_to_scaled_mean(self, bike_cad_dict):
+    def default_to_mean(self, bike_cad_dict):
         defaulted_keys = self.get_empty_keys(bike_cad_dict)
         for key in defaulted_keys:
             bike_cad_dict[key] = SCALED_MEAN
