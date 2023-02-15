@@ -16,12 +16,12 @@ SCALED_MEAN = 0
 
 
 class DefaultBikeSettings(RecommendationSettings):
-    maybe = ["Head tube upper extension2", "Seat tube extension2", "Head tube lower extension2",
+    light = ["Head tube upper extension2", "Seat tube extension2", "Head tube lower extension2",
              "Wheel width rear", "Wheel width front", "Head tube type", "BB length", "Head tube diameter",
              "Wheel cut", "BB diameter", "Seat tube diameter", "Top tube type", "CHAINSTAYbrdgdia1",
              "CHAINSTAYbrdgshift", "SEATSTAYbrdgdia1", "SEATSTAYbrdgshift", "bottle SEATTUBE0 show",
              "bottle DOWNTUBE0 show", "Front Fender include", "Rear Fender include", "Display RACK"]
-    yes = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield", "FCD textfield",
+    heavy = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield", "FCD textfield",
            "Head angle", "Saddle height", "Head tube length textfield", "ERD rear", "Dropout spacing style",
            "BSD front", "ERD front", "BSD rear", "Fork type", "Stem kind", "Display AEROBARS",
            "Handlebar style", "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN",
@@ -31,13 +31,13 @@ class DefaultBikeSettings(RecommendationSettings):
         return 10
 
     def include(self) -> list:
-        return self.maybe + self.yes
+        return self.light + self.heavy
 
     def weights(self) -> dict:
-        maybe_weights = {key: 1 for key in self.maybe}
-        yes_weights = {key: 3 for key in self.yes}
-        weights = maybe_weights
-        weights.update(yes_weights)
+        light_ = {key: 1 for key in self.light}
+        heavy_ = {key: 3 for key in self.heavy}
+        weights = light_
+        weights.update(heavy_)
         return weights
 
 
