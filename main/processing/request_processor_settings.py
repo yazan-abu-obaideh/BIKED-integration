@@ -3,15 +3,15 @@ from abc import abstractmethod
 
 class RequestProcessorSettings:
     @abstractmethod
-    def expected_input_keys(self) -> list:
+    def get_expected_input_keys(self) -> list:
         pass
 
     @abstractmethod
-    def raise_exception_if_missing(self) -> list:
+    def get_required_parameters(self) -> list:
         pass
 
     @abstractmethod
-    def bikeCad_to_model_map(self) -> dict:
+    def get_bikeCad_to_model_map(self) -> dict:
         pass
 
     @abstractmethod

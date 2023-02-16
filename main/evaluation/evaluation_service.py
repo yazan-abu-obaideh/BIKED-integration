@@ -59,7 +59,7 @@ class EvaluationService:
         return bike_cad_dict
 
     def get_empty_keys(self, bike_cad_dict):
-        return (key for key in self.adapter.settings.expected_input_keys() if key not in bike_cad_dict)
+        return (key for key in self.adapter.settings.get_expected_input_keys() if key not in bike_cad_dict)
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         predictions_row = self._predict_from_row(pd_row)
@@ -100,7 +100,7 @@ class EvaluationService:
 
 
 class DefaultAdapterSettings(RequestProcessorSettings):
-    def expected_input_keys(self) -> list:
+    def get_expected_input_keys(self) -> list:
         # warn users when the supplied bikecad file has no materials field OR whenever the material value is not
         # in steel, alum, titanium
         return ['Material=Steel', 'Material=Aluminum', 'Material=Titanium',
@@ -112,7 +112,7 @@ class DefaultAdapterSettings(RequestProcessorSettings):
                 'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
                 'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
 
-    def bikeCad_to_model_map(self) -> dict:
+    def get_bikeCad_to_model_map(self) -> dict:
         # noinspection SpellCheckingInspection
         return {'CS textfield': 'CS Length', 'BB textfield': 'BB Drop', 'Stack': 'Stack',
                 'Head angle': 'HT Angle', 'Head tube length textfield': 'HT Length',
@@ -137,7 +137,7 @@ class DefaultAdapterSettings(RequestProcessorSettings):
     def keys_whose_presence_indicates_their_value(self) -> List[str]:
         return ["CSB_Include", "SSB_Include"]
 
-    def raise_exception_if_missing(self) -> List[str]:
+    def get_required_parameters(self) -> List[str]:
         return []
 
     def millimeters_to_meters(self):

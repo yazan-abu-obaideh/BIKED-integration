@@ -8,7 +8,7 @@ class Settings(RequestProcessorSettings):
     def millimeters_to_meters(self):
         return ['CS F']
 
-    def expected_input_keys(self) -> list:
+    def get_expected_input_keys(self) -> list:
         return ['Material=Steel', 'Material=Aluminum', 'Material=Titanium',
                 'SSB_Include', 'CSB_Include', 'CS Length', 'BB Drop', 'Stack',
                 'SS E', 'ST Angle', 'BB OD', 'TT OD', 'HT OD', 'DT OD', 'CS OD',
@@ -18,7 +18,7 @@ class Settings(RequestProcessorSettings):
                 'CS Thickness', 'TT Thickness', 'BB Thickness', 'HT Thickness',
                 'ST Thickness', 'DT Thickness', 'DT Length']
 
-    def bikeCad_to_model_map(self) -> dict:
+    def get_bikeCad_to_model_map(self) -> dict:
         # noinspection SpellCheckingInspection
         return {'CS textfield': 'CS Length', 'BB textfield': 'BB Drop', 'Stack': 'Stack',
                 'Head angle': 'HT Angle', 'Head tube length textfield': 'HT Length',
@@ -43,5 +43,5 @@ class Settings(RequestProcessorSettings):
     def keys_whose_presence_indicates_their_value(self) -> list:
         return ["CSB_Include", "SSB_Include"]
 
-    def raise_exception_if_missing(self) -> list:
+    def get_required_parameters(self) -> list:
         return []

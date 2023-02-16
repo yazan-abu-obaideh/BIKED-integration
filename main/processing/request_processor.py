@@ -28,8 +28,8 @@ class RequestProcessor:
         return self.pipeline.pass_through(bikeCad_file_entries)
 
     def map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
-        keys_map = self.settings.bikeCad_to_model_map()
-        valid_keys = list(self.settings.expected_input_keys())
+        keys_map = self.settings.get_bikeCad_to_model_map()
+        valid_keys = list(self.settings.get_expected_input_keys())
         return {keys_map.get(key, key): value
                 for key, value in bikeCad_file_entries.items()
                 if keys_map.get(key, key) in valid_keys}
