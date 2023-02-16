@@ -1,8 +1,8 @@
 from main.xml_handler import XmlHandler
-from main.request_processing.request_processor_settings import RequestProcessorSettings
+from main.processing.request_processor_settings import RequestProcessorSettings
 import numpy as np
 
-from main.request_processing.request_pipeline import RequestPipeline
+from main.processing.request_pipeline import RequestPipeline
 
 MILLIMETERS_TO_METERS_FACTOR = 1000
 

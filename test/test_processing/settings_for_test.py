@@ -1,4 +1,4 @@
-from main.request_processing.request_processor_settings import RequestProcessorSettings
+from main.processing.request_processor_settings import RequestProcessorSettings
 
 
 class Settings(RequestProcessorSettings):

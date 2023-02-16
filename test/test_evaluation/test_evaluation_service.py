@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 
 import main.pandas_utility as pd_util
 from main.evaluation.evaluation_service import EvaluationService
-from main.request_processing.scaler_wrapper import ScalerWrapper
+from main.processing.scaler_wrapper import ScalerWrapper
 
 BIKE_PATH = os.path.join(os.path.dirname(__file__), "../resources/bikes/bike(1).xml")
 

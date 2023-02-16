@@ -7,9 +7,9 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 import main.pandas_utility as pd_util
 from main.evaluation.MultilabelPredictor import MultilabelPredictor
 from main.load_data import load_augmented_framed_dataset
-from main.request_processing.request_processor import RequestProcessor
-from main.request_processing.request_processor_settings import RequestProcessorSettings
-from main.request_processing.scaler_wrapper import ScalerWrapper
+from main.processing.request_processor import RequestProcessor
+from main.processing.request_processor_settings import RequestProcessorSettings
+from main.processing.scaler_wrapper import ScalerWrapper
 from main.resource_paths import MODEL_PATH
 from main.xml_handler import XmlHandler
 

@@ -1,8 +1,8 @@
 import os.path
 import unittest
 
-from main.request_processing.request_processor import RequestProcessor
-from test.test_request_processing.settings_for_test import Settings
+from main.processing.request_processor import RequestProcessor
+from test.test_processing.settings_for_test import Settings
 
 RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../resources/SimpleModel1.xml")
 
