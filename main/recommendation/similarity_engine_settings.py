@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
 
-class RecommendationSettings:
+class EngineSettings:
 
     @abstractmethod
     def include(self) -> list:

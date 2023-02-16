@@ -2,13 +2,13 @@ import numpy as np
 import pandas as pd
 
 import main.pandas_utility as pd_util
-from main.recommendation.recommendation_service_settings import RecommendationSettings
+from main.recommendation.similarity_engine_settings import EngineSettings
 
 DISTANCE = 'distance_from_user_entry'
 
 
-class RecommendationService:
-    def __init__(self, data, settings: RecommendationSettings):
+class SimilarityEngine:
+    def __init__(self, data, settings: EngineSettings):
         self.data = data
         self.settings = settings
 
@@ -96,4 +96,4 @@ class RecommendationService:
     def raise_if_invalid_entry(self, user_entry: dict):
         truth_list = [key in self.settings.include() for key in user_entry.keys()]
         if not any(truth_list):
-            raise ValueError("Cannot recommend similar bike.")
+            raise ValueError("Cannot provide similar entry.")

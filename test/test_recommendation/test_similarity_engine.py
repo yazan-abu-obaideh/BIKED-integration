@@ -1,5 +1,5 @@
-from main.recommendation.recommendation_service_settings import RecommendationSettings
-from main.recommendation.recommendation_service import RecommendationService, DISTANCE
+from main.recommendation.similarity_engine_settings import EngineSettings
+from main.recommendation.similarity_engine import SimilarityEngine, DISTANCE
 import main.pandas_utility as pd_util
 import pandas as pd
 import unittest
@@ -12,12 +12,12 @@ TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__),
 class RecommendationServiceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.dataset = pd.read_csv(TEST_DISTANCE_DATASET_PATH)
-        self.service = RecommendationService(self.dataset, TestSettings())
+        self.service = SimilarityEngine(self.dataset, TestSettings())
 
     def test_empty_input(self):
         with self.assertRaises(ValueError) as context:
             self.service.get_closest_n({}, 1)
-        assert context.exception.args[0] == f"Cannot recommend similar bike."
+        assert context.exception.args[0] == f"Cannot provide similar entry."
 
     def test_incomplete_input(self):
         response = self.service.get_closest_to({"x": 5, "y": 12})
@@ -80,7 +80,7 @@ class RecommendationServiceTest(unittest.TestCase):
         self.assertEqual(response[DISTANCE], expected_distance)
 
 
-class TestSettings(RecommendationSettings):
+class TestSettings(EngineSettings):
     MAX_N = 5
     WEIGHTS = {}
     INCLUDE = ["x", "y", "z"]

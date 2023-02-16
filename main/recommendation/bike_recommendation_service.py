@@ -2,8 +2,8 @@ import os.path
 
 import pandas as pd
 
-from main.recommendation.recommendation_service import RecommendationService
-from main.recommendation.recommendation_service_settings import RecommendationSettings
+from main.recommendation.similarity_engine import SimilarityEngine
+from main.recommendation.similarity_engine_settings import EngineSettings
 from main.processing.scaler_wrapper import ScalerWrapper
 from main.resource_paths import RECOMMENDATION_DATASET_PATH
 from main.xml_handler import XmlHandler
@@ -15,7 +15,7 @@ FILENAME = 'filename'
 SCALED_MEAN = 0
 
 
-class DefaultBikeSettings(RecommendationSettings):
+class DefaultBikeSettings(EngineSettings):
     light = ["Head tube upper extension2", "Seat tube extension2", "Head tube lower extension2",
              "Wheel width rear", "Wheel width front", "Head tube type", "BB length", "Head tube diameter",
              "Wheel cut", "BB diameter", "Seat tube diameter", "Top tube type", "CHAINSTAYbrdgdia1",
@@ -50,11 +50,11 @@ class BikeRecommendationService:
         'false': lambda x: 0
     }
 
-    def __init__(self, settings: RecommendationSettings = DEFAULT_SETTINGS,
+    def __init__(self, settings: EngineSettings = DEFAULT_SETTINGS,
                  data_file_path=RECOMMENDATION_DATASET_PATH):
         self.scaler = None
         prepared_dataframe = self.prepare_dataframe_and_scaler(data_file_path, settings)
-        self.inner_service = RecommendationService(prepared_dataframe, settings)
+        self.engine = SimilarityEngine(prepared_dataframe, settings)
         self.xml_handler = XmlHandler()
         self.raise_if_invalid_configuration()
 
@@ -72,15 +72,15 @@ class BikeRecommendationService:
                 dataframe[column] = pd.to_numeric(dataframe[column], errors=SET_INVALID_TO_NAN)
 
     def raise_if_invalid_configuration(self):
-        desired = self.inner_service.settings.include()
-        actual = self.inner_service.data.columns.values
+        desired = self.engine.settings.include()
+        actual = self.engine.data.columns.values
         if not set(desired).issubset(set(actual)):
             raise SystemError("BikeRecommendationService configured incorrectly. "
                               "Columns included in the settings do not match dataset columns.")
 
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)
-        closest_bike_entry = self.inner_service.get_closest_index_to(scaled_user_entry)
+        closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)
         return self.grab_bike_file(closest_bike_entry)
 
     def pre_process_request(self, xml_user_entry):
@@ -92,7 +92,7 @@ class BikeRecommendationService:
     def parse_xml_request(self, xml_user_entry):
         self.xml_handler.set_xml(xml_user_entry)
         user_entry_dict = {key: value for key, value in self.xml_handler.get_entries_dict().items()
-                           if key in self.inner_service.settings.include()}
+                           if key in self.engine.settings.include()}
         if len(user_entry_dict) == 0:
             raise ValueError("Invalid BikeCAD file")
         keys = list(user_entry_dict.keys())
@@ -109,7 +109,7 @@ class BikeRecommendationService:
         return function(value.lower())
 
     def default_to_mean(self, scaled_user_entry):
-        for key in self.inner_service.settings.include():
+        for key in self.engine.settings.include():
             if key not in scaled_user_entry:
                 scaled_user_entry[key] = SCALED_MEAN
         return scaled_user_entry
