@@ -10,9 +10,9 @@ from main.evaluation.MultilabelPredictor import MultilabelPredictor
 from main.load_data import load_augmented_framed_dataset
 from main.evaluation.request_processor import RequestProcessor
 from main.evaluation.request_processor_settings import RequestProcessorSettings
-from main.processing.scaling_filter import ScalerWrapper
+from main.processing.scaling_filter import ScalingFilter
 from main.resource_paths import MODEL_PATH
-from main.processing.xml_handler import XmlHandler
+from main.processing.bikeCad_xml_handler import BikeCadXmlHandler
 
 SCALED_MEAN = 0
 
@@ -95,9 +95,9 @@ class EvaluationService:
         self.predictor = predictor
         self.adapter = RequestProcessor(settings)
         x, y, input_scaler, output_scaler = self.get_data()
-        self.xml_handler = XmlHandler()
-        self.request_scaler = ScalerWrapper(input_scaler, x.columns)
-        self.response_scaler = ScalerWrapper(output_scaler, y.columns)
+        self.xml_handler = BikeCadXmlHandler()
+        self.request_scaler = ScalingFilter(input_scaler, x.columns)
+        self.response_scaler = ScalingFilter(output_scaler, y.columns)
 
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
         self.xml_handler.set_xml(bike_cad_xml)

@@ -1,5 +1,5 @@
 from main.recommendation.bike_recommendation_service import BikeRecommendationService
-from main.processing.xml_handler import XmlHandler
+from main.processing.bikeCad_xml_handler import BikeCadXmlHandler
 import unittest
 import os
 
@@ -9,7 +9,7 @@ VALID_MODEL_PATH = os.path.join(os.path.dirname(__file__), "../resources/bikes/(
 class RecommendationServiceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.service = BikeRecommendationService()
-        self.xml_handler = XmlHandler()
+        self.xml_handler = BikeCadXmlHandler()
 
     def test_get_closest_to(self):
         bike_in_request = self.__grab_bike_xml()

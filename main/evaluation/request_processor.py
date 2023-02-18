@@ -1,4 +1,4 @@
-from main.processing.xml_handler import XmlHandler
+from main.processing.bikeCad_xml_handler import BikeCadXmlHandler
 from main.evaluation.request_processor_settings import RequestProcessorSettings
 import numpy as np
 
@@ -9,7 +9,7 @@ MILLIMETERS_TO_METERS_FACTOR = 1000
 
 class RequestProcessor:
     def __init__(self, settings: RequestProcessorSettings):
-        self.xml_handler = XmlHandler()
+        self.xml_handler = BikeCadXmlHandler()
         self.settings = settings
         # TODO: ensure adherence to T -> T
         self.pipeline = RequestPipeline([self.parse_values,

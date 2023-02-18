@@ -3,7 +3,7 @@ import main.processing.pandas_utility as pd_util
 import pandas as pd
 
 
-class ScalerWrapper:
+class ScalingFilter:
 
     def __init__(self, scaler, columns_in_order):
         self.scaler = scaler
@@ -38,7 +38,7 @@ class ScalerWrapper:
     def build_from_dataframe(cls, data):
         scaler = StandardScaler()
         scaler.fit(data)
-        return ScalerWrapper(scaler, data.columns)
+        return ScalingFilter(scaler, data.columns)
 
     def reorder_dataframe(self, dataframe):
         missing_columns = [column for column in self.columns_in_order if column not in dataframe.columns.values]

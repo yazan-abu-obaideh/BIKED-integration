@@ -4,9 +4,9 @@ import pandas as pd
 
 from main.recommendation.similarity_engine import SimilarityEngine, EuclideanSimilarityEngine
 from main.recommendation.similarity_engine_settings import EngineSettings
-from main.processing.scaling_filter import ScalerWrapper
+from main.processing.scaling_filter import ScalingFilter
 from main.resource_paths import RECOMMENDATION_DATASET_PATH
-from main.processing.xml_handler import XmlHandler
+from main.processing.bikeCad_xml_handler import BikeCadXmlHandler
 
 SET_INVALID_TO_NAN = 'coerce'
 
@@ -54,7 +54,7 @@ def prepare_dataframe_and_scaler(data_file_path, settings):
     dataframe.set_index(FILENAME, inplace=True)
     dataframe.drop(columns=dataframe.columns.difference(settings.include() + [FILENAME]), inplace=True)
     to_numeric_except_index(dataframe)
-    scaler = ScalerWrapper.build_from_dataframe(dataframe)
+    scaler = ScalingFilter.build_from_dataframe(dataframe)
     scaled_dataframe = scaler.scale_dataframe(dataframe).fillna(value=SCALED_MEAN)
     return scaled_dataframe, scaler
 
@@ -70,10 +70,10 @@ class BikeRecommendationService:
 
     def __init__(self,
                  engine : SimilarityEngine = DEFAULT_ENGINE,
-                 scaler: ScalerWrapper = DEFAULT_SCALER):
+                 scaler: ScalingFilter = DEFAULT_SCALER):
         self.scaler = scaler
         self.engine = engine
-        self.xml_handler = XmlHandler()
+        self.xml_handler = BikeCadXmlHandler()
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)
         closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)

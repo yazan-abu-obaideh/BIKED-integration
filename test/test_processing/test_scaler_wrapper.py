@@ -5,7 +5,7 @@ import pandas as pd
 
 import main.processing.pandas_utility as pd_util
 from main.load_data import load_augmented_framed_dataset, one_hot_encode_material
-from main.processing.scaling_filter import ScalerWrapper
+from main.processing.scaling_filter import ScalingFilter
 
 RESOURCES_FILE = os.path.join(os.path.dirname(__file__))
 RELATIVE_PATH = "../../main/resources/all_structural_data_aug.csv"
@@ -16,7 +16,7 @@ class TestScalerWrapper(unittest.TestCase):
     def setUp(self) -> None:
         self.raw_data = pd.read_csv(os.path.join(RESOURCES_FILE, RELATIVE_PATH), index_col=0)
         self.scaled_data, _, scaler, _ = load_augmented_framed_dataset()
-        self.request_scaler = ScalerWrapper(scaler, self.scaled_data.columns)
+        self.request_scaler = ScalingFilter(scaler, self.scaled_data.columns)
         self.input_row = self.prepare_input_row()
         self.first_scaled = self.scaled_data.iloc[0].to_dict()
 
@@ -77,7 +77,7 @@ class TestScalerWrapper(unittest.TestCase):
 
     def build_new_scaler_wrapper(self):
         dataframe = pd.DataFrame.from_dict(self.mock_data())
-        new_wrapper = ScalerWrapper.build_from_dataframe(dataframe)
+        new_wrapper = ScalingFilter.build_from_dataframe(dataframe)
         return dataframe, new_wrapper
 
     def mock_data(self):

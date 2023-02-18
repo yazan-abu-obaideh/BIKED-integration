@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 
 import main.processing.pandas_utility as pd_util
 from main.evaluation.evaluation_service import EvaluationService
-from main.processing.scaling_filter import ScalerWrapper
+from main.processing.scaling_filter import ScalingFilter
 
 BIKE_PATH = os.path.join(os.path.dirname(__file__), "../resources/bikes/bike(1).xml")
 
@@ -15,8 +15,8 @@ class EvaluationServiceTest(unittest.TestCase):
     def setUp(self) -> None:
         self.service = EvaluationService()
         self.x, self.y, request_scaler, result_scaler = self.prepare_x_y()
-        self.request_scaler = ScalerWrapper(request_scaler, self.x.columns)
-        self.result_scaler = ScalerWrapper(result_scaler, self.y.columns)
+        self.request_scaler = ScalingFilter(request_scaler, self.x.columns)
+        self.result_scaler = ScalingFilter(result_scaler, self.y.columns)
         self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
                              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                              'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
