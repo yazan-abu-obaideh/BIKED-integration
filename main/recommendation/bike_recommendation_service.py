@@ -2,7 +2,7 @@ import os.path
 
 import pandas as pd
 
-from main.recommendation.similarity_engine import SimilarityEngine
+from main.recommendation.similarity_engine import SimilarityEngine, EuclideanSimilarityEngine
 from main.recommendation.similarity_engine_settings import EngineSettings
 from main.processing.scaling_filter import ScalerWrapper
 from main.resource_paths import RECOMMENDATION_DATASET_PATH
@@ -44,40 +44,36 @@ class DefaultBikeSettings(EngineSettings):
 DEFAULT_SETTINGS = DefaultBikeSettings()
 
 
+def to_numeric_except_index(dataframe):
+    for column in dataframe.columns.values:
+        if column != FILENAME:
+            dataframe[column] = pd.to_numeric(dataframe[column], errors=SET_INVALID_TO_NAN)
+
+def prepare_dataframe_and_scaler(data_file_path, settings):
+    dataframe = pd.read_csv(data_file_path)
+    dataframe.set_index(FILENAME, inplace=True)
+    dataframe.drop(columns=dataframe.columns.difference(settings.include() + [FILENAME]), inplace=True)
+    to_numeric_except_index(dataframe)
+    scaler = ScalerWrapper.build_from_dataframe(dataframe)
+    scaled_dataframe = scaler.scale_dataframe(dataframe).fillna(value=SCALED_MEAN)
+    return scaled_dataframe, scaler
+
+
+DEFAULT_DATAFRAME, DEFAULT_SCALER = prepare_dataframe_and_scaler(RECOMMENDATION_DATASET_PATH, DEFAULT_SETTINGS)
+DEFAULT_ENGINE = EuclideanSimilarityEngine(DEFAULT_DATAFRAME, DEFAULT_SETTINGS)
+
 class BikeRecommendationService:
     enumeration_function_map = {
         'true': lambda x: 1,
         'false': lambda x: 0
     }
 
-    def __init__(self, settings: EngineSettings = DEFAULT_SETTINGS,
-                 data_file_path=RECOMMENDATION_DATASET_PATH):
-        self.scaler = None
-        prepared_dataframe = self.prepare_dataframe_and_scaler(data_file_path, settings)
-        self.engine = SimilarityEngine(prepared_dataframe, settings)
+    def __init__(self,
+                 engine : SimilarityEngine = DEFAULT_ENGINE,
+                 scaler: ScalerWrapper = DEFAULT_SCALER):
+        self.scaler = scaler
+        self.engine = engine
         self.xml_handler = XmlHandler()
-        self.raise_if_invalid_configuration()
-
-    def prepare_dataframe_and_scaler(self, data_file_path, settings):
-        dataframe = pd.read_csv(data_file_path)
-        dataframe.set_index(FILENAME, inplace=True)
-        dataframe.drop(columns=dataframe.columns.difference(settings.include() + [FILENAME]), inplace=True)
-        self.to_numeric_except_index(dataframe)
-        self.scaler = ScalerWrapper.build_from_dataframe(dataframe)
-        return self.scaler.scale_dataframe(dataframe).fillna(value=SCALED_MEAN)
-
-    def to_numeric_except_index(self, dataframe):
-        for column in dataframe.columns.values:
-            if column != FILENAME:
-                dataframe[column] = pd.to_numeric(dataframe[column], errors=SET_INVALID_TO_NAN)
-
-    def raise_if_invalid_configuration(self):
-        desired = self.engine.settings.include()
-        actual = self.engine.data.columns.values
-        if not set(desired).issubset(set(actual)):
-            raise SystemError("BikeRecommendationService configured incorrectly. "
-                              "Columns included in the settings do not match dataset columns.")
-
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)
         closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)
@@ -92,7 +88,7 @@ class BikeRecommendationService:
     def parse_xml_request(self, xml_user_entry):
         self.xml_handler.set_xml(xml_user_entry)
         user_entry_dict = {key: value for key, value in self.xml_handler.get_entries_dict().items()
-                           if key in self.engine.settings.include()}
+                           if key in self.engine.get_settings().include()}
         if len(user_entry_dict) == 0:
             raise ValueError("Invalid BikeCAD file")
         keys = list(user_entry_dict.keys())
@@ -109,7 +105,7 @@ class BikeRecommendationService:
         return function(value.lower())
 
     def default_to_mean(self, scaled_user_entry):
-        for key in self.engine.settings.include():
+        for key in self.engine.get_settings().include():
             if key not in scaled_user_entry:
                 scaled_user_entry[key] = SCALED_MEAN
         return scaled_user_entry

@@ -1,5 +1,5 @@
 from main.recommendation.similarity_engine_settings import EngineSettings
-from main.recommendation.similarity_engine import SimilarityEngine, DISTANCE
+from main.recommendation.similarity_engine import EuclideanSimilarityEngine, DISTANCE
 import main.processing.pandas_utility as pd_util
 import pandas as pd
 import unittest
@@ -12,7 +12,7 @@ TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__),
 class SimilarityEngineTest(unittest.TestCase):
     def setUp(self) -> None:
         self.dataset = pd.read_csv(TEST_DISTANCE_DATASET_PATH)
-        self.engine = SimilarityEngine(self.dataset, TestSettings())
+        self.engine = EuclideanSimilarityEngine(self.dataset, TestSettings())
 
     def test_empty_input(self):
         with self.assertRaises(ValueError) as context:

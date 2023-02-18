@@ -1,16 +1,45 @@
 import numpy as np
 import pandas as pd
+from abc import abstractmethod, ABCMeta
 
 import main.processing.pandas_utility as pd_util
 from main.recommendation.similarity_engine_settings import EngineSettings
 
 DISTANCE = 'distance_from_user_entry'
 
+class SimilarityEngine(metaclass=ABCMeta):
+    @abstractmethod
+    def get_closest_to(self, user_entry_dict):
+        pass
+    @abstractmethod
+    def get_closest_index_to(self, user_entry_dict):
+        pass
+    @abstractmethod
+    def get_closest_n(self, user_entry: dict, n: int):
+        pass
+    @abstractmethod
+    def get_closest_n_indexes(self, user_entry: dict, n: int):
+        pass
 
-class SimilarityEngine:
+    @abstractmethod
+    def get_settings(self) -> EngineSettings:
+        pass
+
+class EuclideanSimilarityEngine(SimilarityEngine):
     def __init__(self, data, settings: EngineSettings):
         self.data = data
         self.settings = settings
+        self.raise_if_invalid_configuration()
+
+    def raise_if_invalid_configuration(self):
+        desired = self.get_settings().include()
+        actual = self.data.columns.values
+        if not set(desired).issubset(set(actual)):
+            raise SystemError("Similarity engine configured incorrectly. "
+                              "Columns included in the settings do not match dataset columns.")
+
+    def get_settings(self) -> EngineSettings:
+        return self.settings
 
     def get_closest_to(self, user_entry_dict):
         return self.get_closest_n(user_entry_dict, 1)[0]
