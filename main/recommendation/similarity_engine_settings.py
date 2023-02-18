@@ -1,7 +1,7 @@
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 
 
-class EngineSettings:
+class EngineSettings(metaclass=ABCMeta):
 
     @abstractmethod
     def include(self) -> list:

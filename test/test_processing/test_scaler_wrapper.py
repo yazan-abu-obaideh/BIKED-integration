@@ -3,9 +3,9 @@ import unittest
 
 import pandas as pd
 
-import main.pandas_utility as pd_util
+import main.processing.pandas_utility as pd_util
 from main.load_data import load_augmented_framed_dataset, one_hot_encode_material
-from main.processing.scaler_wrapper import ScalerWrapper
+from main.processing.scaling_filter import ScalerWrapper
 
 RESOURCES_FILE = os.path.join(os.path.dirname(__file__))
 RELATIVE_PATH = "../../main/resources/all_structural_data_aug.csv"

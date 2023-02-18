@@ -4,9 +4,9 @@ import pandas as pd
 
 from main.recommendation.similarity_engine import SimilarityEngine
 from main.recommendation.similarity_engine_settings import EngineSettings
-from main.processing.scaler_wrapper import ScalerWrapper
+from main.processing.scaling_filter import ScalerWrapper
 from main.resource_paths import RECOMMENDATION_DATASET_PATH
-from main.xml_handler import XmlHandler
+from main.processing.xml_handler import XmlHandler
 
 SET_INVALID_TO_NAN = 'coerce'
 

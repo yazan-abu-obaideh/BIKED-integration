@@ -3,9 +3,9 @@ import unittest
 
 from sklearn.model_selection import train_test_split
 
-import main.pandas_utility as pd_util
+import main.processing.pandas_utility as pd_util
 from main.evaluation.evaluation_service import EvaluationService
-from main.processing.scaler_wrapper import ScalerWrapper
+from main.processing.scaling_filter import ScalerWrapper
 
 BIKE_PATH = os.path.join(os.path.dirname(__file__), "../resources/bikes/bike(1).xml")
 

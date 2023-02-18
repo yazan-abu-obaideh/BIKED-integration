@@ -1,5 +1,5 @@
-from main.xml_handler import XmlHandler
-from main.processing.request_processor_settings import RequestProcessorSettings
+from main.processing.xml_handler import XmlHandler
+from main.evaluation.request_processor_settings import RequestProcessorSettings
 import numpy as np
 
 from main.processing.request_pipeline import RequestPipeline

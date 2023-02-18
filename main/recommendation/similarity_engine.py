@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-import main.pandas_utility as pd_util
+import main.processing.pandas_utility as pd_util
 from main.recommendation.similarity_engine_settings import EngineSettings
 
 DISTANCE = 'distance_from_user_entry'

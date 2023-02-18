@@ -1,8 +1,8 @@
-from main.xml_handler import XmlHandler
+from main.processing.xml_handler import XmlHandler
 import unittest
 import os
 
-file_path = os.path.join(os.path.dirname(__file__), "./resources/test.xml")
+file_path = os.path.join(os.path.dirname(__file__), "../resources/test.xml")
 
 
 class XmlHandlerTest(unittest.TestCase):
