@@ -15,6 +15,10 @@ class RequestProcessorSettings(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def get_label_replacements(self):
+        pass
+
+    @abstractmethod
     def keys_whose_presence_indicates_their_value(self) -> list:
         pass
 

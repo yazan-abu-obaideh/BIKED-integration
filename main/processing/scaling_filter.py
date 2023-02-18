@@ -5,7 +5,7 @@ import pandas as pd
 
 class ScalingFilter:
 
-    def __init__(self, scaler, columns_in_order):
+    def __init__(self, scaler: StandardScaler, columns_in_order):
         self.scaler = scaler
         self.columns_in_order = columns_in_order
 
