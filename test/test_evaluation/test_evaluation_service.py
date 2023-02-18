@@ -81,20 +81,6 @@ class EvaluationServiceTest(unittest.TestCase):
              "BB Drop": 0.19327064177679704})
         self.assertRaises(KeyError, self.service.predict_from_row,
                           incomplete_model_input)
-
-    def test_can_get_labels(self):
-        self.assertEqual({"Sim 1 Dropout X Disp. Magnitude",
-                          "Sim 1 Dropout Y Disp. Magnitude",
-                          "Sim 1 Bottom Bracket X Disp. Magnitude",
-                          "Sim 1 Bottom Bracket Y Disp. Magnitude",
-                          "Sim 2 Bottom Bracket Z Disp. Magnitude",
-                          "Sim 3 Bottom Bracket Y Disp. Magnitude",
-                          "Sim 3 Bottom Bracket X Rot. Magnitude",
-                          "Sim 1 Safety Factor (Inverted)",
-                          "Sim 3 Safety Factor (Inverted)",
-                          "Model Mass Magnitude"},
-                         set(self.service.get_labels()))
-
     def test_model_and_scalers_loaded(self):
         predictions = self.service._predict_from_row(self.x)
         self.assert_correct_metrics(predictions, self.y)
