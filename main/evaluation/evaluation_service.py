@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
 import main.processing.pandas_utility as pd_util
-from main.evaluation.default_service_settings import DefaultAdapterSettings
+from main.evaluation.default_processor_settings import DefaultProcessorSettings
 from main.evaluation.MultilabelPredictor import MultilabelPredictor
 from main.evaluation.Predictor import Predictor
 from main.evaluation.request_processor import RequestProcessor
@@ -36,7 +36,7 @@ DEFAULT_PREDICTOR = load_pickled_predictor()
 class EvaluationService:
 
     def __init__(self, predictor: Predictor = DEFAULT_PREDICTOR,
-                 settings : RequestProcessorSettings = DefaultAdapterSettings()):
+                 settings : RequestProcessorSettings = DefaultProcessorSettings()):
         self.predictor = predictor
         self.adapter = RequestProcessor(settings)
         x, y, input_scaler, output_scaler = self.get_data()

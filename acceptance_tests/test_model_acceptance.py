@@ -1,6 +1,6 @@
 import unittest
 from sample_request import request
-from main.evaluation.evaluation_service import EvaluationService, DefaultAdapterSettings
+from main.evaluation.evaluation_service import EvaluationService, DefaultProcessorSettings
 from acceptance_tests.robot_qa import RobotQaDepartment
 from acceptance_tests.robot_qa import Relationship
 
@@ -34,7 +34,7 @@ service = EvaluationService()
 qa = RobotQaDepartment(processing_function=service.predict_from_dict,
                        preprocessing_function=service.adapter.convert_dict)
 
-SETTINGS = DefaultAdapterSettings()
+SETTINGS = DefaultProcessorSettings()
 reversed_map = {value: key for key, value in SETTINGS.get_bikeCad_to_model_map().items()}
 def build_relationship(request_parameters, response_parameters):
     return Relationship(request_parameters=request_parameters, affected_values=response_parameters)

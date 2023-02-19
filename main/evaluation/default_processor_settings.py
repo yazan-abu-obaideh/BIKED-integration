@@ -3,7 +3,7 @@ from typing import List
 from main.evaluation.request_processor_settings import RequestProcessorSettings
 
 
-class DefaultAdapterSettings(RequestProcessorSettings):
+class DefaultProcessorSettings(RequestProcessorSettings):
 
     def get_label_replacements(self):
         labels_inverted = ["Sim 1 Safety Factor",
