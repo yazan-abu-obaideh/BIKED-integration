@@ -82,8 +82,8 @@ class BikeRecommendationService:
     def pre_process_request(self, xml_user_entry):
         user_entry_dict = self.parse_xml_request(xml_user_entry)
         scaled_user_entry = self.scaler.scale(user_entry_dict)
-        scaled_user_entry = self.default_to_mean(scaled_user_entry)
-        return scaled_user_entry
+        processed_user_entry = self.default_to_mean(scaled_user_entry)
+        return processed_user_entry
 
     def parse_xml_request(self, xml_user_entry):
         self.xml_handler.set_xml(xml_user_entry)
