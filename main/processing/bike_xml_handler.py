@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 TEMPLATE_ENTRY = "<entry key='k'>1</entry>"
 
 
-class BikeCadXmlHandler:
+class BikeXmlHandler:
     XML_TAG = "entry"
     ATTRIBUTE = "key"
     PARENT_TAG = "properties"

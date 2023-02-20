@@ -10,7 +10,7 @@ from main.evaluation.Predictor import Predictor
 from main.evaluation.request_processor import RequestProcessor
 from main.evaluation.request_processor_settings import RequestProcessorSettings
 from main.load_data import load_augmented_framed_dataset
-from main.processing.bikeCad_xml_handler import BikeCadXmlHandler
+from main.processing.bike_xml_handler import BikeXmlHandler
 from main.processing.scaling_filter import ScalingFilter
 from main.resource_paths import MODEL_PATH
 
@@ -40,7 +40,7 @@ class EvaluationService:
         self.predictor = predictor
         self.adapter = RequestProcessor(settings)
         x, y, input_scaler, output_scaler = self.get_data()
-        self.xml_handler = BikeCadXmlHandler()
+        self.xml_handler = BikeXmlHandler()
         self.request_scaler = ScalingFilter(input_scaler, x.columns)
         self.response_scaler = ScalingFilter(output_scaler, y.columns)
 
