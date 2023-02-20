@@ -55,7 +55,7 @@ class EvaluationServiceTest(unittest.TestCase):
         with open(BIKE_PATH, "r") as file:
             xml_as_string = file.read()
 
-        self.assertEqual({'Sim 1 Dropout X Disp. Magnitude': 0.03133767152123533,
+        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.03133767152123533,
                           'Sim 1 Dropout Y Disp. Magnitude': 0.05843097911811291,
                           'Sim 1 Bottom Bracket X Disp. Magnitude': 0.03333394633093304,
                           'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.04690599138870623,
@@ -92,9 +92,9 @@ class EvaluationServiceTest(unittest.TestCase):
         prediction = self.service.predict_from_row(model_input)
         # TODO: the assertion below is misplaced. pd_utils should have their own tests.
         self.assertEqual(pd_util.get_dict_from_row(model_input), self.sample_input)
-        self.assertEqual(prediction, self.expected_output)
+        self.assertDictAlmostEqual(prediction, self.expected_output)
         model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
-        self.assertEqual(self.service.predict_from_row(model_input_from_dict), self.expected_output)
+        self.assertDictAlmostEqual(self.service.predict_from_row(model_input_from_dict), self.expected_output)
 
     def test_order_does_not_matter(self):
         input_in_different_order = {key: self.sample_input[key]
@@ -126,3 +126,15 @@ class EvaluationServiceTest(unittest.TestCase):
                                                             test_size=0.2,
                                                             random_state=1950)
         return x_test, y_test
+
+    def assertDictAlmostEqual(self, expected, actual, decimal_places=7):
+        """Asserts two dictionaries containing float values are equal up to a specified precision"""
+        expected_length = len(expected)
+        actual_length = len(actual)
+        self.assertEqual(expected_length, actual_length, f"Expected dictionary with length {expected_length}, got length "
+                                                     f"{actual_length} instead.")
+        actual_keys = actual.keys()
+        for key, value in expected.items():
+            self.assertTrue(key in actual_keys)
+            self.assertAlmostEqual(value, actual[key], places=decimal_places, msg=f"Key {key} in dictionary has unexpected value")
+
