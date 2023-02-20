@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
-
-FROM resources-image
+FROM jyguru/biked-integration:resources-image
 
 WORKDIR /app
 
