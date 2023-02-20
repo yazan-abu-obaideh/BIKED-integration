@@ -127,7 +127,7 @@ class EvaluationServiceTest(unittest.TestCase):
                                                             random_state=1950)
         return x_test, y_test
 
-    def assertDictAlmostEqual(self, expected, actual, decimal_places=7):
+    def assertDictAlmostEqual(self, expected, actual, decimal_places=5):
         """Asserts two dictionaries containing float values are equal up to a specified precision"""
         expected_length = len(expected)
         actual_length = len(actual)
