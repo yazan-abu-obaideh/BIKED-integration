@@ -16,10 +16,10 @@ class RecommendationServiceTest(unittest.TestCase):
         recommended_bike = self.service.recommend_bike(bike_in_request)
         self.assertEqual(bike_in_request, recommended_bike)
 
-    def test_raise_if_empty_request(self):
-        def recommend_invalid():
+    def test_raises_correct_exception(self):
+        with self.assertRaises(ValueError) as context:
             self.service.recommend_bike("")
-        self.assertRaises(ValueError, recommend_invalid)
+        self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
 
     def __grab_bike_xml(self):
         with open(VALID_MODEL_PATH, 'r') as file:
