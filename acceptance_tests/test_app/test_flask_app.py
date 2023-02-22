@@ -61,7 +61,7 @@ class AppTest(unittest.TestCase):
 
     @staticmethod
     def site_not_up():
-        return send_request(GET, "http://localhost:5000/health").text != "UP"
+        return send_request(GET, "http://localhost:5000/health").json()["health"] != "UP"
 
     @staticmethod
     def run_app():
