@@ -16,10 +16,10 @@ class RequestValidatorTest(unittest.TestCase):
         self.validator.throw_if_empty({"1": 1}, "should_not_raise")
 
     def test_validate_scheme(self):
-        message = "Required parameters [y, z] missing"
+        message = "Required parameters ['y', 'z'] missing"
         with self.assertRaises(ValueError) as context:
-            self.validator.throw_if_does_not_contain({"x" : 5}, ["y", "z"], message)
+            self.validator.throw_if_does_not_contain({"x" : 5}, ["y", "z"])
         self.assertEqual(message, context.exception.args[0])
 
     def test_valid_scheme_does_not_raise(self):
-        self.validator.throw_if_does_not_contain({"x": 5, "y": 3}, ["x", "y"], "should_not_throw")
+        self.validator.throw_if_does_not_contain({"x": 5, "y": 3}, ["x", "y"])
