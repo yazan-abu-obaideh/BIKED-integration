@@ -39,7 +39,7 @@ def simple_dtai(row):
         direction="maximize",
         targets=[1 for _ in generator],
         alpha_values=[1 for _ in generator],
-        beta_values=[1 for _ in generator],
+        beta_values=[2 for _ in generator],
     )
 
 
@@ -53,7 +53,7 @@ class ModelWrapper:
 
     def predict(self, _x):
         actual = predictor.predict(_x).rename(columns=processor_settings.get_label_replacements())
-        actual['dtai'] = actual.apply(simple_dtai)
+        actual['dtai'] = actual.apply(simple_dtai, axis=1)
         return actual['dtai'].values
 
 
@@ -66,6 +66,9 @@ data_for_dice = pd.concat([x, design_target_index_data], axis=1)
 dice_data = dice_ml.Data(dataframe=data_for_dice, continuous_features=list(x.columns.values),
                          outcome_name="dtai")
 
-explainer = dice_ml.Dice(dice_data, dice_model, method="random")
-e1 = explainer.generate_counterfactuals(x[0:1], total_CFs=5, desired_range=[0, 2])
+explainer = dice_ml.Dice(dice_data, dice_model, method="genetic")
+e1 = explainer.generate_counterfactuals(x[0:1],
+                                        total_CFs=5,
+                                        features_to_vary=[c for c in x.columns.values if c.endswith("Thickness")],
+                                        desired_range=[0.5, 1])
 print(e1.visualize_as_dataframe(display_sparse_df=True, show_only_changes=True))
