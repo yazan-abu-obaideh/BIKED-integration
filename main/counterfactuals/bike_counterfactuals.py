@@ -36,11 +36,13 @@ class ModelWrapper:
         return predictor.predict(_x).rename(
             columns=processor_settings.get_label_replacements()).drop(
             columns=y.columns.difference(["Model Mass Magnitude"])
-        )
+        ).values
 
 
 wrapper = ModelWrapper()
-wrapper.predict(x)
+prediction = wrapper.predict(x[0:1])
+print(prediction)
+print(type(prediction))
 
 dice_model = dice_ml.Model(model=ModelWrapper(), backend="sklearn", model_type=ModelTypes.Regressor)
 data_for_dice = pd.concat([x, y["Model Mass Magnitude"]], axis=1)
