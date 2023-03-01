@@ -1,5 +1,13 @@
+import pandas as pd
+from dice_ml.constants import ModelTypes
+
 from main.evaluation.evaluation_service import load_pickled_predictor
 import main.processing.pandas_utility as pd_util
+from main.load_data import load_augmented_framed_dataset
+from main.evaluation.default_processor_settings import DefaultProcessorSettings
+import dice_ml
+
+processor_settings = DefaultProcessorSettings()
 
 sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
              'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
@@ -20,4 +28,26 @@ sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.4
              'ST Thickness': -0.5700521782698762, 'DT Thickness': -1.0553146425778421,
              'DT Length': 0.10253602811555089}
 predictor = load_pickled_predictor()
-print(predictor.predict(pd_util.get_row_from_dict(sample_input)))
+x, y, x_scaler, y_scaler = load_augmented_framed_dataset()
+class ModelWrapper:
+    def __init__(self):
+        pass
+    def predict(self, _x):
+        return predictor.predict(_x).rename(
+            columns=processor_settings.get_label_replacements()).drop(
+            columns=y.columns.difference(["Model Mass Magnitude"])
+        )
+
+
+wrapper = ModelWrapper()
+wrapper.predict(x)
+
+dice_model = dice_ml.Model(model=ModelWrapper(), backend="sklearn", model_type=ModelTypes.Regressor)
+data_for_dice = pd.concat([x, y["Model Mass Magnitude"]], axis=1)
+print(data_for_dice.columns.values)
+dice_data = dice_ml.Data(dataframe=data_for_dice, continuous_features=list(x.columns.values),
+                         outcome_name="Model Mass Magnitude")
+explainer = dice_ml.Dice(dice_data, dice_model, method="random")
+e1 = explainer.generate_counterfactuals(x[0:1], total_CFs=5, desired_range=[0, 1])
+e1.visualize_as_dataframe(show_only_changes=True)
+e1.visualize_as_dataframe(show_only_changes=False)
