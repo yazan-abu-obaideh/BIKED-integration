@@ -52,13 +52,9 @@ class ModelWrapper:
         pass
 
     def predict(self, _x):
-        actual = predictor.predict(_x).rename(columns=processor_settings.get_label_replacements()).values
-        dtai = calculateDTAI(actual, direction="maximize",
-                             targets=[[1 for i in range(actual.shape[1])] for j in range(actual.shape[0])],
-                             alpha_values=[[2 for i in range(actual.shape[1])] for j in range(actual.shape[0])],
-                             beta_values=[[3 for i in range(actual.shape[1])] for j in range(actual.shape[0])]
-)
-        return np.array([dtai])
+        actual = predictor.predict(_x).rename(columns=processor_settings.get_label_replacements())
+        actual['dtai'] = actual.apply(simple_dtai)
+        return actual['dtai'].values
 
 
 wrapper = ModelWrapper()
