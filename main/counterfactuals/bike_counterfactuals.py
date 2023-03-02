@@ -7,6 +7,8 @@ from main.evaluation.default_processor_settings import DefaultProcessorSettings
 from main.evaluation.evaluation_service import load_pickled_predictor
 from main.load_data import load_augmented_framed_dataset
 
+DTAI = 'dtai'
+
 processor_settings = DefaultProcessorSettings()
 
 sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
@@ -37,13 +39,13 @@ class BikeCounterfactualsGenerator:
 
         def predict(self, _x):
             actual = predictor.predict(_x).rename(columns=processor_settings.get_label_replacements())
-            actual['dtai'] = actual.apply(BikeCounterfactualsGenerator.simple_dtai, axis=1)
-            return actual['dtai'].values
+            actual[DTAI] = actual.apply(BikeCounterfactualsGenerator.simple_dtai, axis=1)
+            return actual[DTAI].values
 
     def __init__(self):
         self.x, y, _, _ = load_augmented_framed_dataset()
-        y['dtai'] = y.apply(self.simple_dtai, axis=1)
-        design_target_index_data = y['dtai']
+        y[DTAI] = y.apply(self.simple_dtai, axis=1)
+        design_target_index_data = y[DTAI]
         dice_model = dice_ml.Model(model=self.ModelWrapper(), backend="sklearn", model_type=ModelTypes.Regressor)
         data_for_dice = pd.concat([self.x, design_target_index_data], axis=1)
         dice_data = dice_ml.Data(dataframe=data_for_dice,
