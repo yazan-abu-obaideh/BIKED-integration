@@ -41,7 +41,7 @@ class BikeCounterfactualsGenerator:
             return actual['dtai'].values
 
     def __init__(self):
-        self.x, y, x_scaler, y_scaler = load_augmented_framed_dataset()
+        self.x, y, _, _ = load_augmented_framed_dataset()
         y['dtai'] = y.apply(self.simple_dtai, axis=1)
         design_target_index_data = y['dtai']
         dice_model = dice_ml.Model(model=self.ModelWrapper(), backend="sklearn", model_type=ModelTypes.Regressor)
