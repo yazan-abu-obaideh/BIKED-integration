@@ -1,12 +1,11 @@
 import dice_ml
-import numpy as np
 import pandas as pd
 from dice_ml.constants import ModelTypes
 
+from calculate_dtai import calculateDTAI
 from main.evaluation.default_processor_settings import DefaultProcessorSettings
 from main.evaluation.evaluation_service import load_pickled_predictor
 from main.load_data import load_augmented_framed_dataset
-from calculate_dtai import calculateDTAI
 
 processor_settings = DefaultProcessorSettings()
 
@@ -29,49 +28,52 @@ sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.4
                 'ST Thickness': -0.5700521782698762, 'DT Thickness': -1.0553146425778421,
                 'DT Length': 0.10253602811555089}
 predictor = load_pickled_predictor()
-x, y, x_scaler, y_scaler = load_augmented_framed_dataset()
 
 
-def simple_dtai(row):
-    generator = range(len(row))
-    return calculateDTAI(
-        row.values,
-        direction="maximize",
-        targets=[1 for _ in generator],
-        alpha_values=[1 for _ in generator],
-        beta_values=[4 for _ in generator],
-    )
+class BikeCounterfactualsGenerator:
+    class ModelWrapper:
+        def __init__(self):
+            pass
 
+        def predict(self, _x):
+            actual = predictor.predict(_x).rename(columns=processor_settings.get_label_replacements())
+            actual['dtai'] = actual.apply(BikeCounterfactualsGenerator.simple_dtai, axis=1)
+            return actual['dtai'].values
 
-y['dtai'] = y.apply(simple_dtai, axis=1)
-design_target_index_data = y['dtai']
-
-
-class ModelWrapper:
     def __init__(self):
-        pass
+        self.x, y, x_scaler, y_scaler = load_augmented_framed_dataset()
+        y['dtai'] = y.apply(self.simple_dtai, axis=1)
+        design_target_index_data = y['dtai']
+        dice_model = dice_ml.Model(model=self.ModelWrapper(), backend="sklearn", model_type=ModelTypes.Regressor)
+        data_for_dice = pd.concat([self.x, design_target_index_data], axis=1)
+        dice_data = dice_ml.Data(dataframe=data_for_dice,
+                                 continuous_features=list(self.x.columns.values),
+                                 outcome_name="dtai")
 
-    def predict(self, _x):
-        actual = predictor.predict(_x).rename(columns=processor_settings.get_label_replacements())
-        actual['dtai'] = actual.apply(simple_dtai, axis=1)
-        return actual['dtai'].values
+        self.explainer = dice_ml.Dice(dice_data,
+                                      dice_model,
+                                      method="genetic")
+
+    @staticmethod
+    def simple_dtai(row):
+        list_generator = range(len(row))
+        return calculateDTAI(
+            row.values,
+            direction="maximize",
+            targets=[1 for _ in list_generator],
+            alpha_values=[1 for _ in list_generator],
+            beta_values=[4 for _ in list_generator],
+        )
+
+    def generate_counterfactuals(self):
+        return self.explainer.generate_counterfactuals(self.x[0:1],
+                                                       total_CFs=5,
+                                                       features_to_vary=[c for c in self.x.columns.values if
+                                                                         c.endswith("Thickness")],
+                                                       desired_range=[0.85, 1])
 
 
-wrapper = ModelWrapper()
-prediction = wrapper.predict(x[0:1])
+generator = BikeCounterfactualsGenerator()
 
-dice_model = dice_ml.Model(model=ModelWrapper(), backend="sklearn", model_type=ModelTypes.Regressor)
-data_for_dice = pd.concat([x, design_target_index_data], axis=1)
-
-dice_data = dice_ml.Data(dataframe=data_for_dice,
-                         continuous_features=list(x.columns.values),
-                         outcome_name="dtai")
-
-explainer = dice_ml.Dice(dice_data,
-                         dice_model,
-                         method="genetic")
-e1 = explainer.generate_counterfactuals(x[0:1],
-                                        total_CFs=5,
-                                        features_to_vary=[c for c in x.columns.values if c.endswith("Thickness")],
-                                        desired_range=[0.85, 1])
+e1 = generator.generate_counterfactuals()
 e1.visualize_as_dataframe(display_sparse_df=True, show_only_changes=True)
