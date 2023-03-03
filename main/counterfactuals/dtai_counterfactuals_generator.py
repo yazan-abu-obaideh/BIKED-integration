@@ -64,6 +64,6 @@ class DtaiCounterfactualsGenerator:
 
     def generate_counterfactuals(self, targets, changes):
         return self.build_explainer(targets).generate_counterfactuals(self.x[0:1],
-                                                               total_CFs=5,
+                                                               total_CFs=2,
                                                                features_to_vary=changes,
-                                                               desired_range=[0.85, 1])
+                                                               desired_range=[0.7, 1])

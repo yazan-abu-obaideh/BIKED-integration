@@ -57,5 +57,5 @@ def convert_to_float_arrays(alpha_values, beta_values, y_eval):
 
 
 if __name__ == "__main__":
-    design_index = calculateDTAI([10, 5, 3], "maximize", [6, 3, 3], [3, 3, 3], [1, 1, 1])
+    design_index = calculateDTAI([10, 5], "maximize", [10, 5], [1, 1], [4, 4])
     print(design_index)

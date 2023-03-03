@@ -10,11 +10,12 @@ from main.processing import pandas_utility as pd_util
 
 class DummyPredictor(Predictor):
     def predict(self, data: pd.DataFrame):
-        data["first_objective"] = data.apply(lambda series: series.loc["x"] + series.loc["y"] - series.loc["z"],
+        results = pd.DataFrame()
+        results["first_objective"] = data.apply(lambda series: -series.loc["x"] ** 2 - series.loc["y"] ** 2 + 15,
                                              axis=1)
-        data["second_objective"] = data.apply(lambda series: series.loc["x"] - series.loc["y"] + series.loc["z"],
+        results["second_objective"] = data.apply(lambda series: -series.loc["x"] ** 2 - series.loc["y"] ** 2 + 17,
                                               axis=1)
-        return data.drop(columns=data.columns.difference(["first_objective", "second_objective"]))
+        return results
 
 
 class DtaiCounterfactualsGeneratorTest(unittest.TestCase):
@@ -40,7 +41,7 @@ class DtaiCounterfactualsGeneratorTest(unittest.TestCase):
         error_generator = lambda value: value + (random.random() * random.choice([-1, 1]))
         y["first_objective"] = y["first_objective"].apply(error_generator)
         y["second_objective"] = y["second_objective"].apply(error_generator)
-        return x.drop(columns=["first_objective", "second_objective"]), y
+        return x, y
 
     def test_build_data(self):
         x, y = self.build_data()
@@ -48,7 +49,7 @@ class DtaiCounterfactualsGeneratorTest(unittest.TestCase):
         print(y.head())
 
     def test_generator(self):
-        counterfactuals = self.generator.generate_counterfactuals([50, 150], ["x", "y", "z"])
+        counterfactuals = self.generator.generate_counterfactuals([12, 14], ["x", "y", "z"])
         counterfactuals.visualize_as_dataframe()
 
     def test_dummy_predictor(self):
