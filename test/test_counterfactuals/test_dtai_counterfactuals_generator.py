@@ -10,9 +10,9 @@ from main.processing import pandas_utility as pd_util
 
 class DummyPredictor(Predictor):
     def predict(self, data: pd.DataFrame):
-        data["first_objective"] = data.apply(lambda series: series.loc["x"] ** 2 + series.loc["y"] ** 2,
+        data["first_objective"] = data.apply(lambda series: series.loc["x"] + series.loc["y"] - series.loc["z"],
                                              axis=1)
-        data["second_objective"] = data.apply(lambda series: series.loc["z"] ** 3 + series.loc["y"] + series.loc["x"],
+        data["second_objective"] = data.apply(lambda series: series.loc["x"] - series.loc["y"] + series.loc["z"],
                                               axis=1)
         return data.drop(columns=data.columns.difference(["first_objective", "second_objective"]))
 
@@ -29,11 +29,11 @@ class DtaiCounterfactualsGeneratorTest(unittest.TestCase):
             "y": 0,
             "z": 0
         })
-        for i in range(250):
+        for i in range(1, 250):
             new = pd_util.get_row_from_dict({
-                "x": i + 3,
-                "y": i * 2,
-                "z": (i + 2) ** 2 - 1
+                "x": i,
+                "y": i,
+                "z": i
             })
             x = pd.concat([x, new], axis=0)
         y = self.predictor.predict(x)
@@ -48,10 +48,10 @@ class DtaiCounterfactualsGeneratorTest(unittest.TestCase):
         print(y.head())
 
     def test_generator(self):
-        counterfactuals = self.generator.generate_counterfactuals([50, 51], ["x", "y", "z"])
+        counterfactuals = self.generator.generate_counterfactuals([50, 150], ["x", "y", "z"])
         counterfactuals.visualize_as_dataframe()
 
     def test_dummy_predictor(self):
         prediction = self.predictor.predict(pd_util.get_row_from_dict({"x": 5, "y": 10, "z": 5}))
-        self.assertEqual(125, prediction.iloc[0].loc["first_objective"])
-        self.assertEqual(140, prediction.iloc[0].loc["second_objective"])
+        self.assertEqual(10, prediction.iloc[0].loc["first_objective"])
+        self.assertEqual(0, prediction.iloc[0].loc["second_objective"])
