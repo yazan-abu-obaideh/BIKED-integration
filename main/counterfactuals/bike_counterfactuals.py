@@ -1,8 +1,12 @@
+from abc import abstractmethod, ABCMeta
+import numpy as np
+
 import dice_ml
 import pandas as pd
 from dice_ml.constants import ModelTypes
 
 from calculate_dtai import calculateDTAI
+from main.evaluation.Predictor import Predictor
 from main.evaluation.default_processor_settings import DefaultProcessorSettings
 from main.evaluation.evaluation_service import load_pickled_predictor
 from main.load_data import load_augmented_framed_dataset
@@ -29,24 +33,41 @@ sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.4
                 'BB Thickness': -0.11934492802927218, 'HT Thickness': -0.7465363724789722,
                 'ST Thickness': -0.5700521782698762, 'DT Thickness': -1.0553146425778421,
                 'DT Length': 0.10253602811555089}
-predictor = load_pickled_predictor()
+
+
+class CounterfactualsPredictor(metaclass=ABCMeta):
+    @abstractmethod
+    def predict(self, data: pd.DataFrame) -> np.array:
+        pass
+
+
+class WrappedBikePredictor(Predictor):
+    def __init__(self):
+        self.inner_predictor = load_pickled_predictor()
+
+    def predict(self, data: pd.DataFrame) -> pd.DataFrame:
+        return self.inner_predictor.predict(data).rename(processor_settings.get_label_replacements())
 
 
 class BikeCounterfactualsGenerator:
-    class ModelWrapper:
-        def __init__(self):
-            pass
 
-        def predict(self, _x):
-            actual = predictor.predict(_x).rename(columns=processor_settings.get_label_replacements())
-            actual[DTAI] = actual.apply(BikeCounterfactualsGenerator.simple_dtai, axis=1)
-            return actual[DTAI].values
+    def __init__(self,
+                 predictor: Predictor,
+                 x,
+                 y):
+        class ModelWrapper(CounterfactualsPredictor):
+            def __init__(self):
+                pass
 
-    def __init__(self):
-        self.x, y, _, _ = load_augmented_framed_dataset()
+            def predict(self, _x):
+                predictions = predictor.predict(_x)
+                predictions[DTAI] = predictions.apply(BikeCounterfactualsGenerator.simple_dtai, axis=1)
+                return predictions[DTAI].values
+
+        self.x = x
         y[DTAI] = y.apply(self.simple_dtai, axis=1)
         design_target_index_data = y[DTAI]
-        dice_model = dice_ml.Model(model=self.ModelWrapper(), backend="sklearn", model_type=ModelTypes.Regressor)
+        dice_model = dice_ml.Model(model=ModelWrapper(), backend="sklearn", model_type=ModelTypes.Regressor)
         data_for_dice = pd.concat([self.x, design_target_index_data], axis=1)
         dice_data = dice_ml.Data(dataframe=data_for_dice,
                                  continuous_features=list(self.x.columns.values),
@@ -74,8 +95,9 @@ class BikeCounterfactualsGenerator:
                                                                          c.endswith("Thickness")],
                                                        desired_range=[0.85, 1])
 
+bike_features, bike_predictions, _, _ = load_augmented_framed_dataset()
 
-generator = BikeCounterfactualsGenerator()
+generator = BikeCounterfactualsGenerator(WrappedBikePredictor(), bike_features, bike_predictions)
 
 e1 = generator.generate_counterfactuals()
 e1.visualize_as_dataframe(display_sparse_df=True, show_only_changes=True)
