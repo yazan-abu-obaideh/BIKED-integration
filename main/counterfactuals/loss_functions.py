@@ -9,7 +9,7 @@ class LossFunctionCalculator:
         all_columns = x1.columns.values
         for column in all_columns:
             weighted_deltas[column] = abs(x1[column] - x2[column]) * (1/self.get_ranges()[column])
-        return (weighted_deltas.apply(np.sum, axis=1).values[0]) * (1/len(all_columns))
+        return weighted_deltas.apply(np.sum, axis=1).values * (1 / len(all_columns))
 
     def get_ranges(self):
         ranges = {}

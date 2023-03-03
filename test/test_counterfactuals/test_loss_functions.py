@@ -21,6 +21,6 @@ class LossFunctionsTest(unittest.TestCase):
             "z": 3
         })
         self.assertAlmostEqual(0.033,
-                               self.calculator.gower_distance(x1, x2),
+                               self.calculator.gower_distance(x1, x2)[0],
                                places=3
                                )
