@@ -42,5 +42,6 @@ bike_features, bike_predictions, _, _ = load_augmented_framed_dataset()
 
 generator = DtaiCounterfactualsGenerator(WrappedBikePredictor(), bike_features, bike_predictions)
 
-e1 = generator.generate_counterfactuals()
+e1 = generator.generate_counterfactuals([1 for i in range(10)], [c for c in bike_features.columns.values
+                                                                 if c.endswith("Thickness")])
 e1.visualize_as_dataframe(display_sparse_df=True, show_only_changes=True)

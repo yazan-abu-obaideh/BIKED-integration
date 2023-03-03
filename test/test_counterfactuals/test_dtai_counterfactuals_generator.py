@@ -48,7 +48,8 @@ class DtaiCounterfactualsGeneratorTest(unittest.TestCase):
         print(y.head())
 
     def test_generator(self):
-        pass
+        counterfactuals = self.generator.generate_counterfactuals([50, 51], ["x", "y", "z"])
+        counterfactuals.visualize_as_dataframe()
 
     def test_dummy_predictor(self):
         prediction = self.predictor.predict(pd_util.get_row_from_dict({"x": 5, "y": 10, "z": 5}))
