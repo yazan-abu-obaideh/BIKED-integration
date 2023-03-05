@@ -40,7 +40,7 @@ class Optimization(Problem):
                  query_weight,
                  cfc_weight,
                  gower_weight):
-        super().__init__(n_var=n_variables, n_obj=num_objs + 2, n_constr=len(validity_fns), xl=lower_bounds,
+        super().__init__(n_var=n_variables, n_obj=num_objs + 3, n_constr=len(validity_fns), xl=lower_bounds,
                          xu=upper_bounds)
         self.query = user_query
         self.target = counterfactual_targets
@@ -57,14 +57,14 @@ class Optimization(Problem):
         assert (cfc_weight >= 0)
 
     def calculate_scores(self, x):
-        all_scores = np.zeros((len(x), num_objs + 2))
+        all_scores = np.zeros((len(x), num_objs + 3))
         # the first n columns are the model predictions
         all_scores[:, :num_objs] = self.predictor(x)
         # n + 1 is gower distance
         all_scores[:, num_objs] = self.gower_dist(x)
         # n + 2 is changed features
         all_scores[:, num_objs + 1] = self.changed_features(x)
-        # all_scores[:, num_objs + 2] = self.evaluate_design(x)
+        all_scores[:, num_objs + 2] = self.evaluate_design(x)
         return all_scores, self.get_validity(x)
 
     def get_validity(self, x):
@@ -86,7 +86,7 @@ class Optimization(Problem):
 
     def evaluate_design(self, x):
         # TODO: use self.counterfactual_targets to evaluate design
-        return np.linalg.norm(x - self.target)
+        return np.zeros(len(x))
 
 
 n_var = len(x_scaled.columns)
