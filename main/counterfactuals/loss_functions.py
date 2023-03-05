@@ -11,6 +11,10 @@ class LossFunctionCalculator:
             weighted_deltas[column] = abs(x1[column] - x2[column]) * (1/self.get_ranges()[column])
         return weighted_deltas.apply(np.sum, axis=1).values * (1 / len(all_columns))
 
+    def np_gower_distance(self, x1, x2):
+        pass
+
+
     def get_ranges(self):
         ranges = {}
         for column in self.dataset.columns.values:
