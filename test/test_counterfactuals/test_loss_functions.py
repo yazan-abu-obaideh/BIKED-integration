@@ -10,6 +10,14 @@ class LossFunctionsTest(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
             self.calculator = LossFunctionCalculator(pd.read_csv(file, index_col=0))
 
+    def test_changed_features(self):
+        x1 = [[1, 2, 5], [2, 4, 5]]
+        x2 = [[1, 3, 6]]
+        changes = self.calculator.changed_features(x1, x2)
+        self.assertEqual(2, changes[0])
+        self.assertEqual(3, changes[1])
+        self.assertEqual(2, len(changes))
+
     def test_gower_distance_with_different_dimensions(self):
         x1 = np.array([[5, 10, 3], [5, 10, 3]])
         x2 = np.array([[6, 10, 3]])

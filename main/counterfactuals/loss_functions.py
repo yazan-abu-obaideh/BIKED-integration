@@ -11,6 +11,12 @@ class LossFunctionCalculator:
             weighted_deltas[column] = x1[column].apply(lambda value: abs(value - x2.iloc[0].loc[column]) * 1/self.get_ranges()[column])
         return weighted_deltas.apply(np.sum, axis=1).values * (1 / len(all_columns))
 
+    def changed_features(self, x1, x2):
+        x1, x2 = self.to_dataframe(x1), self.to_dataframe(x2)
+        changes = pd.DataFrame(columns=["changes"])
+        changes["changes"] = x1.apply(lambda row: np.count_nonzero(row.values - x2.iloc[0].values), axis=1)
+        return changes["changes"].values
+
     def np_gower_distance(self, x1, x2):
         return self.gower_distance(self.to_dataframe(x1), self.to_dataframe(x2))
 

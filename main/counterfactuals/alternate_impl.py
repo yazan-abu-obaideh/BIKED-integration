@@ -51,7 +51,7 @@ class Optimization(Problem):
         self.validity_fns = validity_fns
         self.query = user_query
         self.loss_function_calculator = LossFunctionCalculator(
-            pd.DataFrame([upper_bounds - lower_bounds], columns=[_ for _ in range(n_variables)])
+            pd.DataFrame([upper_bounds, lower_bounds], columns=[_ for _ in range(n_variables)])
         )
         assert (query_weight >= 0)
         assert (cfc_weight >= 0)
@@ -64,7 +64,7 @@ class Optimization(Problem):
         all_scores[:, num_objs] = self.gower_dist(x)
         # n + 2 is changed features
         all_scores[:, num_objs + 1] = self.changed_features(x)
-        all_scores[:, num_objs + 2] = self.evaluate_design(x)
+        # all_scores[:, num_objs + 2] = self.evaluate_design(x)
         return all_scores, self.get_validity(x)
 
     def get_validity(self, x):
@@ -77,7 +77,7 @@ class Optimization(Problem):
         return self.loss_function_calculator.np_gower_distance(x, self.query.values)  # TODO
 
     def changed_features(self, x):
-        return np.count_nonzero(x - self.query)  # TODO
+        return self.loss_function_calculator.changed_features(x, self.query.values)  # TODO
 
     def _evaluate(self, x, out, *args, **kwargs):
         score, validity = self.calculate_scores(x)
@@ -119,7 +119,7 @@ cf_target = y.sample(1, axis=0).iloc[:, obj_indexes]
 problem = Optimization(n_var, ub, lb, predictor_fn, [], query, cf_target, 1, 1, 1)
 algorithm = NSGA2(pop_size=100, eliminate_duplicates=True)
 res = minimize(problem, algorithm,
-               ('n_gen', 100),
+               ('n_gen', 5),
                seed=2,
                verbose=True)
 
