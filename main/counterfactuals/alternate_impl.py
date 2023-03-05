@@ -42,7 +42,6 @@ class Optimization(Problem):
                  gower_weight):
         super().__init__(n_var=n_variables, n_obj=num_objs + 3, n_constr=len(validity_fns), xl=lower_bounds,
                          xu=upper_bounds)
-        self.query = user_query
         self.target = counterfactual_targets
         self.query_weight = query_weight  # query proximity weight
         self.cfc_weight = cfc_weight  # changed features loss weight
@@ -77,7 +76,7 @@ class Optimization(Problem):
         return self.loss_function_calculator.np_gower_distance(x, self.query.values)  # TODO
 
     def changed_features(self, x):
-        return self.loss_function_calculator.changed_features(x, self.query.values)  # TODO
+        return self.loss_function_calculator.np_changed_features(x, self.query.values)  # TODO
 
     def _evaluate(self, x, out, *args, **kwargs):
         score, validity = self.calculate_scores(x)

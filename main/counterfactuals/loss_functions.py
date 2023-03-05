@@ -8,26 +8,40 @@ class LossFunctionCalculator:
         for column in self.dataset.columns.values:
             self.ranges[column] = self.dataset[column].max() - self.dataset[column].min()
 
-    def gower_distance(self, x1, x2):
+    def np_euclidean_distance(self, designs_matrix, reference_design):
+        return self.euclidean_distance(self.to_dataframe(designs_matrix), self.to_dataframe(reference_design))
+
+    def gower_distance(self, dataframe, reference_dataframe):
         weighted_deltas = pd.DataFrame()
-        all_columns = x1.columns.values
-        reference_row = x2.iloc[0]
+        all_columns = dataframe.columns.values
+        reference_row = reference_dataframe.iloc[0]
         for column in all_columns:
-            weighted_deltas[column] = x1[column].apply(lambda value: abs(value - reference_row.loc[column]) * 1 / self.get_ranges()[column])
+            weighted_deltas[column] = dataframe[column].apply(lambda value: abs(value - reference_row.loc[column]) * 1 / self.get_ranges()[column])
         return weighted_deltas.apply(np.sum, axis=1).values * (1 / len(all_columns))
 
-    def changed_features(self, x1, x2):
-        x1, x2 = self.to_dataframe(x1), self.to_dataframe(x2)
+    def np_changed_features(self, designs_matrix, reference_design):
+        designs_matrix, reference_design = self.to_dataframe(designs_matrix), self.to_dataframe(reference_design)
+        return self.changed_features(designs_matrix, reference_design)
+
+    def changed_features(self, designs_dataframe, reference_dataframe):
         changes = pd.DataFrame(columns=["changes"])
-        changes["changes"] = x1.apply(lambda row: np.count_nonzero(row.values - x2.iloc[0].values), axis=1)
+        changes["changes"] = designs_dataframe.apply(
+            lambda row: np.count_nonzero(row.values - reference_dataframe.iloc[0].values), axis=1)
         return changes["changes"].values
 
-    def np_gower_distance(self, x1, x2):
-        return self.gower_distance(self.to_dataframe(x1), self.to_dataframe(x2))
+    def np_gower_distance(self, designs_matrix, reference_design):
+        return self.gower_distance(self.to_dataframe(designs_matrix), self.to_dataframe(reference_design))
 
-    def to_dataframe(self, x1):
-        return pd.DataFrame(x1, columns=self.dataset.columns)
+    def to_dataframe(self, numpy_array):
+        return pd.DataFrame(numpy_array, columns=self.dataset.columns)
 
     def get_ranges(self):
         return self.ranges
+
+    def euclidean_distance(self, dataframe, reference):
+        reference_row = reference.iloc[0]
+        changes = pd.DataFrame(columns=["changes"])
+        changes["changes"] = dataframe.apply(lambda row: np.linalg.norm(row - reference_row), axis=1)
+        return changes["changes"].values
+
 

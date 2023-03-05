@@ -10,10 +10,19 @@ class LossFunctionsTest(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
             self.calculator = LossFunctionCalculator(pd.read_csv(file, index_col=0))
 
+    def test_euclidean_distance(self):
+        x1 = [[1, 2, 5], [2, 4, 5], [1, 3, 6]]
+        reference = [[1, 1, 1]]
+        design_distances = self.calculator.np_euclidean_distance(x1, reference)
+        self.assertAlmostEqual(17 ** 0.5, design_distances[0], places=5)
+        self.assertAlmostEqual(29 ** 0.5, design_distances[2], places=5)
+        self.assertEqual(3, len(design_distances))
+
+
     def test_changed_features(self):
         x1 = [[1, 2, 5], [2, 4, 5], [1, 3, 6]]
         x2 = [[1, 3, 6]]
-        changes = self.calculator.changed_features(x1, x2)
+        changes = self.calculator.np_changed_features(x1, x2)
         self.assertEqual(2, changes[0])
         self.assertEqual(3, changes[1])
         self.assertEqual(0, changes[2])
