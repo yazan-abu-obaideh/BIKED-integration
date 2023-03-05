@@ -10,6 +10,12 @@ class LossFunctionsTest(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
             self.calculator = LossFunctionCalculator(pd.read_csv(file, index_col=0))
 
+    def test_gower_distance_with_different_dimensions(self):
+        x1 = np.array([[5, 10, 3], [5, 10, 3]])
+        x2 = np.array([[6, 10, 3]])
+        self.assertAlmostEqual(0.033, self.calculator.np_gower_distance(x1, x2)[0], places=3)
+        self.assertAlmostEqual(0.033, self.calculator.np_gower_distance(x1, x2)[1], places=3)
+
     def test_to_df(self):
         array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         dataframe = self.calculator.to_dataframe(array)
