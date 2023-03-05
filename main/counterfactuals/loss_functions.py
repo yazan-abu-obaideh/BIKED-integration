@@ -24,10 +24,9 @@ class LossFunctionCalculator:
         return self.changed_features(designs_matrix, reference_design)
 
     def changed_features(self, designs_dataframe: pd.DataFrame, reference_dataframe: pd.DataFrame):
-        changes = pd.DataFrame(columns=["changes"])
-        changes["changes"] = designs_dataframe.apply(
+        changes = designs_dataframe.apply(
             lambda row: np.count_nonzero(row.values - reference_dataframe.iloc[0].values), axis=1)
-        return changes["changes"].values
+        return changes.values
 
     def np_gower_distance(self, designs_matrix: np.array, reference_design: np.array):
         return self.gower_distance(self.to_dataframe(designs_matrix), self.to_dataframe(reference_design))
@@ -40,8 +39,7 @@ class LossFunctionCalculator:
 
     def euclidean_distance(self, dataframe: pd.DataFrame, reference: pd.DataFrame):
         reference_row = reference.iloc[0]
-        changes = pd.DataFrame(columns=["changes"])
-        changes["changes"] = dataframe.apply(lambda row: np.linalg.norm(row - reference_row), axis=1)
-        return changes["changes"].values
+        changes = dataframe.apply(lambda row: np.linalg.norm(row - reference_row), axis=1)
+        return changes.values
 
 
