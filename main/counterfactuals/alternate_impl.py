@@ -1,5 +1,7 @@
 import os
 
+from main.counterfactuals.loss_functions import LossFunctionCalculator
+
 os.environ["TOKENIZERS_PARALLELISM"] = "TRUE"
 import pandas as pd
 import pymoo
@@ -48,6 +50,9 @@ class Optimization(Problem):
         self.predictor = predictor
         self.validity_fns = validity_fns
         self.query = user_query
+        self.loss_function_calculator = LossFunctionCalculator(
+            pd.DataFrame([upper_bounds - lower_bounds], columns=[_ for _ in range(n_variables)])
+        )
         assert (query_weight >= 0)
         assert (cfc_weight >= 0)
 
@@ -56,7 +61,7 @@ class Optimization(Problem):
         # the first n columns are the model predictions
         all_scores[:, :num_objs] = self.predictor(x)
         # n + 1 is gower distance
-        all_scores[:, num_objs] = self.gower_dist(x, self.query)
+        all_scores[:, num_objs] = self.gower_dist(x)
         # n + 2 is changed features
         all_scores[:, num_objs + 1] = self.changed_features(x)
         all_scores[:, num_objs + 2] = self.evaluate_design(x)
@@ -68,11 +73,11 @@ class Optimization(Problem):
             g[:, i] = self.validity_fns[i](x).flatten()
         return g
 
-    def gower_dist(self, x, query):
-        return np.zeros(len(x))  # TODO
+    def gower_dist(self, x):
+        return self.loss_function_calculator.np_gower_distance(x, self.query.values)  # TODO
 
     def changed_features(self, x):
-        return np.zeros(len(x))  # TODO
+        return np.count_nonzero(x - self.query)  # TODO
 
     def _evaluate(self, x, out, *args, **kwargs):
         score, validity = self.calculate_scores(x)
@@ -81,7 +86,7 @@ class Optimization(Problem):
 
     def evaluate_design(self, x):
         # TODO: use self.counterfactual_targets to evaluate design
-        pass
+        return np.linalg.norm(x - self.target)
 
 
 n_var = len(x_scaled.columns)

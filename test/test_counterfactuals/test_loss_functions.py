@@ -2,12 +2,20 @@ import unittest
 import main.processing.pandas_utility as pd_util
 from main.counterfactuals.loss_functions import LossFunctionCalculator
 import pandas as pd
+import numpy as np
 import os
 
 class LossFunctionsTest(unittest.TestCase):
     def setUp(self) -> None:
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
             self.calculator = LossFunctionCalculator(pd.read_csv(file, index_col=0))
+
+    def test_to_df(self):
+        array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        dataframe = self.calculator.to_dataframe(array)
+        self.assertTrue("x" in dataframe.columns.values)
+        self.assertEqual(1, dataframe.loc[0].loc["x"])
+        self.assertEqual((3, 3), dataframe.shape)
 
     def test_np_gower_distance(self):
         x1 = pd_util.get_row_from_dict({
