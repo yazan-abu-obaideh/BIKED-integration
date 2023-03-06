@@ -27,12 +27,14 @@ from main.load_data import load_augmented_framed_dataset
 x_scaled, y, _, xscaler = load_data.load_augmented_framed_dataset()
 
 
+
 class Optimization(Problem):
 
     def __init__(self,
                  n_variables,
                  upper_bounds,
                  lower_bounds,
+                 indices_to_vary,
                  predictor,
                  validity_fns,
                  user_query,
@@ -40,6 +42,8 @@ class Optimization(Problem):
                  query_weight,
                  cfc_weight,
                  gower_weight):
+        assert len(indices_to_vary) == n_variables == len(upper_bounds) == len(lower_bounds), \
+            "Dimensions of arrays provided are inconsistent"
         super().__init__(n_var=n_variables, n_obj=num_objs + 3, n_constr=len(validity_fns), xl=lower_bounds,
                          xu=upper_bounds)
         self.target = counterfactual_targets
@@ -108,6 +112,9 @@ for key in objectives_min:
     obj_indexes.append(y.columns.get_loc(key))
 print(obj_indexes)
 
+CALCULATOR = LossFunctionCalculator(
+    pd.DataFrame([ub, lb], columns=[_ for _ in range(n_var)])
+)
 
 def predictor_fn(x, objective_indexes):
     return bike_predictor.predict(pd.DataFrame(x, columns=x_scaled.columns)).values[:, np.array(objective_indexes)]
@@ -115,7 +122,9 @@ def predictor_fn(x, objective_indexes):
 
 num_objs = len(obj_indexes)
 cf_target = y.sample(1, axis=0).iloc[:, obj_indexes]
-problem = Optimization(n_var, ub, lb, lambda x: predictor_fn(x, obj_indexes), [], query, cf_target, 1, 1, 1)
+problem = Optimization(n_var, ub, lb,
+                       [_ for _ in range(n_var)],
+                       lambda x: predictor_fn(x, obj_indexes), [], query, cf_target, 1, 1, 1)
 algorithm = NSGA2(pop_size=100, eliminate_duplicates=True)
 res = minimize(problem, algorithm,
                ('n_gen', 25),
