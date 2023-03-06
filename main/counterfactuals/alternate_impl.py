@@ -1,6 +1,5 @@
 import os
 
-from main.counterfactuals.loss_functions import LossFunctionCalculator
 
 os.environ["TOKENIZERS_PARALLELISM"] = "TRUE"
 import pandas as pd
@@ -53,9 +52,9 @@ class Optimization(Problem):
         self.predictor = predictor
         self.validity_fns = validity_fns
         self.query = user_query
-        self.loss_function_calculator = LossFunctionCalculator(
-            pd.DataFrame([upper_bounds, lower_bounds], columns=[_ for _ in range(n_variables)])
-        )
+        # self.loss_function_calculator = LossFunctionCalculator(
+        #     pd.DataFrame([upper_bounds, lower_bounds], columns=[_ for _ in range(n_variables)])
+        # )
         assert (query_weight >= 0)
         assert (cfc_weight >= 0)
 
@@ -125,10 +124,12 @@ cf_target = y.sample(1, axis=0).iloc[:, obj_indexes]
 problem = Optimization(n_var, ub, lb,
                        [_ for _ in range(n_var)],
                        lambda x: predictor_fn(x, obj_indexes), [], query, cf_target, 1, 1, 1)
+import time
+start = time.time()
 algorithm = NSGA2(pop_size=100, eliminate_duplicates=True)
 res = minimize(problem, algorithm,
                ('n_gen', 25),
                seed=2,
                verbose=True)
 
-print(res)
+print(time.time() - start)

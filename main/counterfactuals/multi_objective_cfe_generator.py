@@ -13,6 +13,7 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
                  predictions_dataset: pd.DataFrame,
                  base_query: pd.DataFrame,
                  target_design: pd.DataFrame,
+                 # TODO: numpy predictor
                  predictor: Predictor,
                  features_to_vary: list,
                  targeted_predictions: list,
@@ -26,6 +27,7 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
         self.predictor = predictor
         self.base_query = base_query
         self.target_design = target_design
+        self.targeted_predictions = targeted_predictions
         self.validation_functions = validation_functions
         super().__init__(n_var=len(features_to_vary),
                          n_obj=self.number_of_objectives,
@@ -43,7 +45,9 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
     def calculate_scores(self, x):
         all_scores = np.zeros((len(x), self.number_of_objectives))
         # the first n columns are the model predictions
-        prediction = self.predictor.predict(pd.DataFrame(x, columns=self.features_dataset.columns)).values
+        # TODO: feed x into the build_from_template method
+        prediction = self.predictor.predict(pd.DataFrame(x, columns=self.features_dataset.columns))\
+            .drop(columns=self.features_dataset.columns.difference(self.targeted_predictions)).values
         all_scores[:, :self.number_of_objectives] = prediction
         # n + 1 is gower distance
         all_scores[:, self.number_of_objectives] = self.np_gower_distance(x, self.base_query.values)
