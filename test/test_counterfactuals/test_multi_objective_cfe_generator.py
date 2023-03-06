@@ -5,12 +5,21 @@ import pandas as pd
 from main.processing import pandas_utility as pd_util
 
 from main.counterfactuals.multi_objective_cfe_generator import MultiObjectiveCounterfactualsGenerator
+from main.load_data import load_augmented_framed_dataset
 
 
 class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
     def setUp(self) -> None:
+        x, y, _, _ = load_augmented_framed_dataset()
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
-            self.generator = MultiObjectiveCounterfactualsGenerator(pd.read_csv(file, index_col=0))
+            self.generator = MultiObjectiveCounterfactualsGenerator(features_dataset=pd.read_csv(file, index_col=0),
+                                                                    predictions_dataset=
+                                                                    pd.DataFrame(np.array([5, 10]), columns=["performance"]),
+                                                                    features_to_vary=["x", "y", "z"],
+                                                                    targeted_predictions=["performance"],
+                                                                     validity_functions=[],
+                                                                    upper_bounds=np.array([10, 10, 10]),
+                                                                    lower_bounds=np.array([0, 0, 0]))
 
     def test_concat_numpy_arrays(self):
         template_array = np.array([1, 0, 3])
