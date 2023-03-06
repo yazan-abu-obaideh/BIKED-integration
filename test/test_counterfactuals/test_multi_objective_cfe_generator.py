@@ -12,12 +12,13 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
     def setUp(self) -> None:
         x, y, _, _ = load_augmented_framed_dataset()
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
-            self.generator = MultiObjectiveCounterfactualsGenerator(features_dataset=pd.read_csv(file, index_col=0),
-                                                                    predictions_dataset=
-                                                                    pd.DataFrame(np.array([5, 10]), columns=["performance"]),
+            features = pd.read_csv(file, index_col=0)
+            predictions = pd.DataFrame(np.array([5, 10]), columns=["performance"])
+            self.generator = MultiObjectiveCounterfactualsGenerator(features_dataset=features,
+                                                                    predictions_dataset=predictions,
                                                                     features_to_vary=["x", "y", "z"],
                                                                     targeted_predictions=["performance"],
-                                                                     validity_functions=[],
+                                                                    validity_functions=[],
                                                                     upper_bounds=np.array([10, 10, 10]),
                                                                     lower_bounds=np.array([0, 0, 0]))
 
