@@ -117,7 +117,7 @@ cf_target = y.sample(1, axis=0).iloc[:, obj_indexes]
 problem = Optimization(n_var, ub, lb, lambda x: predictor_fn(x, obj_indexes), [], query, cf_target, 1, 1, 1)
 algorithm = NSGA2(pop_size=100, eliminate_duplicates=True)
 res = minimize(problem, algorithm,
-               ('n_gen', 100),
+               ('n_gen', 25),
                seed=2,
                verbose=True)
 
