@@ -34,6 +34,7 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
 
     def validate_parameters(self, features_dataset, features_to_vary, lower_bounds, predictions_dataset,
                             targeted_predictions, upper_bounds):
+        self.validate_datasets(features_dataset, predictions_dataset)
         self.validate_features_to_vary(features_dataset, features_to_vary)
         self.validate_targeted_predictions(predictions_dataset, targeted_predictions)
         self.validate_bounds(features_to_vary, upper_bounds, lower_bounds)
@@ -106,3 +107,6 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
         valid_length = len(features_to_vary)
         assert upper_bounds.shape == (valid_length,)
         assert lower_bounds.shape == (valid_length,)
+
+    def validate_datasets(self, features_dataset: pd.DataFrame, predictions_dataset: pd.DataFrame):
+        assert len(features_dataset) == len(predictions_dataset), "Dimensional mismatch between provided datasets"

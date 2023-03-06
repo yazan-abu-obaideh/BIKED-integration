@@ -14,13 +14,16 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
             features = pd.read_csv(file, index_col=0)
             predictions = pd.DataFrame(np.array([5, 10]), columns=["performance"])
-            self.generator = MultiObjectiveCounterfactualsGenerator(features_dataset=features,
-                                                                    predictions_dataset=predictions,
-                                                                    features_to_vary=["x", "y", "z"],
-                                                                    targeted_predictions=["performance"],
-                                                                    validity_functions=[],
-                                                                    upper_bounds=np.array([10, 10, 10]),
-                                                                    lower_bounds=np.array([0, 0, 0]))
+            valid_initialization_dictionary = {
+                "features_dataset": features,
+                "predictions_dataset": predictions,
+                "features_to_vary": ["x", "y", "z"],
+                "targeted_predictions": ["performance"],
+                "validity_functions": [],
+                "upper_bounds": np.array([10, 10, 10]),
+                "lower_bounds": np.array([0, 0, 0])
+            }
+            self.generator = MultiObjectiveCounterfactualsGenerator(**valid_initialization_dictionary)
 
     def test_concat_numpy_arrays(self):
         template_array = np.array([1, 0, 3])
