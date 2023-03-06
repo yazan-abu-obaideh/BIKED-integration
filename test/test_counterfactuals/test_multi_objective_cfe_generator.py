@@ -17,6 +17,10 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
             valid_initialization_dictionary = {
                 "features_dataset": features,
                 "predictions_dataset": predictions,
+                "base_query": features[0:1],
+                "target_design": predictions[0:1],
+                "predictor": None,
+                "validation_functions": [],
                 "features_to_vary": ["x", "y", "z"],
                 "targeted_predictions": ["performance"],
                 "validity_functions": [],
