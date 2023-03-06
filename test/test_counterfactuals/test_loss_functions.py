@@ -10,6 +10,23 @@ class LossFunctionsTest(unittest.TestCase):
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
             self.calculator = LossFunctionCalculator(pd.read_csv(file, index_col=0))
 
+    def test_concat_numpy_arrays(self):
+        template_array = np.array([1, 0, 3])
+        new_values = np.array([[5, 6, 7, 10]])
+        result = self.calculator.build_from_template(template_array, new_values, [1])
+        self.assertEqual(4, result.shape[0])
+        self.assertEqual(3, result.shape[1])
+        self.assertEqual(7, result[2][1])
+    def test_concat_multi_dimensional_numpy_arrays(self):
+        template_array = np.array([1, 0, 3, 0])
+        new_values = np.array([[5, 6, 7, 10, 12], [12, 13, 14, 15, 13]])
+        result = self.calculator.build_from_template(template_array, new_values, [1, 3])
+        self.assertEqual(5, result.shape[0])
+        self.assertEqual(4, result.shape[1])
+        self.assertEqual(12, result[0][3])
+
+
+
     def test_euclidean_distance(self):
         x1 = [[1, 2, 5], [2, 4, 5], [1, 3, 6]]
         reference = [[1, 1, 1]]

@@ -51,4 +51,10 @@ class LossFunctionCalculator:
         changes = dataframe.apply(lambda row: np.linalg.norm(row - reference_row), axis=1)
         return changes.values
 
+    def build_from_template(self, template_array, new_values, modifiable_indices):
+        base = np.array([template_array for _ in range(new_values.shape[1])])
+        for i in range(len(modifiable_indices)):
+            base[:, modifiable_indices[i]] = new_values[i, :]
+        return base
+
 
