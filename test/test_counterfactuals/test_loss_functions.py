@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 import os
 
+
 class LossFunctionsTest(unittest.TestCase):
     def setUp(self) -> None:
         with open(os.path.join(os.path.dirname(__file__), "data.csv"), "r") as file:
@@ -17,6 +18,7 @@ class LossFunctionsTest(unittest.TestCase):
         self.assertEqual(4, result.shape[0])
         self.assertEqual(3, result.shape[1])
         self.assertEqual(7, result[2][1])
+
     def test_concat_multi_dimensional_numpy_arrays(self):
         template_array = np.array([1, 0, 3, 0])
         new_values = np.array([[5, 6, 7, 10, 12], [12, 13, 14, 15, 13]])
@@ -25,8 +27,6 @@ class LossFunctionsTest(unittest.TestCase):
         self.assertEqual(4, result.shape[1])
         self.assertEqual(12, result[0][3])
 
-
-
     def test_euclidean_distance(self):
         x1 = [[1, 2, 5], [2, 4, 5], [1, 3, 6]]
         reference = [[1, 1, 1]]
@@ -34,7 +34,6 @@ class LossFunctionsTest(unittest.TestCase):
         self.assertAlmostEqual(17 ** 0.5, design_distances[0], places=5)
         self.assertAlmostEqual(29 ** 0.5, design_distances[2], places=5)
         self.assertEqual(3, len(design_distances))
-
 
     def test_changed_features(self):
         x1 = [[1, 2, 5], [2, 4, 5], [1, 3, 6]]
@@ -72,7 +71,6 @@ class LossFunctionsTest(unittest.TestCase):
                                self.calculator.np_gower_distance(x1.values, x2.values)[0],
                                places=3
                                )
-
 
     def test_gower_distance(self):
         x1 = pd_util.get_row_from_dict({
