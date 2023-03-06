@@ -4,28 +4,59 @@ from pymoo.core.problem import Problem
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 
+from main.evaluation.Predictor import Predictor
+
 
 class MultiObjectiveCounterfactualsGenerator(Problem):
-    def _evaluate(self, x, out, *args, **kwargs):
-        pass
-
     def __init__(self,
                  features_dataset: pd.DataFrame,
                  predictions_dataset: pd.DataFrame,
+                 base_query: pd.DataFrame,
+                 target_design: pd.DataFrame,
+                 predictor: Predictor,
                  features_to_vary: list,
                  targeted_predictions: list,
                  validity_functions: list,
+                 validation_functions: list,
                  upper_bounds: np.array,
                  lower_bounds: np.array):
         self.validate_parameters(features_dataset, features_to_vary, lower_bounds, predictions_dataset,
                                  targeted_predictions, upper_bounds)
+        self.number_of_objectives = len(targeted_predictions) + 3
+        self.predictor = predictor
+        self.base_query = base_query
+        self.target_design = target_design
+        self.validation_functions = validation_functions
         super().__init__(n_var=len(features_to_vary),
-                         n_obj=len(targeted_predictions) + 3,
+                         n_obj=self.number_of_objectives,
                          n_constr=len(validity_functions),
                          xl=lower_bounds,
                          xu=upper_bounds)
         self.features_dataset = features_dataset
         self.ranges = self.build_ranges(features_dataset, features_to_vary)
+
+    def _evaluate(self, x, out, *args, **kwargs):
+        score, validity = self.calculate_scores(x)
+        out["F"] = score
+        out["G"] = validity
+
+    def calculate_scores(self, x):
+        all_scores = np.zeros((len(x), self.number_of_objectives))
+        # the first n columns are the model predictions
+        prediction = self.predictor.predict(pd.DataFrame(x, columns=self.features_dataset.columns)).values
+        all_scores[:, :self.number_of_objectives] = prediction
+        # n + 1 is gower distance
+        all_scores[:, self.number_of_objectives] = self.np_gower_distance(x, self.base_query.values)
+        # n + 2 is changed features
+        all_scores[:, self.number_of_objectives + 1] = self.np_changed_features(x, self.base_query.values)
+        all_scores[:, self.number_of_objectives + 2] = self.np_euclidean_distance(prediction, self.target_design)
+        return all_scores, self.get_validity(x)
+
+    def get_validity(self, x):
+        g = np.zeros((len(x), len(self.validation_functions)))
+        for i in range(len(self.validation_functions)):
+            g[:, i] = self.validation_functions[i](x).flatten()
+        return g
 
     @staticmethod
     def build_ranges(features_dataset: pd.DataFrame, features_to_vary: list):
