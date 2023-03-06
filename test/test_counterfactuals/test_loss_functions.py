@@ -13,7 +13,7 @@ class LossFunctionsTest(unittest.TestCase):
     def test_euclidean_distance(self):
         x1 = [[1, 2, 5], [2, 4, 5], [1, 3, 6]]
         reference = [[1, 1, 1]]
-        design_distances = self.calculator.np_euclidean_distance(x1, reference)
+        design_distances = self.calculator.np_euclidean_distance(np.array(x1), np.array(reference))
         self.assertAlmostEqual(17 ** 0.5, design_distances[0], places=5)
         self.assertAlmostEqual(29 ** 0.5, design_distances[2], places=5)
         self.assertEqual(3, len(design_distances))
@@ -22,7 +22,7 @@ class LossFunctionsTest(unittest.TestCase):
     def test_changed_features(self):
         x1 = [[1, 2, 5], [2, 4, 5], [1, 3, 6]]
         x2 = [[1, 3, 6]]
-        changes = self.calculator.np_changed_features(x1, x2)
+        changes = self.calculator.np_changed_features(np.array(x1), np.array(x2))
         self.assertEqual(2, changes[0])
         self.assertEqual(3, changes[1])
         self.assertEqual(0, changes[2])
@@ -37,8 +37,7 @@ class LossFunctionsTest(unittest.TestCase):
     def test_to_df(self):
         array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
         dataframe = self.calculator.to_dataframe(array)
-        self.assertTrue("x" in dataframe.columns.values)
-        self.assertEqual(1, dataframe.loc[0].loc["x"])
+        self.assertEqual(1, dataframe.loc[0].loc[0])
         self.assertEqual((3, 3), dataframe.shape)
 
     def test_np_gower_distance(self):

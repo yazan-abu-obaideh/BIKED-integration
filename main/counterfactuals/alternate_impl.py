@@ -58,12 +58,13 @@ class Optimization(Problem):
     def calculate_scores(self, x):
         all_scores = np.zeros((len(x), num_objs + 3))
         # the first n columns are the model predictions
-        all_scores[:, :num_objs] = self.predictor(x)
+        prediction = self.predictor(x)
+        all_scores[:, :num_objs] = prediction
         # n + 1 is gower distance
         all_scores[:, num_objs] = self.gower_dist(x)
         # n + 2 is changed features
         all_scores[:, num_objs + 1] = self.changed_features(x)
-        all_scores[:, num_objs + 2] = self.evaluate_design(x)
+        all_scores[:, num_objs + 2] = self.evaluate_design(prediction)
         return all_scores, self.get_validity(x)
 
     def get_validity(self, x):
@@ -83,9 +84,9 @@ class Optimization(Problem):
         out["F"] = score
         out["G"] = validity
 
-    def evaluate_design(self, x):
+    def evaluate_design(self, designs):
         # TODO: use self.counterfactual_targets to evaluate design
-        return np.zeros(len(x))
+        return self.loss_function_calculator.np_euclidean_distance(designs, self.target.values[:, :num_objs])
 
 
 n_var = len(x_scaled.columns)
