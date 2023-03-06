@@ -108,14 +108,13 @@ for key in objectives_min:
 print(obj_indexes)
 
 
-def predictor_fn(x, obj_idxs=obj_indexes):
-    obj_idxs = np.array(obj_idxs)
-    return x[:, obj_idxs]
+def predictor_fn(x, objective_indexes):
+    return bike_predictor.predict(pd.DataFrame(x, columns=x_scaled.columns)).values[:, np.array(objective_indexes)]
 
 
 num_objs = len(obj_indexes)
 cf_target = y.sample(1, axis=0).iloc[:, obj_indexes]
-problem = Optimization(n_var, ub, lb, predictor_fn, [], query, cf_target, 1, 1, 1)
+problem = Optimization(n_var, ub, lb, lambda x: predictor_fn(x, obj_indexes), [], query, cf_target, 1, 1, 1)
 algorithm = NSGA2(pop_size=100, eliminate_duplicates=True)
 res = minimize(problem, algorithm,
                ('n_gen', 100),
