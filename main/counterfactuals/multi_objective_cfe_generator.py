@@ -101,6 +101,7 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
                                        self.alt_to_dataframe(reference_design, n_columns))
 
     def np_avg_gower_distance(self, designs_matrix: np.array, reference_design: np.array):
+
         return np.zeros(len(designs_matrix))  # TODO
 
     def gower_distance(self, dataframe: pd.DataFrame, reference_dataframe: pd.DataFrame):
