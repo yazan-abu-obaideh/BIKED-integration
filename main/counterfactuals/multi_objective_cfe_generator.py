@@ -29,12 +29,14 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
         self.target_design = target_design
         self.targeted_predictions = targeted_predictions
         self.validation_functions = validation_functions
+        self.features_to_vary = features_to_vary
         super().__init__(n_var=len(features_to_vary),
                          n_obj=self.number_of_objectives,
                          n_constr=len(validity_functions),
                          xl=lower_bounds,
                          xu=upper_bounds)
         self.features_dataset = features_dataset
+        self.predictions_dataset = predictions_dataset
         self.ranges = self.build_ranges(features_dataset, features_to_vary)
 
     def _evaluate(self, x, out, *args, **kwargs):
@@ -46,15 +48,23 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
         all_scores = np.zeros((len(x), self.number_of_objectives))
         # the first n columns are the model predictions
         # TODO: feed x into the build_from_template method
-        prediction = self.predictor.predict(pd.DataFrame(x, columns=self.features_dataset.columns))\
-            .drop(columns=self.features_dataset.columns.difference(self.targeted_predictions)).values
-        all_scores[:, :self.number_of_objectives] = prediction
+        predictions = self.predict(x)
+        all_scores[:, :self.number_of_objectives - 4] = predictions
         # n + 1 is gower distance
-        all_scores[:, self.number_of_objectives] = self.np_gower_distance(x, self.base_query.values)
+        comparable = self.base_query.drop(columns=self.base_query.columns.difference(self.features_to_vary))
+        all_scores[:, self.number_of_objectives - 3] = self.np_gower_distance(x, comparable.values)
         # n + 2 is changed features
-        all_scores[:, self.number_of_objectives + 1] = self.np_changed_features(x, self.base_query.values)
-        all_scores[:, self.number_of_objectives + 2] = self.np_euclidean_distance(prediction, self.target_design)
+        all_scores[:, self.number_of_objectives - 2] = self.np_changed_features(x, comparable.values)
+        all_scores[:, self.number_of_objectives - 1] = self.np_euclidean_distance(predictions, self.target_design.drop(
+            columns=self.target_design.columns.difference(self.targeted_predictions)).values)
         return all_scores, self.get_validity(x)
+
+    def predict(self, x):
+        x = self.build_from_template(self.base_query.iloc[0].values,
+                                     x,
+                                     [self.features_dataset.columns.get_loc(feature) for feature in self.features_to_vary])
+        return self.predictor.predict(pd.DataFrame(x, columns=self.features_dataset.columns)) \
+            .drop(columns=self.predictions_dataset.columns.difference(self.targeted_predictions)).values
 
     def get_validity(self, x):
         g = np.zeros((len(x), len(self.validation_functions)))
