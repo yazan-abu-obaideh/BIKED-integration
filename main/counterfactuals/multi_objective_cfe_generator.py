@@ -38,6 +38,7 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
         self.features_dataset = features_dataset
         self.predictions_dataset = predictions_dataset
         self.ranges = self.build_ranges(features_dataset, features_to_vary)
+        self.k = 2
 
     def _evaluate(self, x, out, *args, **kwargs):
         score, validity = self.calculate_scores(x)
@@ -101,8 +102,12 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
                                        self.alt_to_dataframe(reference_design, n_columns))
 
     def np_avg_gower_distance(self, designs_matrix: np.array, reference_design: np.array):
-
-        return np.zeros(len(designs_matrix))  # TODO
+        def get_smallest_distances(design):
+            distances = self.np_gower_distance(self.features_dataset.values, np.array([design]))
+            distances.sort()
+            return distances[:self.k]
+        axis = np.apply_along_axis(get_smallest_distances, 1, designs_matrix)
+        return np.apply_along_axis(lambda row: sum(row)/len(row), 1, axis)
 
     def gower_distance(self, dataframe: pd.DataFrame, reference_dataframe: pd.DataFrame):
         weighted_deltas = pd.DataFrame()
