@@ -11,28 +11,28 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
     def __init__(self,
                  features_dataset: pd.DataFrame,
                  predictions_dataset: pd.DataFrame,
-                 base_query: pd.DataFrame,
-                 target_design: pd.DataFrame,
-                 # TODO: numpy predictor
-                 predictor: Predictor,
+                 query_x: pd.DataFrame,
+                 # target_design: pd.DataFrame,  <-What is this?
+
+                 predictor,
                  features_to_vary: list,
-                 targeted_predictions: list,
-                 validity_functions: list,
-                 validation_functions: list,
+                 query_y: dict,
+                 bonus_objs: list,
+                 constraint_functions: list,
                  upper_bounds: np.array,
                  lower_bounds: np.array):
-        self.validate_parameters(features_dataset, features_to_vary, lower_bounds, predictions_dataset,
-                                 targeted_predictions, upper_bounds)
-        self.number_of_objectives = len(targeted_predictions) + 3
+        self.validate_parameters(features_dataset, features_to_vary, lower_bounds, predictions_dataset, upper_bounds,
+                                 bonus_objs, query_y)
+        self.number_of_objectives = len(predictions_dataset.columns) + 3
         self.predictor = predictor
-        self.base_query = base_query
-        self.target_design = target_design
-        self.targeted_predictions = targeted_predictions
-        self.validation_functions = validation_functions
-        self.features_to_vary = features_to_vary
+        self.query_x = query_x
+        # self.target_design = target_design
+        self.bonus_objs = bonus_objs
+        self.query_constraints, self.query_lb, self.query_ub = self.sort_query_y(query_y)
+        self.constraint_functions = constraint_functions
         super().__init__(n_var=len(features_to_vary),
                          n_obj=self.number_of_objectives,
-                         n_constr=len(validity_functions),
+                         n_constr=len(constraint_functions) + len(self.query_constraints),
                          xl=lower_bounds,
                          xu=upper_bounds)
         self.features_dataset = features_dataset
@@ -48,28 +48,28 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
         all_scores = np.zeros((len(x), self.number_of_objectives))
         # the first n columns are the model predictions
         # TODO: feed x into the build_from_template method
-        predictions = self.predict(x)
-        all_scores[:, :self.number_of_objectives - 4] = predictions
+
+        prediction = pd.DataFrame(self.predictor.predict(x), columns=self.predictions_dataset.columns)
+        # self.predictor.predict(pd.DataFrame(x, columns=self.features_dataset.columns))\
+        # .drop(columns=self.features_dataset.columns.difference(self.query_y)).values
+
+        all_scores[:, :-3] = prediction
         # n + 1 is gower distance
-        comparable = self.base_query.drop(columns=self.base_query.columns.difference(self.features_to_vary))
-        all_scores[:, self.number_of_objectives - 3] = self.np_gower_distance(x, comparable.values)
+        all_scores[:, -3] = self.np_gower_distance(x, self.query_x.values)
         # n + 2 is changed features
-        all_scores[:, self.number_of_objectives - 2] = self.np_changed_features(x, comparable.values)
-        all_scores[:, self.number_of_objectives - 1] = self.np_euclidean_distance(predictions, self.target_design.drop(
-            columns=self.target_design.columns.difference(self.targeted_predictions)).values)
-        return all_scores, self.get_validity(x)
+        all_scores[:, -2] = self.np_changed_features(x, self.query_x.values)
+        # all_scores[:, -1] = self.np_euclidean_distance(prediction, self.target_design)
+        all_scores[:, -1] = self.np_avg_gower_distance(x, self.query_x.values)
+        return all_scores, self.get_constraint_satisfaction(x, prediction)
 
-    def predict(self, x):
-        x = self.build_from_template(self.base_query.iloc[0].values,
-                                     x,
-                                     [self.features_dataset.columns.get_loc(feature) for feature in self.features_to_vary])
-        return self.predictor.predict(pd.DataFrame(x, columns=self.features_dataset.columns)) \
-            .drop(columns=self.predictions_dataset.columns.difference(self.targeted_predictions)).values
-
-    def get_validity(self, x):
-        g = np.zeros((len(x), len(self.validation_functions)))
-        for i in range(len(self.validation_functions)):
-            g[:, i] = self.validation_functions[i](x).flatten()
+    def get_constraint_satisfaction(self, x, y):
+        n_cf = len(self.constraint_functions)
+        g = np.zeros((len(x), n_cf + len(self.query_constraints)))
+        for i in range(n_cf):
+            g[:, i] = self.constraint_functions[i](x).flatten()
+        pred_consts = y.loc[:, self.query_constraints].values
+        indiv_satisfaction = np.logical_and(np.less(pred_consts, self.query_ub), np.greater(pred_consts, self.query_lb))
+        g[:, n_cf:] = indiv_satisfaction
         return g
 
     @staticmethod
@@ -77,17 +77,31 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
         subset = features_dataset.drop(columns=features_dataset.columns.difference(features_to_vary))
         return subset.max() - subset.min()
 
+    def sort_query_y(self, query_y: dict):
+        query_constraints = []
+        query_lb = []
+        query_ub = []
+        for key in query_y.keys():
+            query_constraints.append(key)
+            query_lb.append(query_y[key][0])
+            query_ub.append(query_y[key][1])
+        return query_constraints, np.array(query_lb), np.array(query_ub)
+
     def validate_parameters(self, features_dataset, features_to_vary, lower_bounds, predictions_dataset,
-                            targeted_predictions, upper_bounds):
+                            upper_bounds, bonus_objs, query_y):
         self.validate_datasets(features_dataset, predictions_dataset)
         self.validate_features_to_vary(features_dataset, features_to_vary)
-        self.validate_targeted_predictions(predictions_dataset, targeted_predictions)
+        self.validate_query_y(predictions_dataset, query_y)
+        self.validate_bonus_objs(predictions_dataset, query_y)
         self.validate_bounds(features_to_vary, upper_bounds, lower_bounds)
 
     def np_euclidean_distance(self, designs_matrix: np.array, reference_design: np.array):
         n_columns = reference_design.shape[1]
         return self.euclidean_distance(self.alt_to_dataframe(designs_matrix, n_columns),
                                        self.alt_to_dataframe(reference_design, n_columns))
+
+    def np_avg_gower_distance(self, designs_matrix: np.array, reference_design: np.array):
+        return np.zeros(len(designs_matrix))  # TODO
 
     def gower_distance(self, dataframe: pd.DataFrame, reference_dataframe: pd.DataFrame):
         weighted_deltas = pd.DataFrame()
@@ -143,9 +157,14 @@ class MultiObjectiveCounterfactualsGenerator(Problem):
         for label in labels:
             assert label in valid_labels, f"Expected label {label} to be in dataset {valid_labels}"
 
-    def validate_targeted_predictions(self, predictions_dataset: pd.DataFrame, targeted_predictions: list):
+    def validate_query_y(self, predictions_dataset: pd.DataFrame, query_y: dict):
         self._validate_labels(predictions_dataset,
-                              targeted_predictions,
+                              query_y.keys(),
+                              "User has not provided any performance targets")
+
+    def validate_bonus_objs(self, predictions_dataset: pd.DataFrame, bonus_objs: list):
+        self._validate_labels(predictions_dataset,
+                              bonus_objs,
                               "User has not provided any performance targets")
 
     def validate_bounds(self, features_to_vary: list, upper_bounds: np.array, lower_bounds: np.array):

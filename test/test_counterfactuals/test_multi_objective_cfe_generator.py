@@ -17,13 +17,12 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
             self.valid_initialization_dictionary = {
                 "features_dataset": features,
                 "predictions_dataset": predictions,
-                "base_query": features[0:1],
-                "target_design": predictions[0:1],
+                "query_x": features[0:1],
                 "predictor": None,
-                "validation_functions": [],
                 "features_to_vary": ["x", "y", "z"],
-                "targeted_predictions": ["performance"],
-                "validity_functions": [],
+                "query_y": {"performance": [3, 12]},
+                "bonus_objs": [],
+                "constraint_functions": [],
                 "upper_bounds": np.array([10, 10, 10]),
                 "lower_bounds": np.array([0, 0, 0])
             }
