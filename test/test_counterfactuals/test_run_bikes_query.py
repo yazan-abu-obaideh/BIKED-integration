@@ -19,14 +19,18 @@ class MyPredictor(Predictor):
         self.p = load_pickled_predictor()
         self.current_minimum = float("inf")
 
-    def predict(self, data: pd.DataFrame) -> pd.DataFrame:
-        predictions = self.p.predict(data).rename(columns=settings.get_label_replacements())
+    def predict(self, data: np.array) -> np.array:
+        MultiObjectiveCounterfactualsGenerator\
+            .build_from_template(None, )
+        predictions = self.p.predict((pd.DataFrame(data,
+                                                   columns=x.columns))).\
+            rename(columns=settings.get_label_replacements())
         latest_minimum = predictions["Model Mass Magnitude"].min()
         if latest_minimum < self.current_minimum:
             self.current_minimum = latest_minimum
             minima_found.append(self.current_minimum)
             print(f"Minimum updated to {latest_minimum}")
-        return predictions
+        return predictions.values
 
 
 PREDICTOR = MyPredictor()
@@ -34,13 +38,12 @@ PREDICTOR = MyPredictor()
 generator = MultiObjectiveCounterfactualsGenerator(
     features_dataset=x,
     predictions_dataset=y,
-    base_query=x.iloc[0:1],
-    target_design=y.iloc[100:101],
+    query_x=x.iloc[0:1],
     predictor=PREDICTOR,
     features_to_vary=["DT Thickness"],
-    targeted_predictions=["Model Mass Magnitude"],
-    validity_functions=[],
-    validation_functions=[],
+    query_y={"Model Mass Magnitude": [-1, 0]},
+    bonus_objs=[],
+    constraint_functions=[],
     upper_bounds=np.array([3 for _ in range(1)]),
     lower_bounds=np.array([-3 for _ in range(1)])
 )
