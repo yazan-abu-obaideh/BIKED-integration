@@ -56,8 +56,8 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
         x1 = [[1, 2, 5], [2, 4, 5], [1, 3, 6]]
         x2 = [[1, 3, 6]]
         changes = self.generator.np_changed_features(np.array(x1), np.array(x2))
-        self.assertEqual(2, changes[0])
-        self.assertEqual(3, changes[1])
+        self.assertAlmostEqual(2/3, changes[0], places=5)
+        self.assertEqual(1, changes[1])
         self.assertEqual(0, changes[2])
         self.assertEqual(3, len(changes))
 
@@ -75,7 +75,7 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
 
     def test_np_avg_gower_distance(self):
         print(self.generator.np_avg_gower_distance(
-        np.array([[1, 2, 5], [2, 4, 5], [1, 3, 6]]), []
+        np.array([[1, 2, 5], [2, 4, 5], [1, 3, 6]]), np.array([[1, 2, 3]])
         ))
 
     def test_np_gower_distance(self):
