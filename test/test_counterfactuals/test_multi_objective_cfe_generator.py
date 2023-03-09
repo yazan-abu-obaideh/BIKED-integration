@@ -85,7 +85,7 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
             [8, 8, 8],
             [10, 10, 10]
         ])
-        avg_gower_distance = self.generator.np_avg_gower_distance(original_dataset, designs_dataset)
+        avg_gower_distance = self.generator.np_avg_gower_distance(original_dataset, designs_dataset, 3)
         self.assertEqual(2, len(avg_gower_distance))
         self.assertAlmostEqual(0.0811, avg_gower_distance[0], places=4)
         self.assertAlmostEqual(0.1433, avg_gower_distance[1], places=4)
