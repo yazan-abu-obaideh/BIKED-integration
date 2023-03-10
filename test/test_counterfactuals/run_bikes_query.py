@@ -18,16 +18,11 @@ y = y[:2000]
 settings = DefaultProcessorSettings()
 PREDICTOR = load_pickled_predictor()
 minima_found = []
-# features_to_vary = ['CS Length', 'BB Drop',
-#                 'Stack', 'SS E', 'ST Angle', 'BB OD', 'TT OD', 'HT OD',
-#                 'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F']
-# features_to_vary = ['CS Length', 'BB Drop',
-#                     'Stack', 'SS E', 'ST Angle', 'BB OD', 'TT OD', 'HT OD',
-#                     'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F', 'HT LX', 'ST UX',
-#                     'HT UX', 'HT Angle', 'HT Length', 'ST Length', 'BB Length',
-#                     'Dropout Offset', 'SSB OD', 'CSB OD', 'SSB Offset', 'CSB Offset',
-#                     'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
-#                     'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
+features_to_vary = ['BB OD', 'TT OD', 'HT OD',
+                    'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F', 'HT LX', 'ST UX',
+                    'HT UX', 'HT Angle', 'HT Length', 'ST Length', 'BB Length',
+                    'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
+                    'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
 targets = ["Sim 1 Safety Factor (Inverted)", "Model Mass Magnitude"]
 number_of_variables = len(features_to_vary)
 
@@ -65,15 +60,15 @@ problem = MultiObjectiveCounterfactualsGenerator(
     regressor,
     prepared_x.columns,
     query_y={
-        "Model Mass Magnitude": (-float("-inf"), -1.0),
-        "Sim 1 Safety Factor (Inverted)": (-float("inf"), -1.0),
+        "Model Mass Magnitude": (-float("-inf"), 0),
+        "Sim 1 Safety Factor (Inverted)": (-float("inf"), -0.3),
     },
     bonus_objs=[],
     constraint_functions=[],
     datatypes=[Real(bounds=(-2.5, 2.5)) for _ in range(number_of_variables)]
 )
 
-cf_set = CFSet(problem, 100, 500, initialize_from_dataset=False)
+cf_set = CFSet(problem, 50, 1000, initialize_from_dataset=False)
 cf_set.optimize()
 num_samples = 25
 cfs = cf_set.sample(num_samples,
