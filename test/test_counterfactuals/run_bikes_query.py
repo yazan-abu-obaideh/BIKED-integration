@@ -18,11 +18,13 @@ y = y[:2000]
 settings = DefaultProcessorSettings()
 PREDICTOR = load_pickled_predictor()
 minima_found = []
-features_to_vary = ['BB OD', 'TT OD', 'HT OD',
-                    'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F', 'HT LX', 'ST UX',
-                    'HT UX', 'HT Angle', 'HT Length', 'ST Length', 'BB Length',
-                    'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
-                    'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
+features_to_vary = [
+    'Material=Steel', 'Material=Aluminum', 'Material=Titanium',
+    'BB OD', 'TT OD', 'HT OD',
+    'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F', 'HT LX', 'ST UX',
+    'HT UX', 'HT Angle', 'HT Length', 'ST Length', 'BB Length',
+    'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
+    'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
 targets = ["Sim 1 Safety Factor (Inverted)", "Model Mass Magnitude"]
 number_of_variables = len(features_to_vary)
 
@@ -60,8 +62,8 @@ problem = MultiObjectiveCounterfactualsGenerator(
     regressor,
     prepared_x.columns,
     query_y={
-        "Model Mass Magnitude": (-float("-inf"), 0),
-        "Sim 1 Safety Factor (Inverted)": (-float("inf"), -0.3),
+        "Model Mass Magnitude": (-3, 0),
+        "Sim 1 Safety Factor (Inverted)": (-3, 0),
     },
     bonus_objs=[],
     constraint_functions=[],
