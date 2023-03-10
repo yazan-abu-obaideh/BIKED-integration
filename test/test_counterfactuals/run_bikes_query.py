@@ -19,12 +19,8 @@ settings = DefaultProcessorSettings()
 PREDICTOR = load_pickled_predictor()
 minima_found = []
 features_to_vary = [
-    'Material=Steel', 'Material=Aluminum', 'Material=Titanium',
-    'BB OD', 'TT OD', 'HT OD',
-    'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F', 'HT LX', 'ST UX',
-    'HT UX', 'HT Angle', 'HT Length', 'ST Length', 'BB Length',
-    'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
-    'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
+    'Material=Steel', 'Material=Aluminum', 'Material=Titanium', 'BB OD', 'HT Angle', 'ST Length', 'BB Length',
+    'HT Thickness']
 targets = ["Sim 1 Safety Factor (Inverted)", "Model Mass Magnitude"]
 number_of_variables = len(features_to_vary)
 
@@ -41,7 +37,22 @@ class AdaptedRegressor:
                                                                                      x.columns.get_loc(feature)
                                                                                      for
                                                                                      feature in features_to_vary])
-        return self.p.predict(pd.DataFrame(model_input, columns=x.columns)) \
+
+        def handle_materials(row: pd.Series):
+            materials = [
+                (row.loc[material], material) for material in
+                ['Material=Steel', 'Material=Aluminum', 'Material=Titanium']
+            ]
+            materials.sort(key=lambda _x: _x[0])
+            largest = materials[-1]
+            for material in materials:
+                row[material[1]] = x[material[1]].min()
+            row[largest[1]] = x[largest[1]].max()
+
+        features_dataframe = pd.DataFrame(model_input, columns=x.columns)
+        features_dataframe.apply(handle_materials, axis=1)
+
+        return self.p.predict(features_dataframe) \
             .rename(columns=settings.get_label_replacements())
 
     def predict(self, features):
