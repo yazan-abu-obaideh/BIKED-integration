@@ -13,6 +13,8 @@ import numpy as np
 import json
 
 x, y, _, _ = load_augmented_framed_dataset()
+x = x[:2000]
+y = y[:2000]
 settings = DefaultProcessorSettings()
 PREDICTOR = load_pickled_predictor()
 minima_found = []
@@ -63,7 +65,7 @@ problem = MultiObjectiveCounterfactualsGenerator(
     datatypes=[Real(bounds=(-2, 2)) for _ in range(number_of_variables)]
 )
 
-cf_set = CFSet(problem, 10, 4000, initialize_from_dataset=True)
+cf_set = CFSet(problem, 3, 50, initialize_from_dataset=True)
 cf_set.optimize()
 num_samples = 25
 cfs = cf_set.sample(num_samples,
@@ -78,6 +80,7 @@ cfs = cf_set.sample(num_samples,
 
 
 def generate_report(counterfactuals_set: pd.DataFrame, _regressor: AdaptedRegressor):
+    print("Generating report...")
     report = {}
     original_query = x.iloc[0:1]
     report["original_features"] = pd_util.get_dict_from_row(original_query)
@@ -93,8 +96,9 @@ def generate_report(counterfactuals_set: pd.DataFrame, _regressor: AdaptedRegres
                     _regressor._predict(counterfactuals_set[i:i + 1].values))}
         for i in range(len(counterfactuals_set))
     }
-    with open(f"{timestamp}-report-{uuid.uuid4()}.txt", "w") as file:
+    report_filename = f"{timestamp}-report-{uuid.uuid4()}.txt"
+    with open(report_filename, "w") as file:
         json.dump(report, file)
-
+        print(f"Report generation complete! Saved to {report_filename}")
 
 generate_report(cfs, regressor)
