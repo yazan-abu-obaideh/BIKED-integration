@@ -72,7 +72,7 @@ class SimilarityEngineTest(unittest.TestCase):
                                 expected_distance=0.07141428428542856)
 
     def get_by_index(self, index):
-        return pd_util.get_dict_from_row(self.dataset[self.dataset.index == index])
+        return pd_util.get_dict_from_first_row(self.dataset[self.dataset.index == index])
 
     def assertCorrectMatch(self, row, response, expected_distance):
         for entry in row:

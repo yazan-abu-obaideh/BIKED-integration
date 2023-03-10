@@ -57,7 +57,7 @@ class EvaluationService:
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
         scaled_dict = self.default_to_mean(scaled_dict)
-        row = pd_util.get_row_from_dict(scaled_dict)
+        row = pd_util.get_one_row_dataframe_from_dict(scaled_dict)
         return self.predict_from_row(row)
 
     def default_to_mean(self, bike_cad_dict):
@@ -71,7 +71,7 @@ class EvaluationService:
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         predictions_row = self._predict_from_row(pd_row)
-        scaled_result = pd_util.get_dict_from_row(predictions_row)
+        scaled_result = pd_util.get_dict_from_first_row(predictions_row)
         scaled_result = self.replace_labels(scaled_result)
         unscaled_result = self.response_scaler.unscale(scaled_result)
         return self.ensure_magnitude(unscaled_result)

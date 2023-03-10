@@ -83,16 +83,16 @@ def generate_report(counterfactuals_set: pd.DataFrame, _regressor: AdaptedRegres
     print("Generating report...")
     report = {}
     original_query = x.iloc[0:1]
-    report["original_features"] = pd_util.get_dict_from_row(original_query)
-    report["original_performance"] = pd_util.get_dict_from_row(y.iloc[0:1])
+    report["original_features"] = pd_util.get_dict_from_first_row(original_query)
+    report["original_performance"] = pd_util.get_dict_from_first_row(y.iloc[0:1])
     timestamp = time.time()
     report["timestamp"] = timestamp
     report["human_readable_timestamp"] = datetime.now().__str__()
     report["generated_counterfactuals"] = {i:
-        {"counterfactual": pd_util.get_dict_from_row(
+        {"counterfactual": pd_util.get_dict_from_first_row(
             counterfactuals_set[i:i + 1]),
             "predictor_predictions":
-                pd_util.get_dict_from_row(
+                pd_util.get_dict_from_first_row(
                     _regressor._predict(counterfactuals_set[i:i + 1].values))}
         for i in range(len(counterfactuals_set))
     }

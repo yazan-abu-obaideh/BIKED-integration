@@ -62,7 +62,7 @@ class TestScalerWrapper(unittest.TestCase):
             self.assertAlmostEqual(scaled_twice[key], self.first_scaled[key], 10)
 
     def get_input_dict(self):
-        return pd_util.get_dict_from_row(self.input_row)
+        return pd_util.get_dict_from_first_row(self.input_row)
 
     def test_build_from_data(self):
         dataframe, new_wrapper = self.build_new_scaler_wrapper()

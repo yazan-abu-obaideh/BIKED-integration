@@ -49,7 +49,7 @@ class EuclideanSimilarityEngine(SimilarityEngine):
 
     def get_closest_n(self, user_entry: dict, n: int):
         return self.__get_closest(user_entry, n, lambda closest_n_rows:
-        [pd_util.get_dict_from_row(closest_n_rows.iloc[i: i + 1]) for i in range(n)])
+        [pd_util.get_dict_from_first_row(closest_n_rows.iloc[i: i + 1]) for i in range(n)])
 
     def get_closest_n_indexes(self, user_entry: dict, n: int):
         return self.__get_closest(user_entry, n, lambda closest_n_rows:

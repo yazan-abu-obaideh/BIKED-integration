@@ -95,12 +95,12 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
         ))
 
     def test_np_gower_distance(self):
-        x1 = pd_util.get_row_from_dict({
+        x1 = pd_util.get_one_row_dataframe_from_dict({
             "x": 5,
             "y": 10,
             "z": 3
         })
-        x2 = pd_util.get_row_from_dict({
+        x2 = pd_util.get_one_row_dataframe_from_dict({
             "x": 6,
             "y": 10,
             "z": 3
@@ -111,12 +111,12 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
                                )
 
     def test_gower_distance(self):
-        x1 = pd_util.get_row_from_dict({
+        x1 = pd_util.get_one_row_dataframe_from_dict({
             "x": 5,
             "y": 10,
             "z": 3
         })
-        x2 = pd_util.get_row_from_dict({
+        x2 = pd_util.get_one_row_dataframe_from_dict({
             "x": 6,
             "y": 10,
             "z": 3

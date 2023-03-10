@@ -74,7 +74,7 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertIsNotNone(self.service.predict_from_dict(partial_request))
 
     def test_cannot_predict_from_partial_row(self):
-        incomplete_model_input = pd_util.get_row_from_dict(
+        incomplete_model_input = pd_util.get_one_row_dataframe_from_dict(
             {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
              "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
              "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
@@ -91,9 +91,9 @@ class EvaluationServiceTest(unittest.TestCase):
         model_input = self.get_first_row(self.x)
         prediction = self.service.predict_from_row(model_input)
         # TODO: the assertion below is misplaced. pd_utils should have their own tests.
-        self.assertEqual(pd_util.get_dict_from_row(model_input), self.sample_input)
+        self.assertEqual(pd_util.get_dict_from_first_row(model_input), self.sample_input)
         self.assertDictAlmostEqual(prediction, self.expected_output)
-        model_input_from_dict = pd_util.get_row_from_dict(self.sample_input)
+        model_input_from_dict = pd_util.get_one_row_dataframe_from_dict(self.sample_input)
         self.assertDictAlmostEqual(self.service.predict_from_row(model_input_from_dict), self.expected_output)
 
     def test_order_does_not_matter(self):
