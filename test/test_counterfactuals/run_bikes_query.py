@@ -66,16 +66,17 @@ prepared_x = x.drop(columns=x.columns.difference(features_to_vary))
 prepared_y = y.drop(columns=y.columns.difference(targets))
 
 regressor = AdaptedRegressor()
+target_dictionary = {
+    "Model Mass Magnitude": (-3, -0.5),
+    "Sim 1 Safety Factor (Inverted)": (-3, 0.5),
+}
 problem = MultiObjectiveCounterfactualsGenerator(
     prepared_x,
     prepared_y,
     prepared_x.iloc[0:1],
     regressor,
     prepared_x.columns,
-    query_y={
-        "Model Mass Magnitude": (-3, 0),
-        "Sim 1 Safety Factor (Inverted)": (-3, 0),
-    },
+    query_y=target_dictionary,
     bonus_objs=[],
     constraint_functions=[],
     datatypes=[Real(bounds=(-2.5, 2.5)) for _ in range(number_of_variables)]
@@ -104,6 +105,7 @@ def generate_report(counterfactuals_set: pd.DataFrame, _regressor: AdaptedRegres
     timestamp = time.time()
     report["timestamp"] = timestamp
     report["human_readable_timestamp"] = datetime.now().__str__()
+    report["target_constraints"] = target_dictionary
     report["generated_counterfactuals"] = {i:
         {"counterfactual": pd_util.get_dict_from_first_row(
             counterfactuals_set[i:i + 1]),
