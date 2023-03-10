@@ -23,8 +23,7 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
                 "query_y": {"performance": [3, 12]},
                 "bonus_objs": [],
                 "constraint_functions": [],
-                "upper_bounds": np.array([10, 10, 10]),
-                "lower_bounds": np.array([0, 0, 0])
+                "datatypes": [float, float, float]
             }
             self.generator = MultiObjectiveCounterfactualsGenerator(**self.valid_initialization_dictionary)
 
