@@ -68,12 +68,8 @@ class CFSet:  # For calling the optimization and sampling counterfactuals
 
         all_cf_x, all_cf_y = self.filter_by_validity(all_cfs)
 
-        if len(all_cf_x) < num_samples:
-            print(f"No valid counterfactuals! Returning empty dataframe.")
-            return self.build_res_df(all_cf_x)
-
-        if len(all_cf_x) < num_samples:
-            print(f"Only found {len(all_cf_y)} valid counterfactuals! Returning all {len(all_cf_y)}.")
+        if len(all_cf_x) < num_samples: # bug
+            self.log_results_found(all_cf_x, all_cf_y)
             return self.build_res_df(all_cf_x)
 
         if self.verbose:
@@ -96,6 +92,12 @@ class CFSet:  # For calling the optimization and sampling counterfactuals
                 index = range(len(agg_scores))
             samples_index = self.diverse_sample(all_cf_x[index], agg_scores[index], num_samples, diversity_weight)
             return self.build_res_df(all_cf_x[samples_index, :])
+
+    def log_results_found(self, all_cf_x, all_cf_y):
+        if len(all_cf_x) == 0:
+            print(f"No valid counterfactuals! Returning empty dataframe.")
+        else:
+            print(f"Only found {len(all_cf_y)} valid counterfactuals! Returning all {len(all_cf_y)}.")
 
     def filter_by_validity(self, all_cfs):
         all_cf_y = all_cfs.get("F")
