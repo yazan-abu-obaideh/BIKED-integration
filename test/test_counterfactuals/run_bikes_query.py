@@ -66,3 +66,4 @@ cfs = cf_set.sample(num_samples,
                     dtai_alpha=np.array([1]),
                     dtai_beta=np.array([4]),
                     include_dataset=True, num_dpp=2000)
+print(cfs)
