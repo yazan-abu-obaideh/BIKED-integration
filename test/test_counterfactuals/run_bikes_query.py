@@ -18,8 +18,17 @@ y = y[:2000]
 settings = DefaultProcessorSettings()
 PREDICTOR = load_pickled_predictor()
 minima_found = []
-features_to_vary = ['HT Angle', 'HT Length', 'ST Length', 'BB Length', 'Dropout Offset']
-targets = ["Sim 1 Safety Factor (Inverted)", "Sim 3 Safety Factor (Inverted)", "Model Mass Magnitude"]
+# features_to_vary = ['CS Length', 'BB Drop',
+#                 'Stack', 'SS E', 'ST Angle', 'BB OD', 'TT OD', 'HT OD',
+#                 'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F']
+# features_to_vary = ['CS Length', 'BB Drop',
+#                     'Stack', 'SS E', 'ST Angle', 'BB OD', 'TT OD', 'HT OD',
+#                     'DT OD', 'CS OD', 'SS OD', 'ST OD', 'CS F', 'HT LX', 'ST UX',
+#                     'HT UX', 'HT Angle', 'HT Length', 'ST Length', 'BB Length',
+#                     'Dropout Offset', 'SSB OD', 'CSB OD', 'SSB Offset', 'CSB Offset',
+#                     'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
+#                     'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
+targets = ["Sim 1 Safety Factor (Inverted)", "Model Mass Magnitude"]
 number_of_variables = len(features_to_vary)
 
 
@@ -56,16 +65,15 @@ problem = MultiObjectiveCounterfactualsGenerator(
     regressor,
     prepared_x.columns,
     query_y={
-        "Model Mass Magnitude": (-2, -1),
-        "Sim 1 Safety Factor (Inverted)": (-2, -1),
-        "Sim 3 Safety Factor (Inverted)": (-2, -1)
+        "Model Mass Magnitude": (-float("-inf"), -1.0),
+        "Sim 1 Safety Factor (Inverted)": (-float("inf"), -1.0),
     },
     bonus_objs=[],
     constraint_functions=[],
-    datatypes=[Real(bounds=(-2, 2)) for _ in range(number_of_variables)]
+    datatypes=[Real(bounds=(-2.5, 2.5)) for _ in range(number_of_variables)]
 )
 
-cf_set = CFSet(problem, 3, 50, initialize_from_dataset=True)
+cf_set = CFSet(problem, 100, 500, initialize_from_dataset=False)
 cf_set.optimize()
 num_samples = 25
 cfs = cf_set.sample(num_samples,
@@ -74,9 +82,9 @@ cfs = cf_set.sample(num_samples,
                     gower_weight=1,
                     diversity_weight=0.1,
                     dtai_target=np.array([1]),
-                    dtai_alpha=np.array([1]),
-                    dtai_beta=np.array([4]),
-                    include_dataset=True, num_dpp=2000)
+                    dtai_alpha=None,
+                    dtai_beta=None,
+                    include_dataset=False, num_dpp=2000)
 
 
 def generate_report(counterfactuals_set: pd.DataFrame, _regressor: AdaptedRegressor):
@@ -100,5 +108,6 @@ def generate_report(counterfactuals_set: pd.DataFrame, _regressor: AdaptedRegres
     with open(report_filename, "w") as file:
         json.dump(report, file)
         print(f"Report generation complete! Saved to {report_filename}")
+
 
 generate_report(cfs, regressor)
