@@ -160,9 +160,9 @@ class MultilabelPredictor:
     def get_predictor(self, label):
         """ Returns TabularPredictor which is used to predict this label. """
         predictor = self.predictors[label]
-        path_elements = predictor.split("/")
-        path_relative_to_root = path_elements[-2] + "/" + path_elements[-1]
         if isinstance(predictor, str):
+            path_elements = predictor.split("/")
+            path_relative_to_root = path_elements[-2] + "/" + path_elements[-1]
             return TabularPredictor.load(path=os.path.join(self.model_root, path_relative_to_root))
         return predictor
 
