@@ -27,7 +27,8 @@ class AdaptedRegressor:
                                                                                      feature in features_to_vary])
         return self.p.predict(pd.DataFrame(model_input, columns=x.columns)) \
             .rename(columns=DefaultProcessorSettings().get_label_replacements()).drop(columns=
-            y.columns.difference(["Model Mass Magnitude"])) \
+                                                                                      y.columns.difference(
+                                                                                          ["Model Mass Magnitude"])) \
             .values
 
 
@@ -50,10 +51,18 @@ problem = MultiObjectiveCounterfactualsGenerator(
     query_y={"Model Mass Magnitude": (0, 1.5)},
     bonus_objs=[],
     constraint_functions=[],
-    datatypes=[Real(-2, 2), Real(-2, 2), Real(-2, 2)]
+    datatypes=[Real(bounds=(-2, 2)), Real(bounds=(-2, 2)), Real(bounds=(-2, 2))]
 )
 
-cf_set = CFSet(problem, 10, 1000, initialize_from_dataset=True)
+cf_set = CFSet(problem, 5, 500, initialize_from_dataset=True)
 cf_set.optimize()
 num_samples = 10
-cfs = cf_set.sample(num_samples, 1, 1, 1, 0.1, np.array([1,1]), include_dataset=True, num_dpp=2000)
+cfs = cf_set.sample(num_samples,
+                    avg_gower_weight=1,
+                    cfc_weight=1,
+                    gower_weight=1,
+                    diversity_weight=0.1,
+                    dtai_target=np.array([1]),
+                    dtai_alpha=np.array([1]),
+                    dtai_beta=np.array([4]),
+                    include_dataset=True, num_dpp=2000)
