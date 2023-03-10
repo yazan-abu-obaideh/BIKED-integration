@@ -16,7 +16,9 @@ x, y, _, _ = load_augmented_framed_dataset()
 settings = DefaultProcessorSettings()
 PREDICTOR = load_pickled_predictor()
 minima_found = []
-features_to_vary = ["BB OD", "TT OD", "HT OD"]
+features_to_vary = ['HT Angle', 'HT Length', 'ST Length', 'BB Length', 'Dropout Offset']
+targets = ["Sim 1 Safety Factor (Inverted)", "Sim 3 Safety Factor (Inverted)", "Model Mass Magnitude"]
+number_of_variables = len(features_to_vary)
 
 
 class AdaptedRegressor:
@@ -25,43 +27,45 @@ class AdaptedRegressor:
 
     def _predict(self, features):
         model_input = MultiObjectiveCounterfactualsGenerator.build_from_template(x.iloc[0].values,
-                                                                                 np.reshape(features, (3, -1)),
+                                                                                 np.reshape(features,
+                                                                                            (number_of_variables, -1)),
                                                                                  modifiable_indices=[
                                                                                      x.columns.get_loc(feature)
                                                                                      for
                                                                                      feature in features_to_vary])
         return self.p.predict(pd.DataFrame(model_input, columns=x.columns)) \
-            .rename(columns=DefaultProcessorSettings().get_label_replacements())
+            .rename(columns=settings.get_label_replacements())
 
     def predict(self, features):
-        return self._predict(features).drop(columns=y.columns.difference(["Model Mass Magnitude"])).values
+        return self._predict(features).drop(columns=y.columns.difference(targets)).values
 
-
-regressor = AdaptedRegressor()
-
-regressor.predict(np.array([[1], [3], [5]]))
 
 x: pd.DataFrame
 y: pd.DataFrame
 
 prepared_x = x.drop(columns=x.columns.difference(features_to_vary))
-prepared_y = y.drop(columns=y.columns.difference(["Model Mass Magnitude"]))
+prepared_y = y.drop(columns=y.columns.difference(targets))
 
+regressor = AdaptedRegressor()
 problem = MultiObjectiveCounterfactualsGenerator(
     prepared_x,
     prepared_y,
     prepared_x.iloc[0:1],
     regressor,
     prepared_x.columns,
-    query_y={"Model Mass Magnitude": (0, 1.5)},
+    query_y={
+        "Model Mass Magnitude": (-2, -1),
+        "Sim 1 Safety Factor (Inverted)": (-2, -1),
+        "Sim 3 Safety Factor (Inverted)": (-2, -1)
+    },
     bonus_objs=[],
     constraint_functions=[],
-    datatypes=[Real(bounds=(-2, 2)), Real(bounds=(-2, 2)), Real(bounds=(-2, 2))]
+    datatypes=[Real(bounds=(-2, 2)) for _ in range(number_of_variables)]
 )
 
-cf_set = CFSet(problem, 5, 500, initialize_from_dataset=True)
+cf_set = CFSet(problem, 10, 4000, initialize_from_dataset=True)
 cf_set.optimize()
-num_samples = 10
+num_samples = 25
 cfs = cf_set.sample(num_samples,
                     avg_gower_weight=1,
                     cfc_weight=1,
@@ -82,12 +86,15 @@ def generate_report(counterfactuals_set: pd.DataFrame, _regressor: AdaptedRegres
     report["timestamp"] = timestamp
     report["human_readable_timestamp"] = datetime.now().__str__()
     report["generated_counterfactuals"] = {i:
-                                               {"counterfactual": pd_util.get_dict_from_row(counterfactuals_set[i:i+1]),
-                                                "predictor_predictions":
-                                                    pd_util.get_dict_from_row(_regressor._predict(counterfactuals_set[i:i+1].values))}
-                                           for i in range(len(counterfactuals_set))
-                                           }
+        {"counterfactual": pd_util.get_dict_from_row(
+            counterfactuals_set[i:i + 1]),
+            "predictor_predictions":
+                pd_util.get_dict_from_row(
+                    _regressor._predict(counterfactuals_set[i:i + 1].values))}
+        for i in range(len(counterfactuals_set))
+    }
     with open(f"{timestamp}-report-{uuid.uuid4()}.txt", "w") as file:
         json.dump(report, file)
+
 
 generate_report(cfs, regressor)
