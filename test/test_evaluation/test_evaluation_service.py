@@ -56,16 +56,16 @@ class EvaluationServiceTest(unittest.TestCase):
             xml_as_string = file.read()
 
         self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.03133767152123533,
-                          'Sim 1 Dropout Y Disp. Magnitude': 0.05843097911811291,
-                          'Sim 1 Bottom Bracket X Disp. Magnitude': 0.03333394633093304,
-                          'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.04690599138870623,
-                          'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.00491900486740717,
-                          'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.03766911482497084,
-                          'Sim 3 Bottom Bracket X Rot. Magnitude': 0.02156905929579709,
-                          'Sim 1 Safety Factor (Inverted)': 12.848316860648339,
-                          'Sim 3 Safety Factor (Inverted)': 6.39975520468601,
-                          'Model Mass Magnitude': 4.923525203840356},
-                         self.service.predict_from_xml(xml_as_string))
+                                    'Sim 1 Dropout Y Disp. Magnitude': 0.05843097911811291,
+                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.03333394633093304,
+                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.04690599138870623,
+                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.00491900486740717,
+                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.03766911482497084,
+                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.02156905929579709,
+                                    'Sim 1 Safety Factor (Inverted)': 12.848316860648339,
+                                    'Sim 3 Safety Factor (Inverted)': 6.39975520468601,
+                                    'Model Mass Magnitude': 4.923525203840356},
+                                   self.service.predict_from_xml(xml_as_string))
 
     def test_can_predict_from_partial_dict(self):
         partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
@@ -81,6 +81,7 @@ class EvaluationServiceTest(unittest.TestCase):
              "BB Drop": 0.19327064177679704})
         self.assertRaises(KeyError, self.service.predict_from_row,
                           incomplete_model_input)
+
     def test_model_and_scalers_loaded(self):
         predictions = self.service._predict_from_row(self.x)
         self.assert_correct_metrics(predictions, self.y)
@@ -131,10 +132,11 @@ class EvaluationServiceTest(unittest.TestCase):
         """Asserts two dictionaries containing float values are equal up to a specified precision"""
         expected_length = len(expected)
         actual_length = len(actual)
-        self.assertEqual(expected_length, actual_length, f"Expected dictionary with length {expected_length}, got length "
-                                                     f"{actual_length} instead.")
+        self.assertEqual(expected_length, actual_length,
+                         f"Expected dictionary with length {expected_length}, got length "
+                         f"{actual_length} instead.")
         actual_keys = actual.keys()
         for key, value in expected.items():
             self.assertTrue(key in actual_keys)
-            self.assertAlmostEqual(value, actual[key], places=decimal_places, msg=f"Key {key} in dictionary has unexpected value")
-
+            self.assertAlmostEqual(value, actual[key], places=decimal_places,
+                                   msg=f"Key {key} in dictionary has unexpected value")
