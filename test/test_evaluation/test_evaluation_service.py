@@ -17,34 +17,36 @@ class EvaluationServiceTest(unittest.TestCase):
         self.x, self.y, request_scaler, result_scaler = self.prepare_x_y()
         self.request_scaler = ScalingFilter(request_scaler, self.x.columns)
         self.result_scaler = ScalingFilter(result_scaler, self.y.columns)
-        self.sample_input = {'Material=Steel': -1.2089779626768866, 'Material=Aluminum': -0.46507861303022335,
-                             'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
-                             'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
-                             'BB Drop': 0.19327064177679704, 'Stack': -0.036955840782382385,
-                             'SS E': -0.4348758585162575, 'ST Angle': 1.203226228166099, 'BB OD': -0.14197615979296274,
-                             'TT OD': -0.5711431568166616, 'HT OD': -0.879229453202825, 'DT OD': -0.8924125880651749,
-                             'CS OD': -0.6971543225296617, 'SS OD': -0.7226114906751929, 'ST OD': -0.8962254490159303,
-                             'CS F': 0.1664798679079193, 'HT LX': -0.5559202673887266, 'ST UX': -0.5875970924732736,
-                             'HT UX': -0.1666775498399638, 'HT Angle': 1.5120924379123033,
-                             'HT Length': 0.7032710935570091, 'ST Length': 0.980667290296069,
-                             'BB Length': -0.25473226064604454, 'Dropout Offset': -0.0325700226355687,
-                             'SSB OD': -2.1985552817712657, 'CSB OD': -0.279547847307574,
-                             'SSB Offset': -0.09050848378506038, 'CSB Offset': 0.5823537937924539,
-                             'SS Z': -0.06959536571235439, 'SS Thickness': 0.5180142556590571,
-                             'CS Thickness': 1.7994950500929077, 'TT Thickness': 0.2855204217004274,
-                             'BB Thickness': -0.11934492802927218, 'HT Thickness': -0.7465363724789722,
-                             'ST Thickness': -0.5700521782698762, 'DT Thickness': -1.0553146425778421,
-                             'DT Length': 0.10253602811555089}
-        self.expected_output = {'Model Mass Magnitude': 3.189100876474357,
-                                'Sim 1 Bottom Bracket X Disp. Magnitude': 0.012183772767391373,
-                                'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.012939156170363236,
-                                'Sim 1 Dropout X Disp. Magnitude': 0.011111431121145088,
-                                'Sim 1 Dropout Y Disp. Magnitude': 0.021787148423259715,
-                                'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0023485019730819755,
-                                'Sim 3 Bottom Bracket X Rot. Magnitude': 0.0063891630717543306,
-                                'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.01666142336216584,
-                                'Sim 1 Safety Factor (Inverted)': 0.542653611374427,
-                                'Sim 3 Safety Factor (Inverted)': 0.6966032103094124}
+        self.sample_input = {'Material=Steel': 0.8271449363608141, 'Material=Aluminum': -0.46507861303022335,
+                             'Material=Titanium': -0.5440697275169644, 'SSB_Include': -0.9450147617557437,
+                             'CSB_Include': -0.9323228669601348, 'CS Length': -0.35028661439732467,
+                             'BB Drop': -0.1544953575549022, 'Stack': -0.0379252894111939,
+                             'SS E': -0.16383852546719213, 'ST Angle': 2.36455520534093,
+                             'BB OD': 1.2704546076501892, 'TT OD': -0.4170541293473518,
+                             'HT OD': 0.08942680459076938, 'DT OD': -0.4570870737439202,
+                             'CS OD': -0.24471155169908107, 'SS OD': -0.5298026020058619,
+                             'ST OD': 0.379568476070093, 'CS F': -0.05997101198707037,
+                             'HT LX': -0.22274090734521784, 'ST UX': -0.17859053297003494,
+                             'HT UX': 0.7198017671343204, 'HT Angle': 1.4719711522617185,
+                             'HT Length': 1.5354636604045708, 'ST Length': 0.4469654256518064,
+                             'BB Length': -0.461260613117197, 'Dropout Offset': -0.7032407703632412,
+                             'SSB OD': -0.26947988656276173, 'CSB OD': -0.279547847307574,
+                             'SSB Offset': -0.056997290322807315, 'CSB Offset': 0.22893254089370635,
+                             'SS Z': -0.46204285917458726, 'SS Thickness': 0.9214403976762411,
+                             'CS Thickness': 0.2509374633376663, 'TT Thickness': -0.15479200809276833,
+                             'BB Thickness': 0.49282141277749913, 'HT Thickness': 2.9026934109858655,
+                             'ST Thickness': 0.23272460681845872, 'DT Thickness': 1.7696907824504056,
+                             'DT Length': -0.1689535437867544}
+        self.expected_output = {'Sim 1 Dropout X Disp. Magnitude': 0.0008148170584951174,
+                                'Sim 1 Dropout Y Disp. Magnitude': 0.005277660520565001,
+                                'Sim 1 Bottom Bracket X Disp. Magnitude': 0.001409656433970445,
+                                'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.003295668699678577,
+                                'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.000516487020226967,
+                                'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.0034258152203828374,
+                                'Sim 3 Bottom Bracket X Rot. Magnitude': 0.001296153922359631,
+                                'Sim 1 Safety Factor (Inverted)': 1.5218443851778942,
+                                'Sim 3 Safety Factor (Inverted)': 0.9701027710943986,
+                                'Model Mass Magnitude': 10.482583547074846}
 
     def test_raises_correct_exception(self):
         with self.assertRaises(ValueError) as context:
@@ -85,8 +87,8 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_model_and_scalers_loaded(self):
         predictions = self.service._predict_from_row(self.x)
         self.assert_correct_metrics(predictions, self.y)
-        self.assert_correct_metrics(self.result_scaler.scaler.inverse_transform(predictions),
-                                    self.result_scaler.scaler.inverse_transform(self.y))
+        self.assert_correct_metrics(self.result_scaler.unscale_dataframe(predictions),
+                                    self.result_scaler.unscale_dataframe(self.y))
 
     def test_order_does_not_matter(self):
         input_in_different_order = {key: self.sample_input[key]
