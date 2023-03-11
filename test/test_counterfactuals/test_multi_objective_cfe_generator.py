@@ -89,11 +89,6 @@ class MultiObjectiveCFEGeneratorTest(unittest.TestCase):
         self.assertAlmostEqual(0.0811, avg_gower_distance[0], places=4)
         self.assertAlmostEqual(0.1433, avg_gower_distance[1], places=4)
 
-    def test_np_avg_gower_distance(self):
-        print(self.generator.np_avg_gower_distance(
-        np.array([[1, 2, 5], [2, 4, 5], [1, 3, 6]]), np.array([[1, 2, 3]])
-        ))
-
     def test_np_gower_distance(self):
         x1 = pd_util.get_one_row_dataframe_from_dict({
             "x": 5,
