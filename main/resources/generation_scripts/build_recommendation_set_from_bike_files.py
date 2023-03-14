@@ -1,4 +1,4 @@
-from main.processing.xml_handler import XmlHandler
+from main.processing.bike_xml_handler import BikeXmlHandler
 from main.recommendation.default_engine_settings import DefaultBikeSettings
 import main.processing.pandas_utility as pd_util
 import pandas as pd
@@ -8,7 +8,7 @@ FILENAME_KEY = "filename"
 
 include = DefaultBikeSettings().include()
 dataframe = pd.DataFrame(columns=include + [FILENAME_KEY]).set_index(FILENAME_KEY)
-xml_handler = XmlHandler()
+xml_handler = BikeXmlHandler()
 
 bike_files_dir_path = "../large/bikecad files"
 for filename in os.listdir(bike_files_dir_path):
