@@ -7,16 +7,20 @@ from main.recommendation.similarity_engine_settings import EngineSettings
 
 DISTANCE = 'distance_from_user_entry'
 
+
 class SimilarityEngine(metaclass=ABCMeta):
     @abstractmethod
     def get_closest_to(self, user_entry_dict):
         pass
+
     @abstractmethod
     def get_closest_index_to(self, user_entry_dict):
         pass
+
     @abstractmethod
     def get_closest_n(self, user_entry: dict, n: int):
         pass
+
     @abstractmethod
     def get_closest_n_indexes(self, user_entry: dict, n: int):
         pass
@@ -24,6 +28,7 @@ class SimilarityEngine(metaclass=ABCMeta):
     @abstractmethod
     def get_settings(self) -> EngineSettings:
         pass
+
 
 class EuclideanSimilarityEngine(SimilarityEngine):
     def __init__(self, data, settings: EngineSettings):
@@ -48,12 +53,15 @@ class EuclideanSimilarityEngine(SimilarityEngine):
         return self.get_closest_n_indexes(user_entry_dict, 1)[0]
 
     def get_closest_n(self, user_entry: dict, n: int):
-        return self.__get_closest(user_entry, n, lambda closest_n_rows:
-        [pd_util.get_dict_from_first_row(closest_n_rows.iloc[i: i + 1]) for i in range(n)])
+        return self.__get_closest(user_entry,
+                                  n,
+                                  lambda closest_n_rows: [pd_util.get_dict_from_first_row(closest_n_rows.iloc[i: i + 1])
+                                                          for i in range(n)])
 
     def get_closest_n_indexes(self, user_entry: dict, n: int):
-        return self.__get_closest(user_entry, n, lambda closest_n_rows:
-        [closest_n_rows.index[i] for i in range(n)])
+        return self.__get_closest(user_entry,
+                                  n,
+                                  lambda closest_n_rows: [closest_n_rows.index[i] for i in range(n)])
 
     def __get_closest(self, user_entry: dict, n: int, response_builder: callable):
         self.validate(n, user_entry)

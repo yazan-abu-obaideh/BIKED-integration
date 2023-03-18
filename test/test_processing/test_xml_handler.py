@@ -26,7 +26,7 @@ class XmlHandlerTest(unittest.TestCase):
         new_value = "value"
         self.xml_handler.add_new_entry(new_key, new_value)
         self.assertEqual(3, self.xml_handler.get_entries_count())
-        self.assertEqual('[<entry key="ready">3</entry>, <entry key="stuff">5</entry>, ' + \
+        self.assertEqual('[<entry key="ready">3</entry>, <entry key="stuff">5</entry>, '
                          f'<entry key="{new_key}">{new_value}</entry>]', self.xml_handler.get_all_entries_string())
 
     def test_can_get_specific_entry(self):

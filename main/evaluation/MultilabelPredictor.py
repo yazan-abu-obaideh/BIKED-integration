@@ -8,6 +8,7 @@ import os.path
 @author: Lyle
 """
 
+
 class MultilabelPredictor:
     """ Tabular Predictor for predicting multiple columns in table.
         Creates multiple TabularPredictor objects which you can also use individually.

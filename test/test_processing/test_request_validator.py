@@ -6,6 +6,7 @@ from main.processing.request_validator import RequestValidator
 class RequestValidatorTest(unittest.TestCase):
     def setUp(self) -> None:
         self.validator = RequestValidator()
+
     def test_throw_if_empty(self):
         message = "Invalid BikeCAD file"
         with self.assertRaises(ValueError) as context:
@@ -18,7 +19,7 @@ class RequestValidatorTest(unittest.TestCase):
     def test_validate_scheme(self):
         message = "Required parameters ['y', 'z'] missing"
         with self.assertRaises(ValueError) as context:
-            self.validator.throw_if_does_not_contain({"x" : 5}, ["y", "z"])
+            self.validator.throw_if_does_not_contain({"x": 5}, ["y", "z"])
         self.assertEqual(message, context.exception.args[0])
 
     def test_valid_scheme_does_not_raise(self):
