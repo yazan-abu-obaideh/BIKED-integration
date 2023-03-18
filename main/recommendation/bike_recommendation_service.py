@@ -14,9 +14,6 @@ FILENAME = 'filename'
 
 SCALED_MEAN = 0
 
-
-
-
 DEFAULT_SETTINGS = DefaultBikeSettings()
 
 
@@ -24,6 +21,7 @@ def to_numeric_except_index(dataframe):
     for column in dataframe.columns.values:
         if column != FILENAME:
             dataframe[column] = pd.to_numeric(dataframe[column], errors=SET_INVALID_TO_NAN)
+
 
 def prepare_dataframe_and_scaler(data_file_path, settings):
     dataframe = pd.read_csv(data_file_path)
@@ -38,6 +36,7 @@ def prepare_dataframe_and_scaler(data_file_path, settings):
 DEFAULT_DATAFRAME, DEFAULT_SCALER = prepare_dataframe_and_scaler(RECOMMENDATION_DATASET_PATH, DEFAULT_SETTINGS)
 DEFAULT_ENGINE = EuclideanSimilarityEngine(DEFAULT_DATAFRAME, DEFAULT_SETTINGS)
 
+
 class BikeRecommendationService:
     enumeration_function_map = {
         'true': lambda x: 1,
@@ -45,15 +44,16 @@ class BikeRecommendationService:
     }
 
     def __init__(self,
-                 engine : SimilarityEngine = DEFAULT_ENGINE,
+                 engine: SimilarityEngine = DEFAULT_ENGINE,
                  scaler: ScalingFilter = DEFAULT_SCALER):
         self.scaler = scaler
         self.engine = engine
         self.xml_handler = BikeXmlHandler()
+
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)
         closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)
-        return self.grab_bike_file(closest_bike_entry)
+        return self.build_link(closest_bike_entry)
 
     def pre_process_request(self, xml_user_entry):
         user_entry_dict = self.parse_xml_request(xml_user_entry)
@@ -86,8 +86,5 @@ class BikeRecommendationService:
                 scaled_user_entry[key] = SCALED_MEAN
         return scaled_user_entry
 
-    def grab_bike_file(self, bike_filename):
-        with open(os.path.join(os.path.dirname(__file__),
-                               f"../resources/large/bikecad files/{bike_filename}"),
-                  "r") as file:
-            return file.read()
+    def build_link(self, bike_filename):
+        return f"http://bcd.bikecad.ca/{bike_filename}"
