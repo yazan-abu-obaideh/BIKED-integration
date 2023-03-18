@@ -1,6 +1,5 @@
 # syntax=docker/dockerfile:1
-
-FROM python:3.8-slim-buster
+FROM jyguru/biked-integration-resources-image:2023mar11
 
 WORKDIR /app
 

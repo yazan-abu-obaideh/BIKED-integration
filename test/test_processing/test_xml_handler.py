@@ -1,4 +1,4 @@
-from main.processing.bikeCad_xml_handler import BikeCadXmlHandler
+from main.processing.bike_xml_handler import BikeXmlHandler
 import unittest
 import os
 
@@ -8,7 +8,7 @@ file_path = os.path.join(os.path.dirname(__file__), "../resources/test.xml")
 class XmlHandlerTest(unittest.TestCase):
     def setUp(self):
         with open(file_path, "r") as file:
-            self.xml_handler = BikeCadXmlHandler()
+            self.xml_handler = BikeXmlHandler()
             self.xml_handler.set_xml(file.read())
         self.ENTRY_TAG = self.xml_handler.XML_TAG
         self.ENTRY_KEY = self.xml_handler.ATTRIBUTE
@@ -94,7 +94,7 @@ class XmlHandlerTest(unittest.TestCase):
         self.assertEqual('<?xml version="1.0" encoding="utf-8"?>\n', self.xml_handler.get_content_string())
 
     def test_generate_xml_from_dict(self):
-        handler = BikeCadXmlHandler()
+        handler = BikeXmlHandler()
         handler.set_entries_from_dict({num: num for num in range(3)})
         self.assertEqual('''<?xml version="1.0" encoding="utf-8"?>
 <properties><entry key="0">0</entry><entry key="1">1</entry><entry key="2">2</entry></properties>''',

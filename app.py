@@ -33,4 +33,4 @@ def recommend_similar():
 
 @app.route("/health")
 def get_health():
-    return "UP"
+    return make_response({"health": "UP"})

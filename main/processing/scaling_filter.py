@@ -22,7 +22,7 @@ class ScalingFilter:
         return self._operate_on_dataframe(scaled_data, self.scaler.inverse_transform)
 
     def _operate_on_dict(self, data: dict, operate: callable):
-        return pd_util.get_dict_from_row(operate(pd_util.get_row_from_dict(data)))
+        return pd_util.get_dict_from_first_row(operate(pd_util.get_one_row_dataframe_from_dict(data)))
 
     def _operate_on_dataframe(self, dataframe: pd.DataFrame, operation: callable) -> pd.DataFrame:
         dataframe, missing_columns = self.reorder_dataframe(dataframe)

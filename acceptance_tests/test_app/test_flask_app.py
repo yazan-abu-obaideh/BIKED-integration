@@ -50,18 +50,18 @@ class AppTest(unittest.TestCase):
             sleep(0.5)
 
     @classmethod
-    def handle_time_out(cls, start_time):
-        if AppTest.more_than_x_seconds_since(start_time, x=5):
-            AppTest.APP_PROCESS.terminate()
-            raise SystemError("Timed out waiting for app to start")
-
-    @classmethod
     def tearDownClass(cls) -> None:
         AppTest.APP_PROCESS.terminate()
 
     @staticmethod
+    def handle_time_out(start_time):
+        if AppTest.more_than_x_seconds_since(start_time, x=5):
+            AppTest.APP_PROCESS.terminate()
+            raise SystemError("Timed out waiting for app to start")
+
+    @staticmethod
     def site_not_up():
-        return send_request(GET, "http://localhost:5000/health").text != "UP"
+        return send_request(GET, "http://localhost:5000/health").json()["health"] != "UP"
 
     @staticmethod
     def run_app():

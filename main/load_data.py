@@ -40,8 +40,7 @@ def load_augmented_framed_dataset():
                 'Sim 3 Bottom Bracket X Rot.', 'Model Mass']:
         y[col] = [np.abs(val) for val in y[col].values]
         y.rename(columns={col: col + " Magnitude"}, inplace=True)
-    y = filter_y(y)
-    x = x.loc[y.index]
+
     y, y_scaler = scale(y)
 
     return x, y, x_scaler, y_scaler
@@ -53,10 +52,3 @@ def scale(v):
     v_scaled_values = v_scaler.transform(v)
     new_v = pd.DataFrame(v_scaled_values, columns=v.columns, index=v.index)
     return new_v, v_scaler
-
-
-def filter_y(y):
-    q = y.quantile(.95)
-    for col in y.columns:
-        y = y[y[col] <= q[col]]
-    return y

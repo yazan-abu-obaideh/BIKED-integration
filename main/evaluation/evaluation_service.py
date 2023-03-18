@@ -10,12 +10,11 @@ from main.evaluation.Predictor import Predictor
 from main.evaluation.request_processor import RequestProcessor
 from main.evaluation.request_processor_settings import RequestProcessorSettings
 from main.load_data import load_augmented_framed_dataset
-from main.processing.bikeCad_xml_handler import BikeCadXmlHandler
+from main.processing.bike_xml_handler import BikeXmlHandler
 from main.processing.scaling_filter import ScalingFilter
 from main.resource_paths import MODEL_PATH
 
 SCALED_MEAN = 0
-
 
 
 def prepare_pickle():
@@ -31,16 +30,14 @@ def load_pickled_predictor():
 DEFAULT_PREDICTOR = load_pickled_predictor()
 
 
-
-
 class EvaluationService:
 
     def __init__(self, predictor: Predictor = DEFAULT_PREDICTOR,
-                 settings : RequestProcessorSettings = DefaultProcessorSettings()):
+                 settings: RequestProcessorSettings = DefaultProcessorSettings()):
         self.predictor = predictor
         self.adapter = RequestProcessor(settings)
         x, y, input_scaler, output_scaler = self.get_data()
-        self.xml_handler = BikeCadXmlHandler()
+        self.xml_handler = BikeXmlHandler()
         self.request_scaler = ScalingFilter(input_scaler, x.columns)
         self.response_scaler = ScalingFilter(output_scaler, y.columns)
 
@@ -57,7 +54,7 @@ class EvaluationService:
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
         scaled_dict = self.default_to_mean(scaled_dict)
-        row = pd_util.get_row_from_dict(scaled_dict)
+        row = pd_util.get_one_row_dataframe_from_dict(scaled_dict)
         return self.predict_from_row(row)
 
     def default_to_mean(self, bike_cad_dict):
@@ -71,7 +68,7 @@ class EvaluationService:
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         predictions_row = self._predict_from_row(pd_row)
-        scaled_result = pd_util.get_dict_from_row(predictions_row)
+        scaled_result = pd_util.get_dict_from_first_row(predictions_row)
         scaled_result = self.replace_labels(scaled_result)
         unscaled_result = self.response_scaler.unscale(scaled_result)
         return self.ensure_magnitude(unscaled_result)

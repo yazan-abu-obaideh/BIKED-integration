@@ -2,7 +2,7 @@ import os.path
 
 import pandas as pd
 
-from main.processing.bikeCad_xml_handler import BikeCadXmlHandler
+from main.processing.bike_xml_handler import BikeXmlHandler
 from main.processing.scaling_filter import ScalingFilter
 from main.recommendation.default_engine_settings import DefaultBikeSettings
 from main.recommendation.similarity_engine import SimilarityEngine, EuclideanSimilarityEngine
@@ -49,7 +49,7 @@ class BikeRecommendationService:
                  scaler: ScalingFilter = DEFAULT_SCALER):
         self.scaler = scaler
         self.engine = engine
-        self.xml_handler = BikeCadXmlHandler()
+        self.xml_handler = BikeXmlHandler()
     def recommend_bike(self, xml_user_entry: str):
         scaled_user_entry = self.pre_process_request(xml_user_entry)
         closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)
