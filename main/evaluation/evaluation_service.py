@@ -17,7 +17,6 @@ from main.resource_paths import MODEL_PATH
 SCALED_MEAN = 0
 
 
-
 def prepare_pickle():
     # TODO: investigate why this needs to be done and what it implies
     __main__.MultilabelPredictor = MultilabelPredictor
@@ -31,12 +30,10 @@ def load_pickled_predictor():
 DEFAULT_PREDICTOR = load_pickled_predictor()
 
 
-
-
 class EvaluationService:
 
     def __init__(self, predictor: Predictor = DEFAULT_PREDICTOR,
-                 settings : RequestProcessorSettings = DefaultProcessorSettings()):
+                 settings: RequestProcessorSettings = DefaultProcessorSettings()):
         self.predictor = predictor
         self.adapter = RequestProcessor(settings)
         x, y, input_scaler, output_scaler = self.get_data()

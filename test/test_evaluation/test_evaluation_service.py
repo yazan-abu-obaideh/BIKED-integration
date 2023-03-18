@@ -86,9 +86,16 @@ class EvaluationServiceTest(unittest.TestCase):
 
     def test_model_and_scalers_loaded(self):
         predictions = self.service._predict_from_row(self.x)
-        self.assert_correct_metrics(predictions, self.y)
-        self.assert_correct_metrics(self.result_scaler.unscale_dataframe(predictions),
-                                    self.result_scaler.unscale_dataframe(self.y))
+        self.assert_correct_metrics(*self.service.get_metrics(predictions, self.y))
+        unscaled_y = self.result_scaler.unscale_dataframe(self.y)
+        unscaled_predictions = self.result_scaler.unscale_dataframe(predictions)
+        r2 = self.service.get_metrics(predictions, self.y)[0]
+        r2_after_scaling = self.service.get_metrics(unscaled_predictions, unscaled_y)[0]
+        self.assertAlmostEqual(
+            r2,
+            r2_after_scaling,
+            places=7
+        )
 
     def test_order_does_not_matter(self):
         input_in_different_order = {key: self.sample_input[key]
@@ -96,9 +103,7 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertEqual(self.service.predict_from_dict(self.sample_input),
                          self.service.predict_from_dict(input_in_different_order))
 
-    def assert_correct_metrics(self, predictions, actual):
-        r2, mean_square_error, mean_absolute_error = self.service.get_metrics(predictions,
-                                                                              actual)
+    def assert_correct_metrics(self, r2, mean_square_error, mean_absolute_error):
         self.assertGreater(r2, 0.72)
         self.assertLess(mean_square_error, 0.65)
         self.assertLess(mean_absolute_error, 0.12)
