@@ -10,7 +10,7 @@ include = DefaultBikeSettings().include()
 dataframe = pd.DataFrame(columns=include + [FILENAME_KEY]).set_index(FILENAME_KEY)
 xml_handler = BikeXmlHandler()
 
-bike_files_dir_path = "../large/bikecad files"
+bike_files_dir_path = "bikecad_files_gen"
 for filename in os.listdir(bike_files_dir_path):
     with open(f"{bike_files_dir_path}/{filename}", "r") as file:
         xml_handler.set_xml(file.read())
@@ -20,4 +20,4 @@ for filename in os.listdir(bike_files_dir_path):
         dataframe = pd.concat([pd_util.get_one_row_dataframe_from_dict(entries_dict), dataframe])
 
 generated_dataframe = dataframe.set_index(FILENAME_KEY)
-generated_dataframe.to_csv(path_or_buf="../generated/BIKED_recommend.csv")
+generated_dataframe.to_csv(path_or_buf="BIKED_recommend.csv")

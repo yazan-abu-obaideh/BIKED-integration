@@ -8,10 +8,10 @@ class DefaultBikeSettings(EngineSettings):
              "CHAINSTAYbrdgshift", "SEATSTAYbrdgdia1", "SEATSTAYbrdgshift", "bottle SEATTUBE0 show",
              "bottle DOWNTUBE0 show", "Front Fender include", "Rear Fender include", "Display RACK"]
     heavy = ["BB textfield", "Seat tube length", "Stack", "Seat angle", "CS textfield", "FCD textfield",
-           "Head angle", "Saddle height", "Head tube length textfield", "ERD rear", "Dropout spacing style",
-           "BSD front", "ERD front", "BSD rear", "Fork type", "Stem kind", "Display AEROBARS",
-           "Handlebar style", "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN",
-           "Number of cogs", "Number of chainrings"]
+             "Head angle", "Saddle height", "Head tube length textfield", "ERD rear", "Dropout spacing style",
+             "BSD front", "ERD front", "BSD rear", "Fork type", "Stem kind", "Display AEROBARS",
+             "Handlebar style", "CHAINSTAYbrdgCheck", "SEATSTAYbrdgCheck", "Display WATERBOTTLES", "BELTorCHAIN",
+             "Number of cogs", "Number of chainrings"]
 
     def max_n(self) -> int:
         return 10
