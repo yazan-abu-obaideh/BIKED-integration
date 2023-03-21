@@ -15,14 +15,14 @@ from main.resource_paths import ALL_STRUCTURAL_DATASET
 def one_hot_encode_material(data):
     data = data.copy()
     # One-hot encode the materials
-    data.loc[:, "Material"] = pd.Categorical(data["Material"], categories=["Steel", "Aluminum", "Titanium"])
+    data["Material"] = pd.Categorical(data["Material"], categories=["Steel", "Aluminum", "Titanium"])
     mats_oh = pd.get_dummies(data["Material"], prefix="Material=", prefix_sep="")
     data.drop(["Material"], axis=1, inplace=True)
     data = pd.concat([mats_oh, data], axis=1)
     return data
 
 
-def load_augmented_framed_dataset():
+def load_augmented_framed_dataset() -> tuple[pd.DataFrame, pd.DataFrame, StandardScaler, StandardScaler]:
     reg_data = pd.read_csv(ALL_STRUCTURAL_DATASET, index_col=0)
 
     x = reg_data.iloc[:, :-11]
