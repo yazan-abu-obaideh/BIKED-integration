@@ -1,20 +1,17 @@
-import os
 import unittest
 
 import pandas as pd
 
 import src.main.processing.pandas_utility as pd_util
+from service_resources.resource_paths import ALL_STRUCTURAL_DATASET
 from src.main.load_data import load_augmented_framed_dataset, one_hot_encode_material
 from src.main.processing.scaling_filter import ScalingFilter
-
-RESOURCES_FILE = os.path.join(os.path.dirname(__file__))
-RELATIVE_PATH = "../../main/resources/all_structural_data_aug.csv"
 
 
 class TestScalerWrapper(unittest.TestCase):
 
     def setUp(self) -> None:
-        self.raw_data = pd.read_csv(os.path.join(RESOURCES_FILE, RELATIVE_PATH), index_col=0)
+        self.raw_data = pd.read_csv(ALL_STRUCTURAL_DATASET, index_col=0)
         self.scaled_data, _, scaler, _ = load_augmented_framed_dataset()
         self.request_scaler = ScalingFilter(scaler, self.scaled_data.columns)
         self.input_row = self.prepare_input_row()

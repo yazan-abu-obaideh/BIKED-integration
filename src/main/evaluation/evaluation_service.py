@@ -12,7 +12,7 @@ from src.main.evaluation.request_processor_settings import RequestProcessorSetti
 from src.main.load_data import load_augmented_framed_dataset
 from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.processing.scaling_filter import ScalingFilter
-from src.main.resource_paths import MODEL_PATH
+from service_resources.resource_paths import MODEL_PATH
 
 SCALED_MEAN = 0
 

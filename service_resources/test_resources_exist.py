@@ -1,6 +1,6 @@
 import os.path
 import unittest
-from src.main.resource_paths import *
+from service_resources.resource_paths import *
 
 
 class ResourcesTester(unittest.TestCase):

@@ -6,7 +6,7 @@ from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.processing.scaling_filter import ScalingFilter
 from src.main.recommendation.default_engine_settings import DefaultBikeSettings
 from src.main.recommendation.similarity_engine import SimilarityEngine, EuclideanSimilarityEngine
-from src.main.resource_paths import RECOMMENDATION_DATASET_PATH
+from service_resources.resource_paths import RECOMMENDATION_DATASET_PATH
 
 SET_INVALID_TO_NAN = 'coerce'
 
@@ -76,7 +76,7 @@ class BikeRecommendationService:
         return user_entry_dict
 
     def attempt_enumerate(self, value: str):
-        default_function = lambda x: float(x)
+        def default_function(x): return float(x)
         function = self.enumeration_function_map.get(value, default_function)
         return function(value.lower())
 

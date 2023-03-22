@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-from src.main.resource_paths import ALL_STRUCTURAL_DATASET
+from service_resources.resource_paths import ALL_STRUCTURAL_DATASET
 
 
 def one_hot_encode_material(data):
