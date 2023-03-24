@@ -1,2 +1,6 @@
 For development purposes, use the provided script (install-correct-py-version.sh) to install python3.8,
 create the virtual environment, and install the requirements.
+
+1. Pull the image
+2. docker swarm init
+3. docker service create [OPTIONS] IMAGE [COMMAND] [ARG...]
