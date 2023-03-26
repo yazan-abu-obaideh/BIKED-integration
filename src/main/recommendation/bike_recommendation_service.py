@@ -1,12 +1,10 @@
-import os.path
-
 import pandas as pd
 
+from service_resources.resource_paths import RECOMMENDATION_DATASET_PATH
 from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.processing.scaling_filter import ScalingFilter
 from src.main.recommendation.default_engine_settings import DefaultBikeSettings
 from src.main.recommendation.similarity_engine import SimilarityEngine, EuclideanSimilarityEngine
-from service_resources.resource_paths import RECOMMENDATION_DATASET_PATH
 
 SET_INVALID_TO_NAN = 'coerce'
 

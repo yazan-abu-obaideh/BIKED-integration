@@ -30,23 +30,26 @@ STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 
 service = EvaluationService()
 
-
 qa = RobotQaDepartment(processing_function=service.predict_from_dict,
                        preprocessing_function=service.adapter.convert_dict)
 
 SETTINGS = DefaultProcessorSettings()
 reversed_map = {value: key for key, value in SETTINGS.get_bikeCad_to_model_map().items()}
+
+
 def build_relationship(request_parameters, response_parameters):
     return Relationship(request_parameters=request_parameters, affected_values=response_parameters)
 
 
 qa.add_proportional_relationship(build_relationship(DIAMETER_PARAMETERS, MODEL_MASS_PARAMETERS))
-qa.add_proportional_relationship(build_relationship(DOWN_TUBE_LENGTH_PARAMETERS, MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
+qa.add_proportional_relationship(
+    build_relationship(DOWN_TUBE_LENGTH_PARAMETERS, MODEL_MASS_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
 qa.add_proportional_relationship(build_relationship(STAY_BRIDGES, [SAFETY_3_INVERTED]))
 
-qa.add_inverse_relationship(build_relationship(DIAMETER_PARAMETERS, SAFETY_INVERTED_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
-qa.add_inverse_relationship(build_relationship(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude']))
-
+qa.add_inverse_relationship(
+    build_relationship(DIAMETER_PARAMETERS, SAFETY_INVERTED_PARAMETERS + SIM_2_DEFLECTIONS + SIM_3_DEFLECTIONS))
+qa.add_inverse_relationship(
+    build_relationship(STAY_BRIDGES, SIM_2_DEFLECTIONS + ['Sim 3 Bottom Bracket X Rot. Magnitude']))
 
 
 class ModelAcceptanceTest(unittest.TestCase):
@@ -55,4 +58,3 @@ class ModelAcceptanceTest(unittest.TestCase):
         qa.execute_assertions()
         print(qa.successful_executions)
         print(qa.reported_errors)
-
