@@ -48,6 +48,26 @@ class EvaluationServiceTest(unittest.TestCase):
                                 'Sim 3 Safety Factor (Inverted)': 0.9701027710943986,
                                 'Model Mass Magnitude': 10.482583547074846}
 
+    @unittest.skip
+    def test_request_with_bad_datatypes(self):
+        pass
+
+    @unittest.skip
+    def test_empty_request(self):
+        pass
+
+    @unittest.skip
+    def test_request_with_extreme_values(self):
+        pass
+
+    @unittest.skip
+    def test_request_with_none_values(self):
+        pass
+
+    @unittest.skip
+    def test_request_with_duplicated_keys(self):
+        pass
+
     def test_raises_correct_exception(self):
         with self.assertRaises(ValueError) as context:
             self.service.predict_from_xml("")
