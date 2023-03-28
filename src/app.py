@@ -28,7 +28,7 @@ def evaluate_design():
 
 @app.route("/recommend")
 def recommend_similar():
-    return recommendation_service.recommend_bike(get_xml(request))
+    return recommendation_service.recommend_bike_from_xml(get_xml(request))
 
 
 @app.route("/health")

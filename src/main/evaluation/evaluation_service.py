@@ -4,6 +4,7 @@ import pandas as pd
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
 import src.main.processing.pandas_utility as pd_util
+from src.main.processing.request_validator import RequestValidator
 from src.main.evaluation.default_processor_settings import DefaultProcessorSettings
 from src.main.evaluation.MultilabelPredictor import MultilabelPredictor
 from src.main.evaluation.Predictor import Predictor
@@ -40,16 +41,13 @@ class EvaluationService:
         self.xml_handler = BikeXmlHandler()
         self.request_scaler = ScalingFilter(input_scaler, x.columns)
         self.response_scaler = ScalingFilter(output_scaler, y.columns)
+        self.request_validator = RequestValidator()
 
     def predict_from_xml(self, bike_cad_xml: str) -> dict:
         self.xml_handler.set_xml(bike_cad_xml)
         entries = self.xml_handler.get_entries_dict()
-        self.raise_if_empty_dict(entries)
+        self.request_validator.throw_if_empty(entries, 'Invalid BikeCAD file')
         return self.predict_from_dict(self.adapter.convert_dict(entries))
-
-    def raise_if_empty_dict(self, bikeCad_file_entries):
-        if len(bikeCad_file_entries) == 0:
-            raise ValueError('Invalid BikeCAD file')
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
