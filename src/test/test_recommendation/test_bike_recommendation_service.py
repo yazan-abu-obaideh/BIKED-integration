@@ -11,6 +11,26 @@ class RecommendationServiceTest(unittest.TestCase):
         self.service = BikeRecommendationService()
         self.xml_handler = BikeXmlHandler()
 
+    @unittest.skip
+    def test_request_with_bad_datatypes(self):
+        pass
+
+    @unittest.skip
+    def test_empty_request(self):
+        pass
+
+    @unittest.skip
+    def test_request_with_extreme_values(self):
+        pass
+
+    @unittest.skip
+    def test_request_with_none_values(self):
+        pass
+
+    @unittest.skip
+    def test_request_with_duplicated_keys(self):
+        pass
+
     def test_get_closest_to(self):
         bike_in_request = self.__grab_bike_xml()
         recommended_bike = self.service.recommend_bike_from_xml(bike_in_request)
