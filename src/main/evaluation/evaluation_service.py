@@ -43,17 +43,17 @@ class EvaluationService:
         self.response_scaler = ScalingFilter(output_scaler, y.columns)
         self.request_validator = RequestValidator()
 
-    def predict_from_xml(self, bike_cad_xml: str) -> dict:
-        self.xml_handler.set_xml(bike_cad_xml)
-        entries = self.xml_handler.get_entries_dict()
-        self.request_validator.throw_if_empty(entries, 'Invalid BikeCAD file')
-        return self.predict_from_dict(self.adapter.convert_dict(entries))
+    def predict_from_xml(self, xml_user_request: str) -> dict:
+        self.xml_handler.set_xml(xml_user_request)
+        user_request = self.xml_handler.get_entries_dict()
+        self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
+        return self.predict_from_dict(self.adapter.convert_dict(user_request))
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
         scaled_dict = self.default_to_mean(scaled_dict)
-        row = pd_util.get_one_row_dataframe_from_dict(scaled_dict)
-        return self.predict_from_row(row)
+        one_row_dataframe = pd_util.get_one_row_dataframe_from_dict(scaled_dict)
+        return self.predict_from_row(one_row_dataframe)
 
     def default_to_mean(self, bike_cad_dict):
         defaulted_keys = self.get_empty_keys(bike_cad_dict)
