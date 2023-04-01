@@ -52,9 +52,10 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_request_with_bad_datatypes(self):
         pass
 
-    @unittest.skip
     def test_empty_request(self):
-        pass
+        with self.assertRaises(ValueError) as context:
+            self.service.predict_from_xml("")
+        self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
 
     @unittest.skip
     def test_request_with_extreme_values(self):

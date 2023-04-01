@@ -38,14 +38,14 @@ class EvaluationService:
         self.predictor = predictor
         self.adapter = RequestProcessor(settings)
         x, y, input_scaler, output_scaler = self.get_data()
-        self.xml_handler = BikeXmlHandler()
         self.request_scaler = ScalingFilter(input_scaler, x.columns)
         self.response_scaler = ScalingFilter(output_scaler, y.columns)
         self.request_validator = RequestValidator()
 
     def predict_from_xml(self, xml_user_request: str) -> dict:
-        self.xml_handler.set_xml(xml_user_request)
-        user_request = self.xml_handler.get_entries_dict()
+        xml_handler = BikeXmlHandler()
+        xml_handler.set_xml(xml_user_request)
+        user_request = xml_handler.get_entries_dict()
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
         return self.predict_from_dict(self.adapter.convert_dict(user_request))
 
