@@ -4,6 +4,8 @@ TEMPLATE_ENTRY = "<entry key='k'>1</entry>"
 
 
 class BikeXmlHandler:
+    """Stateful xml handler. Can parse boolean and float values and
+    can alternatively convert an xml string into a string -> string dictionary"""
     XML_TAG = "entry"
     ATTRIBUTE = "key"
     PARENT_TAG = "properties"
@@ -99,16 +101,27 @@ class BikeXmlHandler:
     def get_all_keys(self):
         return [entry[self.ATTRIBUTE] for entry in self.get_all_entries()]
 
-    def get_parsed_entries_dict(self):
-        entries_dict = self.get_entries_dict()
-        return {key: self._parse_value(key, value) for key, value in entries_dict.items()}
+    def get_parsable_entries(self):
+        """Returns only entries from the bike xml whose type
+        is either boolean or float. Note that the type of map returned is str -> float.
+        Boolean values are mapped to 1.0 and 0.0"""
+        all_entries = self.get_entries_dict()
+        result = {}
+        for key, value in all_entries.items():
+            self.__add_if_float_or_boolean(key, value, result)
+        return result
 
-    def _parse_value(self, key, value):
+    def __add_if_float_or_boolean(self, key: str, value: str, target: dict) -> None:
+        parsed_value = self._parse_value(value)
+        if parsed_value is not None:
+            target[key] = parsed_value
+
+    def _parse_value(self, value):
         if self._is_float(value):
             return float(value)
         if self._is_bool(value):
-            return int(bool(value))
-        raise ValueError(f'Could not parse XML, value supplied for key ["{key}"] is invalid ["{value}"]')
+            return float(value.lower() == "true")
+        return None
 
     def _is_float(self, value: str) -> bool:
         try:

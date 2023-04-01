@@ -14,7 +14,26 @@ class XmlHandlerTest(unittest.TestCase):
         self.ENTRY_KEY = self.xml_handler.ATTRIBUTE
         self.PARENT_TAG = self.xml_handler.PARENT_TAG
 
-    def test_parse_xml_with_invalid_values(self):
+    def test_parses_boolean(self):
+        xml_handler = BikeXmlHandler()
+        xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+        <properties>
+        <comment> Made with care! </comment>
+        <entry key="first">TRUE</entry>
+        <entry key="second">tRue</entry>
+        <entry key="third">FALSE</entry>
+        <entry key="fourth">fAlSe</entry>
+        </properties>""")
+        parsed = xml_handler.get_parsable_entries()
+        self.assertEqual(4, len(parsed))
+        self.assertEqual(1, parsed["first"])
+        self.assertEqual(1, parsed["second"])
+        self.assertEqual(0, parsed["third"])
+        self.assertEqual(0, parsed["fourth"])
+
+
+    def test_parse_xml_with_non_float_values(self):
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
         <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
@@ -23,10 +42,7 @@ class XmlHandlerTest(unittest.TestCase):
         <entry key="first">NEITHER_FLOAT_NOR_BOOLEAN</entry>
         <entry key="second">5</entry>
         </properties>""")
-        with self.assertRaises(ValueError) as context:
-            parsed_entries = xml_handler.get_parsed_entries_dict()
-        self.assertEqual('Could not parse XML, value supplied for '
-                         'key ["first"] is invalid ["NEITHER_FLOAT_NOR_BOOLEAN"]', context.exception.args[0])
+        self.assertEqual(1, len(xml_handler.get_parsable_entries()))
 
     def test_parse_xml_with_extreme_values(self):
         xml_handler = BikeXmlHandler()
@@ -37,7 +53,7 @@ class XmlHandlerTest(unittest.TestCase):
         <entry key="first">1e+10000</entry>
         <entry key="second">5</entry>
         </properties>""")
-        parsed_entries = xml_handler.get_parsed_entries_dict()
+        parsed_entries = xml_handler.get_parsable_entries()
         self.assertEqual(2, len(parsed_entries))
         self.assertEqual(float("inf"), parsed_entries["first"])
         self.assertEqual(5, parsed_entries["second"])
@@ -51,7 +67,7 @@ class XmlHandlerTest(unittest.TestCase):
 <entry key="first">12.5</entry>
 <entry key="second">5</entry>
 </properties>""")
-        parsed_entries = xml_handler.get_parsed_entries_dict()
+        parsed_entries = xml_handler.get_parsable_entries()
         self.assertEqual(2, len(parsed_entries))
         self.assertEqual(12.5, parsed_entries["first"])
         self.assertIs(float, type(parsed_entries["first"]))
