@@ -37,10 +37,6 @@ DEFAULT_ENGINE = EuclideanSimilarityEngine(DEFAULT_DATAFRAME, DEFAULT_SETTINGS)
 
 
 class BikeRecommendationService:
-    enumeration_function_map = {
-        'true': lambda x: True,
-        'false': lambda x: False
-    }
 
     def __init__(self,
                  engine: SimilarityEngine = DEFAULT_ENGINE,
@@ -50,24 +46,16 @@ class BikeRecommendationService:
         self.request_validator = RequestValidator()
 
     def recommend_bike_from_xml(self, xml_user_entry: str):
-        user_entry_dict = self.__transform_to_dict(xml_user_entry)
-        return self.recommend_bike_from_dict(user_entry_dict)
+        return self.recommend_bike_from_dict(self.__transform_to_dict(xml_user_entry))
 
     def __transform_to_dict(self, xml_user_entry):
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml_user_entry)
-        user_entry_dict = {key: value for key, value in xml_handler.get_entries_dict().items()
-                           if key in self.engine.get_settings().include()}
+        user_entry_dict = self.__drop_unwanted(xml_handler.get_parsable_entries())
         return user_entry_dict
 
     def recommend_bike_from_dict(self, user_entry: dict):
         self.request_validator.throw_if_empty(user_entry, "Invalid BikeCAD file")
-        keys = list(user_entry.keys())
-        for key in keys:
-            try:
-                user_entry[key] = self.attempt_enumerate(user_entry[key])
-            except ValueError:
-                del user_entry[key]
         scaled_user_entry = self.pre_process_request(user_entry)
         closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)
         return self.build_link(closest_bike_entry)
@@ -77,13 +65,6 @@ class BikeRecommendationService:
         processed_user_entry = self.default_to_mean(scaled_user_entry)
         return processed_user_entry
 
-    def attempt_enumerate(self, value: str):
-        def default_function(x): return float(x)
-
-        case_insensitive_value = value.lower()
-        function = self.enumeration_function_map.get(case_insensitive_value, default_function)
-        return function(case_insensitive_value)
-
     def default_to_mean(self, scaled_user_entry):
         for key in self.engine.get_settings().include():
             if key not in scaled_user_entry:
@@ -92,3 +73,6 @@ class BikeRecommendationService:
 
     def build_link(self, bike_filename):
         return f"http://bcd.bikecad.ca/{bike_filename}"
+
+    def __drop_unwanted(self, request):
+        return {key: value for key, value in request.items() if key in self.engine.get_settings().include()}
