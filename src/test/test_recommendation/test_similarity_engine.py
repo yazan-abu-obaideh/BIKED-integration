@@ -19,6 +19,10 @@ class SimilarityEngineTest(unittest.TestCase):
             self.engine.get_closest_n({}, 1)
         assert context.exception.args[0] == f"Cannot provide similar entry."
 
+    def test_distance_with_boolean_values(self):
+        actual_distance = self.engine.get_distance_between({"x": 1}, {"x": True})
+        self.assertEqual(0, actual_distance)
+
     def test_incomplete_input(self):
         response = self.engine.get_closest_to({"x": 5, "y": 12})
         self.assertCorrectMatch(row=self.get_by_index(3), response=response,
