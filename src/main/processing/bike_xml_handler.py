@@ -101,13 +101,14 @@ class BikeXmlHandler:
 
     def get_parsed_entries_dict(self):
         entries_dict = self.get_entries_dict()
-        return {key: self._parse_value(value) for key, value in entries_dict.items()}
+        return {key: self._parse_value(key, value) for key, value in entries_dict.items()}
 
-    def _parse_value(self, value):
+    def _parse_value(self, key, value):
         if self._is_float(value):
             return float(value)
         if self._is_bool(value):
             return int(bool(value))
+        raise ValueError(f'Could not parse XML, value supplied for key ["{key}"] is invalid ["{value}"]')
 
     def _is_float(self, value: str) -> bool:
         try:

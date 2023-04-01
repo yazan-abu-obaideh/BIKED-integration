@@ -14,19 +14,48 @@ class XmlHandlerTest(unittest.TestCase):
         self.ENTRY_KEY = self.xml_handler.ATTRIBUTE
         self.PARENT_TAG = self.xml_handler.PARENT_TAG
 
+    def test_parse_xml_with_invalid_values(self):
+        xml_handler = BikeXmlHandler()
+        xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+        <properties>
+        <comment> Made with care! </comment>
+        <entry key="first">NEITHER_FLOAT_NOR_BOOLEAN</entry>
+        <entry key="second">5</entry>
+        </properties>""")
+        with self.assertRaises(ValueError) as context:
+            parsed_entries = xml_handler.get_parsed_entries_dict()
+        self.assertEqual('Could not parse XML, value supplied for '
+                         'key ["first"] is invalid ["NEITHER_FLOAT_NOR_BOOLEAN"]', context.exception.args[0])
+
+    def test_parse_xml_with_extreme_values(self):
+        xml_handler = BikeXmlHandler()
+        xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+        <properties>
+        <comment> Made with care! </comment>
+        <entry key="first">1e+10000</entry>
+        <entry key="second">5</entry>
+        </properties>""")
+        parsed_entries = xml_handler.get_parsed_entries_dict()
+        self.assertEqual(2, len(parsed_entries))
+        self.assertEqual(float("inf"), parsed_entries["first"])
+        self.assertEqual(5, parsed_entries["second"])
+
     def test_parse_xml(self):
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <comment> Made with care! </comment>
-<entry key="ready">12.5</entry>
-<entry key="stuff">5</entry>
+<entry key="first">12.5</entry>
+<entry key="second">5</entry>
 </properties>""")
         parsed_entries = xml_handler.get_parsed_entries_dict()
         self.assertEqual(2, len(parsed_entries))
-        self.assertEqual(5, parsed_entries["stuff"])
-        self.assertEqual(12.5, parsed_entries["ready"])
+        self.assertEqual(12.5, parsed_entries["first"])
+        self.assertIs(float, type(parsed_entries["first"]))
+        self.assertEqual(5, parsed_entries["second"])
 
     def test_xml_tree_contains_entries(self):
         self.assertEqual(2, self.xml_handler.get_entries_count())
