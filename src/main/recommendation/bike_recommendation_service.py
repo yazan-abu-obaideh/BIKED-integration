@@ -38,8 +38,8 @@ DEFAULT_ENGINE = EuclideanSimilarityEngine(DEFAULT_DATAFRAME, DEFAULT_SETTINGS)
 
 class BikeRecommendationService:
     enumeration_function_map = {
-        'true': lambda x: 1,
-        'false': lambda x: 0
+        'true': lambda x: True,
+        'false': lambda x: False
     }
 
     def __init__(self,
@@ -47,7 +47,6 @@ class BikeRecommendationService:
                  scaler: ScalingFilter = DEFAULT_SCALER):
         self.scaler = scaler
         self.engine = engine
-        self.xml_handler = BikeXmlHandler()
         self.request_validator = RequestValidator()
 
     def recommend_bike_from_xml(self, xml_user_entry: str):
@@ -55,8 +54,9 @@ class BikeRecommendationService:
         return self.recommend_bike_from_dict(user_entry_dict)
 
     def __transform_to_dict(self, xml_user_entry):
-        self.xml_handler.set_xml(xml_user_entry)
-        user_entry_dict = {key: value for key, value in self.xml_handler.get_entries_dict().items()
+        xml_handler = BikeXmlHandler()
+        xml_handler.set_xml(xml_user_entry)
+        user_entry_dict = {key: value for key, value in xml_handler.get_entries_dict().items()
                            if key in self.engine.get_settings().include()}
         return user_entry_dict
 

@@ -14,6 +14,20 @@ class XmlHandlerTest(unittest.TestCase):
         self.ENTRY_KEY = self.xml_handler.ATTRIBUTE
         self.PARENT_TAG = self.xml_handler.PARENT_TAG
 
+    def test_parse_xml(self):
+        xml_handler = BikeXmlHandler()
+        xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<comment> Made with care! </comment>
+<entry key="ready">12.5</entry>
+<entry key="stuff">5</entry>
+</properties>""")
+        parsed_entries = xml_handler.get_parsed_entries_dict()
+        self.assertEqual(2, len(parsed_entries))
+        self.assertEqual(5, parsed_entries["stuff"])
+        self.assertEqual(12.5, parsed_entries["ready"])
+
     def test_xml_tree_contains_entries(self):
         self.assertEqual(2, self.xml_handler.get_entries_count())
 

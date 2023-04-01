@@ -82,6 +82,7 @@ class BikeXmlHandler:
         self.xml_tree.append(parent)
         for key, value in entries_dict.items():
             self.add_new_entry(str(key), str(value))
+
     def update_entries_from_dict(self, entries_dict: dict):
         for key, value in entries_dict.items():
             self.add_or_update(key, value)
@@ -97,3 +98,23 @@ class BikeXmlHandler:
 
     def get_all_keys(self):
         return [entry[self.ATTRIBUTE] for entry in self.get_all_entries()]
+
+    def get_parsed_entries_dict(self):
+        entries_dict = self.get_entries_dict()
+        return {key: self._parse_value(value) for key, value in entries_dict.items()}
+
+    def _parse_value(self, value):
+        if self._is_float(value):
+            return float(value)
+        if self._is_bool(value):
+            return int(bool(value))
+
+    def _is_float(self, value: str) -> bool:
+        try:
+            float(value)
+            return True
+        except ValueError:
+            return False
+
+    def _is_bool(self, value: str) -> bool:
+        return value.lower() in ["true", "false"]
