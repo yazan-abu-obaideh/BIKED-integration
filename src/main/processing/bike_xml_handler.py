@@ -108,7 +108,7 @@ class BikeXmlHandler:
                               key_filter: Callable,
                               parsed_value_filter: Callable):
         all_entries = self.get_entries_dict()
-        filtered_by_key = self.filter_by_key(all_entries, key_filter)
+        filtered_by_key = self.__filter_by_key(all_entries, key_filter)
         return self.__parse_and_filter(filtered_by_key, value_parser, parsed_value_filter)
 
     def __parse_and_filter(self, entries: dict, value_parser, parsed_value_filter):
@@ -119,5 +119,5 @@ class BikeXmlHandler:
                 result[key] = parsed_value
         return result
 
-    def filter_by_key(self, all_entries, key_filter):
+    def __filter_by_key(self, all_entries, key_filter):
         return {key: value for key, value in all_entries.items() if key_filter(key)}

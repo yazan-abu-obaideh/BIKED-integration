@@ -1,3 +1,4 @@
+from processing.algebraic_parser import AlgebraicParser
 from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.evaluation.request_processor_settings import RequestProcessorSettings
 import numpy as np
@@ -12,9 +13,9 @@ class RequestProcessor:
         self.xml_handler = BikeXmlHandler()
         self.settings = settings
         # TODO: ensure adherence to T -> T
-        self.pipeline = RequestPipeline([self.parse_values,
+        self.pipeline = RequestPipeline([self.one_hot_encode,
+                                        self.parse_values,
                                          self.calculate_composite_values,
-                                         self.one_hot_encode,
                                          self.map_to_model_input,
                                          self.handle_special_behavior,
                                          self.convert_millimeter_values_to_meters])
@@ -114,3 +115,14 @@ class RequestProcessor:
         bikeCad_file_entries['Wall thickness Bottom Bracket'] = 2.0
         bikeCad_file_entries['Wall thickness Head tube'] = 1.1
         return bikeCad_file_entries
+
+    def __parse(self, value: str):
+        if value.lower() in ["steel", "aluminum", "titanium"]:
+            return value
+        return AlgebraicParser().parse(value)
+
+    def __key_filter(self, key):
+        return key in list(self.settings.get_bikeCad_to_model_map().keys()) + ["MATERIAL"]
+
+    def __value_filter(self, parsed_value):
+        return parsed_value is not None
