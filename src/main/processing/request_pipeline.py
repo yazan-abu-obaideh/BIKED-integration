@@ -1,7 +1,8 @@
 from typing import List, Callable, TypeVar
 
-
 T = TypeVar('T')
+
+
 class RequestPipeline:
     def __init__(self, pipeline: List[Callable[[T], T]]):
         self.pipeline = pipeline

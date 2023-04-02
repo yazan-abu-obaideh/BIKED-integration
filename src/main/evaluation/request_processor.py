@@ -14,7 +14,7 @@ class RequestProcessor:
         self.settings = settings
         # TODO: ensure adherence to T -> T
         self.pipeline = RequestPipeline([self.one_hot_encode,
-                                        self.parse_values,
+                                         self.parse_values,
                                          self.calculate_composite_values,
                                          self.map_to_model_input,
                                          self.handle_special_behavior,
