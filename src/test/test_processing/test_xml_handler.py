@@ -1,4 +1,4 @@
-from processing.algebraic_parser import AlgebraicParser
+from src.main.processing.algebraic_parser import AlgebraicParser
 from src.main.processing.bike_xml_handler import BikeXmlHandler
 import unittest
 import os

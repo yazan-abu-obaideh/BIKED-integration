@@ -1,6 +1,6 @@
 import pandas as pd
 
-from processing.algebraic_parser import AlgebraicParser
+from src.main.processing.algebraic_parser import AlgebraicParser
 from src.main.processing.request_validator import RequestValidator
 from service_resources.resource_paths import RECOMMENDATION_DATASET_PATH
 from src.main.processing.bike_xml_handler import BikeXmlHandler
