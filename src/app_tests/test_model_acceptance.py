@@ -1,6 +1,6 @@
 import unittest
 from sample_request import request
-from src.main.evaluation.evaluation_service import EvaluationService, DefaultProcessorSettings
+from src.main.evaluation.evaluation_service import EvaluationService, DefaultMapperSettings
 from src.app_tests.robot_qa import RobotQaDepartment
 from src.app_tests.robot_qa import Relationship
 
@@ -31,9 +31,9 @@ STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 service = EvaluationService()
 
 qa = RobotQaDepartment(processing_function=service.predict_from_dict,
-                       preprocessing_function=service.adapter.convert_dict)
+                       preprocessing_function=service.adapter.map_dict)
 
-SETTINGS = DefaultProcessorSettings()
+SETTINGS = DefaultMapperSettings()
 reversed_map = {value: key for key, value in SETTINGS.get_bikeCad_to_model_map().items()}
 
 

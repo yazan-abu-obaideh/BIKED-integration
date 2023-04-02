@@ -2,8 +2,8 @@ from typing import Optional
 
 
 class AlgebraicParser:
-    def parse(self, value: str):
-        return self._parse_value(value)
+    def parse(self, value) -> Optional[float]:
+        return self._parse_value(str(value))
 
     def _parse_value(self, value: str) -> Optional[float]:
         if self._is_bool(value):

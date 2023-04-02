@@ -5,11 +5,11 @@ from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
 import src.main.processing.pandas_utility as pd_util
 from src.main.processing.request_validator import RequestValidator
-from src.main.evaluation.default_processor_settings import DefaultProcessorSettings
+from src.main.evaluation.default_mapper_settings import DefaultMapperSettings
 from src.main.evaluation.MultilabelPredictor import MultilabelPredictor
 from src.main.evaluation.Predictor import Predictor
-from src.main.evaluation.request_processor import RequestProcessor
-from src.main.evaluation.request_processor_settings import RequestProcessorSettings
+from src.main.evaluation.framed_mapper import FramedMapper
+from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
 from src.main.load_data import load_augmented_framed_dataset
 from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.processing.scaling_filter import ScalingFilter
@@ -34,9 +34,9 @@ DEFAULT_PREDICTOR = load_pickled_predictor()
 class EvaluationService:
 
     def __init__(self, predictor: Predictor = DEFAULT_PREDICTOR,
-                 settings: RequestProcessorSettings = DefaultProcessorSettings()):
+                 settings: FramedMapperSettings = DefaultMapperSettings()):
         self.predictor = predictor
-        self.adapter = RequestProcessor(settings)
+        self.adapter = FramedMapper(settings)
         x, y, input_scaler, output_scaler = self.get_data()
         self.request_scaler = ScalingFilter(input_scaler, x.columns)
         self.response_scaler = ScalingFilter(output_scaler, y.columns)
@@ -47,7 +47,7 @@ class EvaluationService:
         xml_handler.set_xml(xml_user_request)
         user_request = xml_handler.get_entries_dict()
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
-        return self.predict_from_dict(self.adapter.convert_dict(user_request))
+        return self.predict_from_dict(self.adapter.map_dict(user_request))
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)

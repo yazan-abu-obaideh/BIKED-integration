@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABCMeta
 
 
-class RequestProcessorSettings(metaclass=ABCMeta):
+class FramedMapperSettings(metaclass=ABCMeta):
     @abstractmethod
     def get_expected_input_keys(self) -> list:
         pass

@@ -1,6 +1,6 @@
 from processing.algebraic_parser import AlgebraicParser
 from src.main.processing.bike_xml_handler import BikeXmlHandler
-from src.main.evaluation.request_processor_settings import RequestProcessorSettings
+from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
 import numpy as np
 
 from src.main.processing.request_pipeline import RequestPipeline
@@ -8,8 +8,8 @@ from src.main.processing.request_pipeline import RequestPipeline
 MILLIMETERS_TO_METERS_FACTOR = 1000
 
 
-class RequestProcessor:
-    def __init__(self, settings: RequestProcessorSettings):
+class FramedMapper:
+    def __init__(self, settings: FramedMapperSettings):
         self.xml_handler = BikeXmlHandler()
         self.settings = settings
         # TODO: ensure adherence to T -> T
@@ -20,12 +20,12 @@ class RequestProcessor:
                                          self.handle_special_behavior,
                                          self.convert_millimeter_values_to_meters])
 
-    def convert_xml(self, xml: str):
+    def map_xml(self, xml: str):
         self.xml_handler.set_xml(xml)
         request_dict = self.xml_handler.get_entries_dict()
-        return self.convert_dict(request_dict)
+        return self.map_dict(request_dict)
 
-    def convert_dict(self, bikeCad_file_entries):
+    def map_dict(self, bikeCad_file_entries):
         return self.pipeline.pass_through(bikeCad_file_entries)
 
     def map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
@@ -55,7 +55,7 @@ class RequestProcessor:
             result_dict["SSB OD"] = 15.849
 
     def parse_values(self, input_dict: dict) -> dict:
-        return {key: self.get_float_or_strip(value) for key, value in input_dict.items()}
+        return {key: AlgebraicParser().parse(value) for key, value in input_dict.items()}
 
     def get_float_or_strip(self, value):
         try:

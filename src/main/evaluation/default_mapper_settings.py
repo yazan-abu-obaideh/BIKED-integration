@@ -1,9 +1,9 @@
 from typing import List
 
-from src.main.evaluation.request_processor_settings import RequestProcessorSettings
+from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
 
 
-class DefaultProcessorSettings(RequestProcessorSettings):
+class DefaultMapperSettings(FramedMapperSettings):
 
     def get_label_replacements(self):
         labels_inverted = ["Sim 1 Safety Factor",
