@@ -7,11 +7,11 @@ from src.test.test_evaluation.settings_for_test import Settings
 RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../resources/SimpleModel1.xml")
 
 
-class RequestProcessorTest(unittest.TestCase):
+class FramedMapperTest(unittest.TestCase):
     def setUp(self) -> None:
         bikeCad_file = self.get_BikeCad_file_as_raw_xml()
-        self.processor = FramedMapper(Settings())
-        self.result_dict = self.processor.map_xml(bikeCad_file)
+        self.mapper = FramedMapper(Settings())
+        self.result_dict = self.mapper.map_xml(bikeCad_file)
 
     def test_can_transform(self):
         actual = self.result_dict["TT Thickness"]
