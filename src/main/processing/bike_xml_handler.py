@@ -1,3 +1,5 @@
+from typing import Callable
+
 from bs4 import BeautifulSoup
 
 TEMPLATE_ENTRY = "<entry key='k'>1</entry>"
@@ -101,34 +103,21 @@ class BikeXmlHandler:
     def get_all_keys(self):
         return [entry[self.ATTRIBUTE] for entry in self.get_all_entries()]
 
-    def get_parsable_entries(self):
-        """Returns only entries from the bike xml whose type
-        is either boolean or float. Note that the type of map returned is str -> float.
-        Boolean values are mapped to 1.0 and 0.0"""
+    def get_parsable_entries_(self,
+                              value_parser: Callable,
+                              key_filter: Callable,
+                              parsed_value_filter: Callable):
         all_entries = self.get_entries_dict()
+        filtered_by_key = self.filter_by_key(all_entries, key_filter)
+        return self.__parse_and_filter(filtered_by_key, value_parser, parsed_value_filter)
+
+    def __parse_and_filter(self, entries: dict, value_parser, parsed_value_filter):
         result = {}
-        for key, value in all_entries.items():
-            self.__add_if_float_or_boolean(key, value, result)
+        for key, value in entries.items():
+            parsed_value = value_parser(value)
+            if parsed_value_filter(parsed_value):
+                result[key] = parsed_value
         return result
 
-    def __add_if_float_or_boolean(self, key: str, value: str, target: dict) -> None:
-        parsed_value = self._parse_value(value)
-        if parsed_value is not None:
-            target[key] = parsed_value
-
-    def _parse_value(self, value):
-        if self._is_float(value):
-            return float(value)
-        if self._is_bool(value):
-            return float(value.lower() == "true")
-        return None
-
-    def _is_float(self, value: str) -> bool:
-        try:
-            float(value)
-            return True
-        except ValueError:
-            return False
-
-    def _is_bool(self, value: str) -> bool:
-        return value.lower() in ["true", "false"]
+    def filter_by_key(self, all_entries, key_filter):
+        return {key: value for key, value in all_entries.items() if key_filter(key)}

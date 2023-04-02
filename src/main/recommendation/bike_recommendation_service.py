@@ -1,5 +1,6 @@
 import pandas as pd
 
+from processing.algebraic_parser import AlgebraicParser
 from src.main.processing.request_validator import RequestValidator
 from service_resources.resource_paths import RECOMMENDATION_DATASET_PATH
 from src.main.processing.bike_xml_handler import BikeXmlHandler
@@ -44,6 +45,7 @@ class BikeRecommendationService:
         self.scaler = scaler
         self.engine = engine
         self.request_validator = RequestValidator()
+        self.parser = AlgebraicParser()
 
     def recommend_bike_from_xml(self, xml_user_entry: str):
         return self.recommend_bike_from_dict(self.__transform_to_dict(xml_user_entry))
@@ -51,7 +53,9 @@ class BikeRecommendationService:
     def __transform_to_dict(self, xml_user_entry):
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml_user_entry)
-        user_entry_dict = self.__drop_unwanted(xml_handler.get_parsable_entries())
+        user_entry_dict = xml_handler.get_parsable_entries_(
+            self.parser.parse, self.__key_filter, self.__value_filter
+        )
         return user_entry_dict
 
     def recommend_bike_from_dict(self, user_entry: dict):
@@ -74,5 +78,8 @@ class BikeRecommendationService:
     def build_link(self, bike_filename):
         return f"http://bcd.bikecad.ca/{bike_filename}"
 
-    def __drop_unwanted(self, request):
-        return {key: value for key, value in request.items() if key in self.engine.get_settings().include()}
+    def __key_filter(self, key):
+        return key in self.engine.get_settings().include()
+
+    def __value_filter(self, value):
+        return value is not None
