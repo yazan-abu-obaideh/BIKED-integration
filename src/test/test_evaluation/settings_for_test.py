@@ -5,6 +5,9 @@ class Settings(FramedMapperSettings):
     """THIS IS NOT DUPLICATION. The test settings just so happen to match the real settings because we have not done the
     requisite work on the real settings just yet."""
 
+    def get_expected_xml_keys(self):
+        pass
+
     def get_label_replacements(self):
         pass
 

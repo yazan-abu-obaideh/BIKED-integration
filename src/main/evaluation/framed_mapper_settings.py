@@ -2,6 +2,11 @@ from abc import abstractmethod, ABCMeta
 
 
 class FramedMapperSettings(metaclass=ABCMeta):
+
+    @abstractmethod
+    def get_expected_xml_keys(self):
+        pass
+
     @abstractmethod
     def get_expected_input_keys(self) -> list:
         pass
