@@ -67,23 +67,23 @@ class FramedMapper:
     def _should_be_converted(self, _dict):
         return (key for key in self.settings.millimeters_to_meters() if key in _dict.keys())
 
-    def _get_sum(self, entries, my_dict):
+    def _get_sum(self, my_dict, entries):
+        if self._any_missing(my_dict, entries):
+            return None
         entries_values = [my_dict.get(entry, 0) for entry in entries]
         return sum(entries_values)
 
-    def _convert_angle(self, entry, my_dict):
+    def _convert_angle(self, my_dict, entry):
         return my_dict[entry] * np.pi / 180
 
     def _get_average(self, my_dict, entries):
-        # for entry in entries:
-        #     if entry not in bikeCad_file_entries:
-        #         return None
-        return self._get_sum(entries, my_dict) / len(entries)
+        if self._any_missing(my_dict, entries):
+            return None
+        return self._get_sum(my_dict, entries) / len(entries)
 
-    def _get_geometric_average(self, entries, my_dict):
-        # for entry in entries:
-        #     if entry not in bikeCad_file_entries:
-        #         return None
+    def _get_geometric_average(self, my_dict, entries):
+        if self._any_missing(my_dict, entries):
+            return None
         entries_squares = [my_dict.get(entry, 0) ** 2 for entry in entries]
         return np.power(sum(entries_squares), np.divide(1, len(entries)))
 
@@ -110,23 +110,20 @@ class FramedMapper:
         bikeCad_file_entries['Wall thickness Head tube'] = 1.1
         return bikeCad_file_entries
 
+    def _any_missing(self, dictionary, keys):
+        return False
+        return not all([(key in dictionary) for key in keys])
+
     def _calculate_dt_length(self, bikeCad_file_entries):
+        required_keys = ['BB textfield', 'FCD textfield', 'FORKOR', 'FORK0L',
+                         'Head tube lower extension2', 'lower stack height', 'Head angle']
+        if self._any_missing(bikeCad_file_entries, required_keys):
+            return None
         fty = bikeCad_file_entries['BB textfield']
-        ftx = self._get_geometric_average(['BB textfield', 'FCD textfield'], bikeCad_file_entries)
+        ftx = self._get_geometric_average(bikeCad_file_entries, ['BB textfield', 'FCD textfield'])
         x = bikeCad_file_entries.get('FORKOR', 0)
-        y = self._get_sum(['FORK0L', 'Head tube lower extension2', 'lower stack height'], bikeCad_file_entries)
-        ha = self._convert_angle('Head angle', bikeCad_file_entries)
+        y = self._get_sum(bikeCad_file_entries, ['FORK0L', 'Head tube lower extension2', 'lower stack height'])
+        ha = self._convert_angle(bikeCad_file_entries, 'Head angle')
         dtx = ftx - y * np.cos(ha) - x * np.sin(ha)
         dty = fty + y * np.sin(ha) + x * np.cos(ha)
         return np.sqrt(dtx ** 2 + dty ** 2)
-
-    def __parse(self, value: str):
-        if value.lower() in ["steel", "aluminum", "titanium"]:
-            return value
-        return AlgebraicParser().attempt_parse(value)
-
-    def __key_filter(self, key):
-        return key in list(self.settings.get_bikeCad_to_model_map().keys()) + ["MATERIAL"]
-
-    def __value_filter(self, parsed_value):
-        return parsed_value is not None
