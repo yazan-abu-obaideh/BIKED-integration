@@ -25,7 +25,7 @@ class XmlHandlerTest(unittest.TestCase):
         <entry key="second">tRue</entry>
         </properties>""")
         parsed = xml_handler.get_parsable_entries_(
-            AlgebraicParser().parse, lambda x: x == "first", lambda y: True
+            AlgebraicParser().attempt_parse, lambda x: x == "first", lambda y: True
         )
         self.assertTrue("second" not in parsed.keys())
         self.assertEqual(1, len(parsed))
@@ -41,7 +41,7 @@ class XmlHandlerTest(unittest.TestCase):
         <entry key="second">5</entry>
         </properties>""")
         parsed_entries = xml_handler.get_parsable_entries_(
-            AlgebraicParser().parse, lambda x: True, lambda y: y is not None
+            AlgebraicParser().attempt_parse, lambda x: True, lambda y: type(y) != str
         )
         self.assertEqual(1, len(parsed_entries))
 
@@ -55,7 +55,7 @@ class XmlHandlerTest(unittest.TestCase):
 <entry key="second">TRUE</entry>
 </properties>""")
         parsed_entries = xml_handler.get_parsable_entries_(
-            AlgebraicParser().parse, lambda x: True, lambda y: True
+            AlgebraicParser().attempt_parse, lambda x: True, lambda y: True
         )
         self.assertEqual(2, len(parsed_entries))
         self.assertEqual(12.5, parsed_entries["first"])

@@ -54,7 +54,7 @@ class BikeRecommendationService:
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml_user_entry)
         user_entry_dict = xml_handler.get_parsable_entries_(
-            self.parser.parse, self.__key_filter, self.__value_filter
+            self.parser.attempt_parse, self.__key_filter, self.__value_filter
         )
         return user_entry_dict
 
@@ -82,4 +82,4 @@ class BikeRecommendationService:
         return key in self.engine.get_settings().include()
 
     def __value_filter(self, value):
-        return value is not None
+        return (value is not None) and (type(value) != str)

@@ -36,7 +36,7 @@ class EvaluationService:
     def __init__(self, predictor: Predictor = DEFAULT_PREDICTOR,
                  settings: FramedMapperSettings = DefaultMapperSettings()):
         self.predictor = predictor
-        self.adapter = FramedMapper(settings)
+        self.framed_mapper = FramedMapper(settings)
         x, y, input_scaler, output_scaler = self.get_data()
         self.request_scaler = ScalingFilter(input_scaler, x.columns)
         self.response_scaler = ScalingFilter(output_scaler, y.columns)
@@ -47,7 +47,7 @@ class EvaluationService:
         xml_handler.set_xml(xml_user_request)
         user_request = xml_handler.get_entries_dict()
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
-        return self.predict_from_dict(self.adapter.map_dict(user_request))
+        return self.predict_from_dict(self.framed_mapper.map_dict(user_request))
 
     def predict_from_dict(self, bike_cad_dict: dict) -> dict:
         scaled_dict = self.request_scaler.scale(bike_cad_dict)
@@ -62,7 +62,7 @@ class EvaluationService:
         return bike_cad_dict
 
     def get_empty_keys(self, bike_cad_dict):
-        return (key for key in self.adapter.settings.get_expected_input_keys() if key not in bike_cad_dict)
+        return (key for key in self.framed_mapper.settings.get_expected_input_keys() if key not in bike_cad_dict)
 
     def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         predictions_row = self._predict_from_row(pd_row)
@@ -72,7 +72,7 @@ class EvaluationService:
         return self.ensure_magnitude(unscaled_result)
 
     def replace_labels(self, scaled_result):
-        scaled_result = {self.adapter.settings.get_label_replacements().get(key, key): value
+        scaled_result = {self.framed_mapper.settings.get_label_replacements().get(key, key): value
                          for key, value in
                          scaled_result.items()}
         return scaled_result

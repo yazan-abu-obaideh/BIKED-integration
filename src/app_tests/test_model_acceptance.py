@@ -31,7 +31,7 @@ STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 service = EvaluationService()
 
 qa = RobotQaDepartment(processing_function=service.predict_from_dict,
-                       preprocessing_function=service.adapter.map_dict)
+                       preprocessing_function=service.framed_mapper.map_dict)
 
 SETTINGS = DefaultMapperSettings()
 reversed_map = {value: key for key, value in SETTINGS.get_bikeCad_to_model_map().items()}

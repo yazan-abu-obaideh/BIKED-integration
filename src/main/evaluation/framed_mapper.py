@@ -55,7 +55,7 @@ class FramedMapper:
             result_dict["SSB OD"] = 15.849
 
     def parse_values(self, input_dict: dict) -> dict:
-        return {key: AlgebraicParser().parse(value) for key, value in input_dict.items()}
+        return {key: AlgebraicParser().attempt_parse(value) for key, value in input_dict.items()}
 
     def get_float_or_strip(self, value):
         try:
@@ -119,7 +119,7 @@ class FramedMapper:
     def __parse(self, value: str):
         if value.lower() in ["steel", "aluminum", "titanium"]:
             return value
-        return AlgebraicParser().parse(value)
+        return AlgebraicParser().attempt_parse(value)
 
     def __key_filter(self, key):
         return key in list(self.settings.get_bikeCad_to_model_map().keys()) + ["MATERIAL"]
