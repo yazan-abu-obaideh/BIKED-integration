@@ -9,6 +9,14 @@ MILLIMETERS_TO_METERS_FACTOR = 1000
 
 
 class FramedMapper:
+    """Maps a dictionary representing
+    a subset of bike properties into a dictionary representing
+    a datapoint that belongs to the FRAMED dataset.
+    If a value is not present the associated key will not be present in
+    the returned dictionary. If a value X needed for
+    the calculation of another value Y is not present, value Y and its
+    associated key will not be present in the returned dictionary."""
+
     def __init__(self, settings: FramedMapperSettings):
         self.xml_handler = BikeXmlHandler()
         self.settings = settings
@@ -18,11 +26,6 @@ class FramedMapper:
                                          self.map_to_model_input,
                                          self.handle_special_behavior,
                                          self.convert_millimeter_values_to_meters])
-
-    def map_xml(self, xml: str):
-        self.xml_handler.set_xml(xml)
-        request_dict = self.xml_handler.get_entries_dict()
-        return self.map_dict(request_dict)
 
     def map_dict(self, bikeCad_file_entries):
         return self.pipeline.pass_through(bikeCad_file_entries)
@@ -40,7 +43,9 @@ class FramedMapper:
         return result_dict
 
     def one_hot_encode(self, result_dict: dict) -> dict:
-        result_dict[f"Material={result_dict['MATERIAL'].lower().title()}"] = 1
+        material_value = result_dict.get("MATERIAL", None)
+        if material_value in ["STEEL", "ALUMINUM", "TITANIUM"]:
+            result_dict[f"Material={result_dict['MATERIAL'].lower().title()}"] = 1
         return result_dict
 
     def handle_keys_whose_presence_indicates_their_value(self, result_dict):
@@ -48,21 +53,19 @@ class FramedMapper:
             result_dict[key] = int(key in result_dict)
 
     def handle_ramifications(self, result_dict):
-        if result_dict["CSB_Include"] == 0:
+        if result_dict.get("CSB_Include", 1) == 0:
             result_dict["CSB OD"] = 17.759
-        if result_dict["SSB_Include"] == 0:
+        if result_dict.get("SSB_Include", 1) == 0:
             result_dict["SSB OD"] = 15.849
 
     def convert_millimeter_values_to_meters(self, result_dict: dict) -> dict:
         for key in self.should_be_converted(result_dict):
-            result_dict[key] = self.convert_millimeter_value_to_meters(result_dict[key])
+            original_value = result_dict[key]
+            result_dict[key] = original_value / MILLIMETERS_TO_METERS_FACTOR
         return result_dict
 
     def should_be_converted(self, _dict):
         return (key for key in self.settings.millimeters_to_meters() if key in _dict.keys())
-
-    def convert_millimeter_value_to_meters(self, original_value):
-        return original_value / MILLIMETERS_TO_METERS_FACTOR
 
     def calculate_composite_values(self, bikeCad_file_entries: dict) -> dict:
 
