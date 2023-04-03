@@ -14,7 +14,6 @@ class FramedMapper:
         self.settings = settings
         # TODO: ensure adherence to T -> T
         self.pipeline = RequestPipeline([self.one_hot_encode,
-                                         self.parse_values,
                                          self.calculate_composite_values,
                                          self.map_to_model_input,
                                          self.handle_special_behavior,
@@ -53,15 +52,6 @@ class FramedMapper:
             result_dict["CSB OD"] = 17.759
         if result_dict["SSB_Include"] == 0:
             result_dict["SSB OD"] = 15.849
-
-    def parse_values(self, input_dict: dict) -> dict:
-        return {key: AlgebraicParser().attempt_parse(value) for key, value in input_dict.items()}
-
-    def get_float_or_strip(self, value):
-        try:
-            return float(value)
-        except ValueError:
-            return str(value).strip()
 
     def convert_millimeter_values_to_meters(self, result_dict: dict) -> dict:
         for key in self.should_be_converted(result_dict):

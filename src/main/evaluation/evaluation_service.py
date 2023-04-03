@@ -47,9 +47,9 @@ class EvaluationService:
     def predict_from_xml(self, xml_user_request: str) -> dict:
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml_user_request)
-        user_request = xml_handler.get_parsable_entries_(
-            self.parser.attempt_parse, key_filter=self.__key_filter, parsed_value_filter=self.__value_filter
-        )
+        user_request = xml_handler.get_parsable_entries_(self.parser.attempt_parse,
+                                                         key_filter=self.__key_filter,
+                                                         parsed_value_filter=self.__value_filter)
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
         return self.predict_from_dict(self.framed_mapper.map_dict(user_request))
 

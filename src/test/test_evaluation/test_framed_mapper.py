@@ -1,6 +1,8 @@
 import os.path
 import unittest
 
+from processing.algebraic_parser import AlgebraicParser
+from processing.bike_xml_handler import BikeXmlHandler
 from src.main.evaluation.framed_mapper import FramedMapper
 from src.test.test_evaluation.settings_for_test import Settings
 
@@ -11,7 +13,14 @@ class FramedMapperTest(unittest.TestCase):
     def setUp(self) -> None:
         bikeCad_file = self.get_BikeCad_file_as_raw_xml()
         self.mapper = FramedMapper(Settings())
-        self.result_dict = self.mapper.map_xml(bikeCad_file)
+        handler = BikeXmlHandler()
+        handler.set_xml(bikeCad_file)
+        bike_dict = handler.get_parsable_entries_(
+            AlgebraicParser().attempt_parse,
+            key_filter=lambda x: x in Settings().get_expected_xml_keys(),
+            parsed_value_filter=lambda y: y is not None
+        )
+        self.result_dict = self.mapper.map_dict(bike_dict)
 
     def test_can_transform(self):
         actual = self.result_dict["TT Thickness"]
