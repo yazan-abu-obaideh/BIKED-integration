@@ -48,6 +48,9 @@ class EvaluationServiceTest(unittest.TestCase):
                                 'Sim 3 Safety Factor (Inverted)': 0.9701027710943986,
                                 'Model Mass Magnitude': 10.482583547074846}
 
+    def test_default_material_values(self):
+        assert False
+
     @unittest.skip
     def test_request_with_bad_datatypes(self):
         pass

@@ -101,4 +101,3 @@ class EvaluationService:
 
     def __value_filter(self, parsed_value):
         return parsed_value is not None
-

@@ -45,8 +45,10 @@ class FramedMapper:
 
     def _one_hot_encode(self, result_dict: dict) -> dict:
         material_value = result_dict.get("MATERIAL", None)
-        if material_value in ["STEEL", "ALUMINUM", "TITANIUM"]:
-            result_dict[f"Material={result_dict['MATERIAL'].lower().title()}"] = 1
+        accepted_values = ["STEEL", "ALUMINUM", "TITANIUM"]
+        if material_value in accepted_values:
+            result_dict[f"Material={material_value.lower().title()}"] = 1
+            result_dict = self._set_other_values(result_dict, accepted_values, material_value)
         return result_dict
 
     def _handle_keys_whose_presence_indicates_their_value(self, result_dict):
@@ -127,3 +129,9 @@ class FramedMapper:
         dtx = ftx - y * np.cos(ha) - x * np.sin(ha)
         dty = fty + y * np.sin(ha) + x * np.cos(ha)
         return np.sqrt(dtx ** 2 + dty ** 2)
+
+    def _set_other_values(self, result_dict, accepted_values, material_value):
+        for value in accepted_values:
+            if value != material_value:
+                result_dict[f"Material={value.lower().title()}"] = 0
+        return result_dict
