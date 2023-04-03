@@ -1,8 +1,8 @@
 import os.path
 import unittest
 
-from processing.algebraic_parser import AlgebraicParser
-from processing.bike_xml_handler import BikeXmlHandler
+from src.main.processing.algebraic_parser import AlgebraicParser
+from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.evaluation.framed_mapper import FramedMapper
 from src.test.test_evaluation.settings_for_test import Settings
 
