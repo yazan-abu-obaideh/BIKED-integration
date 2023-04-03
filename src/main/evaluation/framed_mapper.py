@@ -1,8 +1,9 @@
-from src.main.processing.algebraic_parser import AlgebraicParser
-from src.main.processing.bike_xml_handler import BikeXmlHandler
-from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
+from typing import Optional
+
 import numpy as np
 
+from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
+from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.processing.request_pipeline import RequestPipeline
 
 MILLIMETERS_TO_METERS_FACTOR = 1000
@@ -21,14 +22,14 @@ class FramedMapper:
         self.xml_handler = BikeXmlHandler()
         self.settings = settings
         # TODO: ensure adherence to T -> T
-        self.pipeline = RequestPipeline([self._one_hot_encode,
-                                         self._calculate_composite_values,
-                                         self._map_to_model_input,
-                                         self._handle_special_behavior,
-                                         self._convert_millimeter_values_to_meters])
+        self._mapping_pipeline = RequestPipeline([self._one_hot_encode,
+                                                  self._calculate_composite_values,
+                                                  self._map_to_model_input,
+                                                  self._handle_special_behavior,
+                                                  self._convert_millimeter_values_to_meters])
 
     def map_dict(self, bikeCad_file_entries):
-        return self.pipeline.pass_through(bikeCad_file_entries)
+        return self._mapping_pipeline.pass_through(bikeCad_file_entries)
 
     def _map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
         keys_map = self.settings.get_bikeCad_to_model_map()
@@ -67,62 +68,62 @@ class FramedMapper:
     def _should_be_converted(self, _dict):
         return (key for key in self.settings.millimeters_to_meters() if key in _dict.keys())
 
-    def _get_sum(self, my_dict, entries):
+    def _get_sum(self, my_dict, entries) -> Optional[float]:
         if self._any_missing(my_dict, entries):
             return None
         entries_values = [my_dict.get(entry, 0) for entry in entries]
         return sum(entries_values)
 
-    def _convert_angle(self, my_dict, entry):
-        return my_dict[entry] * np.pi / 180
-
-    def _get_average(self, my_dict, entries):
+    def _get_average(self, my_dict, entries) -> Optional[float]:
         if self._any_missing(my_dict, entries):
             return None
         return self._get_sum(my_dict, entries) / len(entries)
 
-    def _get_geometric_average(self, my_dict, entries):
-        if self._any_missing(my_dict, entries):
-            return None
-        entries_squares = [my_dict.get(entry, 0) ** 2 for entry in entries]
-        return np.power(sum(entries_squares), np.divide(1, len(entries)))
-
     def _calculate_composite_values(self, bikeCad_file_entries: dict) -> dict:
 
-        # TODO: homie this is essentially a bloated anonymous class. This is bad. Fix this.
-        def set_value(key, value):
+        def set_optional_value(key, value):
             if value is not None:
                 bikeCad_file_entries[key] = value
 
-        set_value('DT Length', self._calculate_dt_length(bikeCad_file_entries))
+        set_optional_value('DT Length', self._calculate_dt_length(bikeCad_file_entries))
 
-        set_value('csd', self._get_average(bikeCad_file_entries,
-                                           ['Chain stay back diameter', 'Chain stay vertical diameter']))
-        set_value('ssd', self._get_average(bikeCad_file_entries,
-                                           ['Seat stay bottom diameter', 'SEATSTAY_HR']))
-        set_value('ttd', self._get_average(bikeCad_file_entries,
-                                           ['Top tube rear diameter', 'Top tube rear dia2',
-                                            'Top tube front diameter', 'Top tube front dia2']))
-        set_value('dtd', self._get_average(bikeCad_file_entries, ['Down tube rear diameter', 'Down tube rear dia2',
-                                                                  'Down tube front dia2', 'Down tube front diameter']))
+        set_optional_value('csd', self._get_average(bikeCad_file_entries,
+                                                    ['Chain stay back diameter', 'Chain stay vertical diameter']))
+        set_optional_value('ssd', self._get_average(bikeCad_file_entries,
+                                                    ['Seat stay bottom diameter', 'SEATSTAY_HR']))
+        set_optional_value('ttd', self._get_average(bikeCad_file_entries,
+                                                    ['Top tube rear diameter', 'Top tube rear dia2',
+                                                     'Top tube front diameter', 'Top tube front dia2']))
+        set_optional_value('dtd',
+                           self._get_average(bikeCad_file_entries, ['Down tube rear diameter', 'Down tube rear dia2',
+                                                                    'Down tube front dia2',
+                                                                    'Down tube front diameter']))
 
         bikeCad_file_entries['Wall thickness Bottom Bracket'] = 2.0
         bikeCad_file_entries['Wall thickness Head tube'] = 1.1
         return bikeCad_file_entries
 
-    def _any_missing(self, dictionary, keys):
+    def _any_missing(self, dictionary, keys) -> bool:
         return not all([(key in dictionary) for key in keys])
 
-    def _calculate_dt_length(self, bikeCad_file_entries):
+    def _calculate_dt_length(self, bikeCad_file_entries) -> Optional[float]:
         required_keys = ['BB textfield', 'FCD textfield', 'FORKOR', 'FORK0L',
                          'Head tube lower extension2', 'lower stack height', 'Head angle']
         if self._any_missing(bikeCad_file_entries, required_keys):
             return None
+
+        def geometric_average(entries):
+            entries_squares = [bikeCad_file_entries.get(entry, 0) ** 2 for entry in entries]
+            return np.power(sum(entries_squares), np.divide(1, len(entries)))
+
+        def convert_angle(my_dict, entry):
+            return my_dict[entry] * np.pi / 180
+
         fty = bikeCad_file_entries['BB textfield']
-        ftx = self._get_geometric_average(bikeCad_file_entries, ['BB textfield', 'FCD textfield'])
+        ftx = geometric_average(['BB textfield', 'FCD textfield'])
         x = bikeCad_file_entries.get('FORKOR', 0)
         y = self._get_sum(bikeCad_file_entries, ['FORK0L', 'Head tube lower extension2', 'lower stack height'])
-        ha = self._convert_angle(bikeCad_file_entries, 'Head angle')
+        ha = convert_angle(bikeCad_file_entries, 'Head angle')
         dtx = ftx - y * np.cos(ha) - x * np.sin(ha)
         dty = fty + y * np.sin(ha) + x * np.cos(ha)
         return np.sqrt(dtx ** 2 + dty ** 2)

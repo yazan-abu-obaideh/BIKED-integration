@@ -7,7 +7,7 @@ class DefaultMapperSettings(FramedMapperSettings):
 
     def get_expected_xml_keys(self):
         return list(self.get_bikeCad_to_model_map().keys()) + ["MATERIAL"] \
-            + ['BB textfield', 'FCD textfield', 'FORK0L', 'Head tube lower extension2', 'lower stack height',
+            + ['BB textfield', 'FCD textfield', 'FORKOR', 'FORK0L', 'Head tube lower extension2', 'lower stack height',
                'Head angle', 'Chain stay back diameter', 'Chain stay vertical diameter',
                'Seat stay bottom diameter', 'SEATSTAY_HR', 'Top tube rear diameter', 'Top tube rear dia2',
                'Top tube front diameter', 'Top tube front dia2', 'Down tube rear diameter', 'Down tube rear dia2',
