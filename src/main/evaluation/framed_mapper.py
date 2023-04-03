@@ -111,7 +111,6 @@ class FramedMapper:
         return bikeCad_file_entries
 
     def _any_missing(self, dictionary, keys):
-        return False
         return not all([(key in dictionary) for key in keys])
 
     def _calculate_dt_length(self, bikeCad_file_entries):

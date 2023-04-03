@@ -78,16 +78,16 @@ class EvaluationServiceTest(unittest.TestCase):
         with open(BIKE_PATH, "r") as file:
             xml_as_string = file.read()
 
-        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.006317373031884621,
-                                    'Sim 1 Dropout Y Disp. Magnitude': 0.12904948712871744,
-                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.004421147229796096,
-                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.13356138705381396,
-                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.014787568056570236,
-                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.14349666332423694,
-                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.6784388296958873,
-                                    'Sim 1 Safety Factor (Inverted)': 467.74263810696385,
-                                    'Sim 3 Safety Factor (Inverted)': 558.2490643908037,
-                                    'Model Mass Magnitude': 7.403376048347106},
+        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.017414003196911554,
+                                    'Sim 1 Dropout Y Disp. Magnitude': 0.09507184125546018,
+                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.011296059684154293,
+                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.11651980780928267,
+                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.016675222292259727,
+                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.13614756222871643,
+                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.543633220059328,
+                                    'Sim 1 Safety Factor (Inverted)': 371.71569321751326,
+                                    'Sim 3 Safety Factor (Inverted)': 449.94631253280437,
+                                    'Model Mass Magnitude': 7.041238567274864},
                                    self.service.predict_from_xml(xml_as_string))
 
     def test_can_predict_from_partial_dict(self):
