@@ -95,15 +95,13 @@ class FramedMapper:
 
         bikeCad_file_entries['DT Length'] = np.sqrt(dtx ** 2 + dty ** 2)
 
-        bikeCad_file_entries['csd'] = get_average(['Chain stay back diameter', 'Chain stay vertical diameter'])
+        def set_value(key, value):
+            bikeCad_file_entries[key] = value
 
-        bikeCad_file_entries['ssd'] = get_average(['Seat stay bottom diameter', 'SEATSTAY_HR'])
-
-        bikeCad_file_entries['ttd'] = get_average(['Top tube rear diameter', 'Top tube rear dia2',
-                                                   'Top tube front diameter', 'Top tube front dia2'])
-
-        bikeCad_file_entries['dtd'] = get_average(['Down tube rear diameter', 'Down tube rear dia2',
-                                                   'Down tube front dia2', 'Down tube front diameter'])
+        set_value('csd', get_average(['Chain stay back diameter', 'Chain stay vertical diameter']))
+        set_value('ssd', get_average(['Seat stay bottom diameter', 'SEATSTAY_HR']))
+        set_value('ttd', get_average(['Top tube rear diameter', 'Top tube rear dia2','Top tube front diameter', 'Top tube front dia2']))
+        set_value('dtd', get_average(['Down tube rear diameter', 'Down tube rear dia2','Down tube front dia2', 'Down tube front diameter']))
 
         bikeCad_file_entries['Wall thickness Bottom Bracket'] = 2.0
         bikeCad_file_entries['Wall thickness Head tube'] = 1.1
