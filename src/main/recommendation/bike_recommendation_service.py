@@ -47,39 +47,38 @@ class BikeRecommendationService:
         self.request_validator = RequestValidator()
         self.parser = AlgebraicParser()
 
-    def recommend_bike_from_xml(self, xml_user_entry: str):
-        return self._recommend_bike_from_parsed_dict(self.__transform_to_dict(xml_user_entry))
+    def recommend_bike_from_xml(self, xml_request: str):
+        return self._recommend_bike_from_parsed_dict(self._parse_to_dict(xml_request))
 
-    def __transform_to_dict(self, xml_user_entry):
+    def _parse_to_dict(self, xml: str):
         xml_handler = BikeXmlHandler()
-        xml_handler.set_xml(xml_user_entry)
+        xml_handler.set_xml(xml)
         user_entry_dict = xml_handler.get_parsable_entries_(
-            self.parser.attempt_parse, self.__key_filter, self.__value_filter
+            self.parser.attempt_parse, self._key_filter, self._value_filter
         )
         return user_entry_dict
 
     def _recommend_bike_from_parsed_dict(self, user_entry: dict):
         self.request_validator.throw_if_empty(user_entry, "Invalid BikeCAD file")
-        scaled_user_entry = self.pre_process_request(user_entry)
+        scaled_user_entry = self._pre_process_request(user_entry)
         closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)
-        return self.build_link(closest_bike_entry)
+        return self._build_link(closest_bike_entry)
 
-    def pre_process_request(self, user_entry: dict):
-        scaled_user_entry = self.scaler.scale(user_entry)
-        processed_user_entry = self.default_to_mean(scaled_user_entry)
-        return processed_user_entry
+    def _pre_process_request(self, request: dict):
+        scaled = self.scaler.scale(request)
+        return self._default_to_mean(scaled)
 
-    def default_to_mean(self, scaled_user_entry):
+    def _default_to_mean(self, scaled_user_entry):
         for key in self.engine.get_settings().include():
             if key not in scaled_user_entry:
                 scaled_user_entry[key] = SCALED_MEAN
         return scaled_user_entry
 
-    def build_link(self, bike_filename):
+    def _build_link(self, bike_filename):
         return f"http://bcd.bikecad.ca/{bike_filename}"
 
-    def __key_filter(self, key):
+    def _key_filter(self, key):
         return key in self.engine.get_settings().include()
 
-    def __value_filter(self, value):
-        return (value is not None) and (type(value) != str)
+    def _value_filter(self, value):
+        return (value is not None) and (type(value) in [float, int])

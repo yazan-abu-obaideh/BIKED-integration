@@ -42,4 +42,4 @@ class RecommendationServiceTest(unittest.TestCase):
             return file.read()
 
     def test_buildlink(self):
-        self.assertEqual("http://bcd.bikecad.ca/1.bcad", self.service.build_link("1.bcad"))
+        self.assertEqual("http://bcd.bikecad.ca/1.bcad", self.service._build_link("1.bcad"))
