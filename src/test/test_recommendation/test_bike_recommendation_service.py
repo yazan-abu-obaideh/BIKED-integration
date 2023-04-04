@@ -26,16 +26,33 @@ class RecommendationServiceTest(unittest.TestCase):
         self.assertTrue(self.service._value_filter(1.15))
 
     def test_get_closest_to(self):
-        bike_in_request = self.__grab_bike_xml()
-        recommended_bike = self.service.recommend_bike_from_xml(bike_in_request)
+        class TesterService(BikeRecommendationService):
+            def __init__(self):
+                super().__init__()
+                self.key_filter_calls = 0
+                self.value_filter_calls = 0
+
+            def _key_filter(self, value):
+                self.key_filter_calls += 1
+                return super()._key_filter(value)
+
+            def _value_filter(self, value):
+                self.value_filter_calls += 1
+                return super()._value_filter(value)
+
+        bike_in_request = self.grab_bike_xml()
+        service = TesterService()
+        recommended_bike = service.recommend_bike_from_xml(bike_in_request)
         self.assertEqual("http://bcd.bikecad.ca/1310591065335.bcad", recommended_bike)
+        self.assertEqual(3563, service.key_filter_calls)
+        self.assertEqual(31, service.value_filter_calls)
 
     def test_empty_request(self):
         with self.assertRaises(ValueError) as context:
             self.service.recommend_bike_from_xml("")
         self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
 
-    def __grab_bike_xml(self):
+    def grab_bike_xml(self):
         with open(VALID_MODEL_PATH, 'r') as file:
             return file.read()
 

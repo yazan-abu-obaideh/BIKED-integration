@@ -41,6 +41,40 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_default_material_values(self):
         assert False
 
+    def test_uses_filters_and_produces_expected_response(self):
+        class TesterService(EvaluationService):
+            def __init__(self):
+                super().__init__()
+                self.value_filter_calls = 0
+                self.key_filter_calls = 0
+
+            def _key_filter(self, key):
+                self.key_filter_calls += 1
+                return super()._key_filter(key)
+
+            def _value_filter(self, parsed_value):
+                self.value_filter_calls += 1
+                return super()._value_filter(parsed_value)
+
+        service = TesterService()
+
+        xml_as_string = self.get_xml()
+
+        service_response = service.evaluate_xml(xml_as_string)
+        self.assertEqual(6189, service.key_filter_calls)
+        self.assertEqual(43, service.value_filter_calls)
+        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.038326118317548265,
+                                    'Sim 1 Dropout Y Disp. Magnitude': 0.09414663183265932,
+                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.05474823933361474,
+                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.05830368655186024,
+                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0024333662165477855,
+                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.019052710337140566,
+                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.006138438802087421,
+                                    'Sim 1 Safety Factor (Inverted)': 12.041694474674063,
+                                    'Sim 3 Safety Factor (Inverted)': 3.6281390549872006,
+                                    'Model Mass Magnitude': 2.6662627465729853},
+                                   service_response)
+
     def test_value_filter(self):
         self.assertFalse(self.service._value_filter(None))
         self.assertFalse(self.service._value_filter(float("inf")))
@@ -60,21 +94,9 @@ class EvaluationServiceTest(unittest.TestCase):
             self.service.evaluate_xml("")
         self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
 
-    def test_is_sane(self):
+    def get_xml(self):
         with open(BIKE_PATH, "r") as file:
-            xml_as_string = file.read()
-
-        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.038326118317548265,
-                                    'Sim 1 Dropout Y Disp. Magnitude': 0.09414663183265932,
-                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.05474823933361474,
-                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.05830368655186024,
-                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0024333662165477855,
-                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.019052710337140566,
-                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.006138438802087421,
-                                    'Sim 1 Safety Factor (Inverted)': 12.041694474674063,
-                                    'Sim 3 Safety Factor (Inverted)': 3.6281390549872006,
-                                    'Model Mass Magnitude': 2.6662627465729853},
-                                   self.service.evaluate_xml(xml_as_string))
+            return file.read()
 
     def test_can_predict_from_partial_dict(self):
         partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
