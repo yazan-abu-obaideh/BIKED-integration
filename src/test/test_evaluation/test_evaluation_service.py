@@ -82,7 +82,7 @@ class EvaluationServiceTest(unittest.TestCase):
         partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                            'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
                            'BB Drop': 0.19327064177679704}
-        self.assertIsNotNone(self.service.predict_from_dict(partial_request))
+        self.assertIsNotNone(self.service._predict_from_dict(partial_request))
 
     def test_cannot_predict_from_partial_row(self):
         incomplete_model_input = pd_util.get_one_row_dataframe_from_dict(
@@ -109,8 +109,8 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_order_does_not_matter(self):
         input_in_different_order = {key: self.sample_input[key]
                                     for key in sorted(self.sample_input.keys())}
-        self.assertEqual(self.service.predict_from_dict(self.sample_input),
-                         self.service.predict_from_dict(input_in_different_order))
+        self.assertEqual(self.service._predict_from_dict(self.sample_input),
+                         self.service._predict_from_dict(input_in_different_order))
 
     def assert_correct_metrics(self, r2, mean_square_error, mean_absolute_error):
         self.assertGreater(r2, 0.72)

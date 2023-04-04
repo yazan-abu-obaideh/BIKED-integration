@@ -51,15 +51,16 @@ class EvaluationService:
                                                          key_filter=self._key_filter,
                                                          parsed_value_filter=self._value_filter)
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
-        return self.predict_from_dict(self.framed_mapper.map_dict(user_request))
+        return self._predict_from_dict(user_request)
 
-    def predict_from_dict(self, bike_cad_dict: dict) -> dict:
-        scaled_dict = self.request_scaler.scale(bike_cad_dict)
-        scaled_dict = self.default_to_mean(scaled_dict)
+    def _predict_from_dict(self, bike_cad_dict: dict) -> dict:
+        framed_dict = self.framed_mapper.map_dict(bike_cad_dict)
+        scaled_dict = self.request_scaler.scale(framed_dict)
+        scaled_dict = self._default_to_mean(scaled_dict)
         one_row_dataframe = pd_util.get_one_row_dataframe_from_dict(scaled_dict)
         return self.predict_from_row(one_row_dataframe)
 
-    def default_to_mean(self, bike_cad_dict):
+    def _default_to_mean(self, bike_cad_dict):
         defaulted_keys = self.get_empty_keys(bike_cad_dict)
         for key in defaulted_keys:
             bike_cad_dict[key] = SCALED_MEAN

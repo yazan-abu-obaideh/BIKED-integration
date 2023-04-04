@@ -4,7 +4,7 @@ import numpy as np
 
 from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
 from src.main.processing.bike_xml_handler import BikeXmlHandler
-from src.main.processing.request_pipeline import RequestPipeline
+from src.main.processing.processing_pipeline import ProcessingPipeline
 
 MILLIMETERS_TO_METERS_FACTOR = 1000
 
@@ -22,14 +22,14 @@ class FramedMapper:
         self.xml_handler = BikeXmlHandler()
         self.settings = settings
         # TODO: ensure adherence to T -> T
-        self._mapping_pipeline = RequestPipeline([self._one_hot_encode,
-                                                  self._calculate_composite_values,
-                                                  self._map_to_model_input,
-                                                  self._handle_special_behavior,
-                                                  self._convert_millimeter_values_to_meters])
+        self._mapping_pipeline = ProcessingPipeline([self._one_hot_encode,
+                                                     self._calculate_composite_values,
+                                                     self._map_to_model_input,
+                                                     self._handle_special_behavior,
+                                                     self._convert_millimeter_values_to_meters])
 
     def map_dict(self, bikeCad_file_entries):
-        return self._mapping_pipeline.pass_through(bikeCad_file_entries)
+        return self._mapping_pipeline.process(bikeCad_file_entries)
 
     def _map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
         keys_map = self.settings.get_bikeCad_to_model_map()
