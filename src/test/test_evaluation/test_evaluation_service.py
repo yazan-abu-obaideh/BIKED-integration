@@ -7,7 +7,7 @@ import src.main.processing.pandas_utility as pd_util
 from src.main.evaluation.evaluation_service import EvaluationService
 from src.main.processing.scaling_filter import ScalingFilter
 
-BIKE_PATH = os.path.join(os.path.dirname(__file__), "../resources/bikes/bike(1).xml")
+BIKE_PATH = os.path.join(os.path.dirname(__file__), "../resources/bikes/(4800).xml")
 
 
 class EvaluationServiceTest(unittest.TestCase):
@@ -37,16 +37,6 @@ class EvaluationServiceTest(unittest.TestCase):
                              'BB Thickness': 0.49282141277749913, 'HT Thickness': 2.9026934109858655,
                              'ST Thickness': 0.23272460681845872, 'DT Thickness': 1.7696907824504056,
                              'DT Length': -0.1689535437867544}
-        self.expected_output = {'Sim 1 Dropout X Disp. Magnitude': 0.0008148170584951174,
-                                'Sim 1 Dropout Y Disp. Magnitude': 0.005277660520565001,
-                                'Sim 1 Bottom Bracket X Disp. Magnitude': 0.001409656433970445,
-                                'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.003295668699678577,
-                                'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.000516487020226967,
-                                'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.0034258152203828374,
-                                'Sim 3 Bottom Bracket X Rot. Magnitude': 0.001296153922359631,
-                                'Sim 1 Safety Factor (Inverted)': 1.5218443851778942,
-                                'Sim 3 Safety Factor (Inverted)': 0.9701027710943986,
-                                'Model Mass Magnitude': 10.482583547074846}
 
     def test_default_material_values(self):
         assert False
@@ -76,16 +66,16 @@ class EvaluationServiceTest(unittest.TestCase):
         with open(BIKE_PATH, "r") as file:
             xml_as_string = file.read()
 
-        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.017414003196911554,
-                                    'Sim 1 Dropout Y Disp. Magnitude': 0.09507184125546018,
-                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.011296059684154293,
-                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.11651980780928267,
-                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.016675222292259727,
-                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.13614756222871643,
-                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.543633220059328,
-                                    'Sim 1 Safety Factor (Inverted)': 371.71569321751326,
-                                    'Sim 3 Safety Factor (Inverted)': 449.94631253280437,
-                                    'Model Mass Magnitude': 7.041238567274864},
+        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.038326118317548265,
+                                    'Sim 1 Dropout Y Disp. Magnitude': 0.09414663183265932,
+                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.05474823933361474,
+                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.05830368655186024,
+                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0024333662165477855,
+                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.019052710337140566,
+                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.006138438802087421,
+                                    'Sim 1 Safety Factor (Inverted)': 12.041694474674063,
+                                    'Sim 3 Safety Factor (Inverted)': 3.6281390549872006,
+                                    'Model Mass Magnitude': 2.6662627465729853},
                                    self.service.predict_from_xml(xml_as_string))
 
     def test_can_predict_from_partial_dict(self):
