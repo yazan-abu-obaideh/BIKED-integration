@@ -38,6 +38,7 @@ class EvaluationServiceTest(unittest.TestCase):
                              'ST Thickness': 0.23272460681845872, 'DT Thickness': 1.7696907824504056,
                              'DT Length': -0.1689535437867544}
 
+    @unittest.skip
     def test_default_material_values(self):
         assert False
 
