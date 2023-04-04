@@ -23,7 +23,7 @@ def handle_value_error(e):
 
 @app.route("/evaluate")
 def evaluate_design():
-    return evaluation_service.predict_from_xml(get_xml(request))
+    return evaluation_service.evaluate_xml(get_xml(request))
 
 
 @app.route("/recommend")

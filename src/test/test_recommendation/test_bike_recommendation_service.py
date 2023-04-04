@@ -16,10 +16,6 @@ class RecommendationServiceTest(unittest.TestCase):
         pass
 
     @unittest.skip
-    def test_empty_request(self):
-        pass
-
-    @unittest.skip
     def test_request_with_extreme_values(self):
         pass
 
@@ -36,7 +32,7 @@ class RecommendationServiceTest(unittest.TestCase):
         recommended_bike = self.service.recommend_bike_from_xml(bike_in_request)
         self.assertEqual("http://bcd.bikecad.ca/1310591065335.bcad", recommended_bike)
 
-    def test_raises_correct_exception(self):
+    def test_empty_request(self):
         with self.assertRaises(ValueError) as context:
             self.service.recommend_bike_from_xml("")
         self.assertEqual("Invalid BikeCAD file", context.exception.args[0])

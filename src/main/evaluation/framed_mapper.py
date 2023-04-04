@@ -23,6 +23,7 @@ class FramedMapper:
         self.settings = settings
         # TODO: ensure adherence to T -> T
         self._mapping_pipeline = ProcessingPipeline([self._one_hot_encode,
+                                                     self._validate_datatypes,
                                                      self._calculate_composite_values,
                                                      self._map_to_model_input,
                                                      self._handle_special_behavior,
@@ -47,7 +48,17 @@ class FramedMapper:
         material_value = result_dict.get("MATERIAL", None)
         accepted_values = ["STEEL", "ALUMINUM", "TITANIUM"]
         result_dict = self._add_if_valid(accepted_values, material_value, result_dict)
+        result_dict.pop("MATERIAL", None)
         return result_dict
+
+    def _validate_datatypes(self, result_dict: dict) -> dict:
+        self._throw_if_invalid_types(result_dict)
+        return result_dict
+
+    def _throw_if_invalid_types(self, result_dict: dict):
+        for key, value in result_dict.items():
+            if type(value) not in [float, int]:
+                raise ValueError(f"Failed to parse {value} - value was associated with {key}")
 
     def _add_if_valid(self, accepted_values: list, material_value: str, result_dict: dict) -> dict:
         if material_value in accepted_values:

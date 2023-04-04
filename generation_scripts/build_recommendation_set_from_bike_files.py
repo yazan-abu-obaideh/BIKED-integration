@@ -17,7 +17,7 @@ for filename in os.listdir(bike_files_dir_path):
         entries_dict = xml_handler.get_entries_dict()
         entries_dict = {key: value for key, value in entries_dict.items() if key in include}
         entries_dict[FILENAME_KEY] = filename
-        dataframe = pd.concat([pd_util.get_one_row_dataframe_from_dict(entries_dict), dataframe])
+        dataframe = pd.concat([pd_util.get_single_row_dataframe_from(entries_dict), dataframe])
 
 generated_dataframe = dataframe.set_index(FILENAME_KEY)
 generated_dataframe.to_csv(path_or_buf="BIKED_recommend.csv")

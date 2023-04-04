@@ -30,7 +30,7 @@ STAY_BRIDGES = CHAIN_STAY_BRIDGE + SEAT_STAY_BRIDGE
 
 service = EvaluationService()
 
-qa = RobotQaDepartment(processing_function=service._predict_from_dict,
+qa = RobotQaDepartment(processing_function=service._evaluate_parsed_dict,
                        preprocessing_function=service.framed_mapper.map_dict)
 
 SETTINGS = DefaultMapperSettings()

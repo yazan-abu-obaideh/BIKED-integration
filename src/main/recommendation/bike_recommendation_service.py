@@ -48,7 +48,7 @@ class BikeRecommendationService:
         self.parser = AlgebraicParser()
 
     def recommend_bike_from_xml(self, xml_user_entry: str):
-        return self.recommend_bike_from_dict(self.__transform_to_dict(xml_user_entry))
+        return self._recommend_bike_from_parsed_dict(self.__transform_to_dict(xml_user_entry))
 
     def __transform_to_dict(self, xml_user_entry):
         xml_handler = BikeXmlHandler()
@@ -58,7 +58,7 @@ class BikeRecommendationService:
         )
         return user_entry_dict
 
-    def recommend_bike_from_dict(self, user_entry: dict):
+    def _recommend_bike_from_parsed_dict(self, user_entry: dict):
         self.request_validator.throw_if_empty(user_entry, "Invalid BikeCAD file")
         scaled_user_entry = self.pre_process_request(user_entry)
         closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)

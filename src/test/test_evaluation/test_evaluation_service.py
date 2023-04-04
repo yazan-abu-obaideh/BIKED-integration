@@ -47,7 +47,7 @@ class EvaluationServiceTest(unittest.TestCase):
 
     def test_empty_request(self):
         with self.assertRaises(ValueError) as context:
-            self.service.predict_from_xml("")
+            self.service.evaluate_xml("")
         self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
 
     @unittest.skip
@@ -76,16 +76,16 @@ class EvaluationServiceTest(unittest.TestCase):
                                     'Sim 1 Safety Factor (Inverted)': 12.041694474674063,
                                     'Sim 3 Safety Factor (Inverted)': 3.6281390549872006,
                                     'Model Mass Magnitude': 2.6662627465729853},
-                                   self.service.predict_from_xml(xml_as_string))
+                                   self.service.evaluate_xml(xml_as_string))
 
     def test_can_predict_from_partial_dict(self):
         partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
                            'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
                            'BB Drop': 0.19327064177679704}
-        self.assertIsNotNone(self.service._predict_from_dict(partial_request))
+        self.assertIsNotNone(self.service._evaluate_parsed_dict(partial_request))
 
     def test_cannot_predict_from_partial_row(self):
-        incomplete_model_input = pd_util.get_one_row_dataframe_from_dict(
+        incomplete_model_input = pd_util.get_single_row_dataframe_from(
             {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
              "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
              "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
@@ -109,8 +109,8 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_order_does_not_matter(self):
         input_in_different_order = {key: self.sample_input[key]
                                     for key in sorted(self.sample_input.keys())}
-        self.assertEqual(self.service._predict_from_dict(self.sample_input),
-                         self.service._predict_from_dict(input_in_different_order))
+        self.assertEqual(self.service._evaluate_parsed_dict(self.sample_input),
+                         self.service._evaluate_parsed_dict(input_in_different_order))
 
     def assert_correct_metrics(self, r2, mean_square_error, mean_absolute_error):
         self.assertGreater(r2, 0.72)

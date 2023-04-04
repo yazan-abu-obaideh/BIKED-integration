@@ -44,20 +44,20 @@ class EvaluationService:
         self.request_validator = RequestValidator()
         self.parser = AlgebraicParser()
 
-    def predict_from_xml(self, xml_user_request: str) -> dict:
+    def evaluate_xml(self, xml_user_request: str) -> dict:
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml_user_request)
         user_request = xml_handler.get_parsable_entries_(self.parser.attempt_parse,
                                                          key_filter=self._key_filter,
                                                          parsed_value_filter=self._value_filter)
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
-        return self._predict_from_dict(user_request)
+        return self._evaluate_parsed_dict(user_request)
 
-    def _predict_from_dict(self, bike_cad_dict: dict) -> dict:
+    def _evaluate_parsed_dict(self, bike_cad_dict: dict) -> dict:
         framed_dict = self.framed_mapper.map_dict(bike_cad_dict)
         scaled_dict = self.request_scaler.scale(framed_dict)
         scaled_dict = self._default_to_mean(scaled_dict)
-        one_row_dataframe = pd_util.get_one_row_dataframe_from_dict(scaled_dict)
+        one_row_dataframe = pd_util.get_single_row_dataframe_from(scaled_dict)
         return self.predict_from_row(one_row_dataframe)
 
     def _default_to_mean(self, bike_cad_dict):
