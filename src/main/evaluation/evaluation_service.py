@@ -51,14 +51,15 @@ class EvaluationService:
                                                          key_filter=self._key_filter,
                                                          parsed_value_filter=self._value_filter)
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
+        self.request_validator.throw_if_does_not_contain(user_request, ["MATERIAL"])
         return self._evaluate_parsed_dict(user_request)
 
     def _evaluate_parsed_dict(self, bike_cad_dict: dict) -> dict:
         framed_dict = self.framed_mapper.map_dict(bike_cad_dict)
         scaled_dict = self.request_scaler.scale(framed_dict)
-        scaled_dict = self._default_to_mean(scaled_dict)
-        one_row_dataframe = pd_util.get_single_row_dataframe_from(scaled_dict)
-        return self.predict_from_row(one_row_dataframe)
+        processed_dict = self._default_to_mean(scaled_dict)
+        one_row_dataframe = pd_util.get_single_row_dataframe_from(processed_dict)
+        return self._predict_from_row(one_row_dataframe)
 
     def _default_to_mean(self, bike_cad_dict):
         defaulted_keys = self.get_empty_keys(bike_cad_dict)
@@ -69,8 +70,8 @@ class EvaluationService:
     def get_empty_keys(self, bike_cad_dict):
         return (key for key in self.framed_mapper.settings.get_expected_input_keys() if key not in bike_cad_dict)
 
-    def predict_from_row(self, pd_row: pd.DataFrame) -> dict:
-        predictions_row = self._predict_from_row(pd_row)
+    def _predict_from_row(self, pd_row: pd.DataFrame) -> dict:
+        predictions_row = self._call_predictor(pd_row)
         scaled_result = pd_util.get_dict_from_first_row(predictions_row)
         scaled_result = self.replace_labels(scaled_result)
         unscaled_result = self.response_scaler.unscale(scaled_result)
@@ -82,7 +83,7 @@ class EvaluationService:
                          scaled_result.items()}
         return scaled_result
 
-    def _predict_from_row(self, pd_row: pd.DataFrame) -> pd.DataFrame:
+    def _call_predictor(self, pd_row: pd.DataFrame) -> pd.DataFrame:
         return self.predictor.predict(pd_row)
 
     def ensure_magnitude(self, scaled_result):

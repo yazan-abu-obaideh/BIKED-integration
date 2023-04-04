@@ -42,6 +42,10 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_default_material_values(self):
         assert False
 
+    @unittest.skip
+    def test_ensure_magnitude_raises(self):
+        assert False
+
     def test_uses_filters_and_produces_expected_response(self):
         class TesterService(EvaluationService):
             def __init__(self):
@@ -111,11 +115,11 @@ class EvaluationServiceTest(unittest.TestCase):
              "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
              "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
              "BB Drop": 0.19327064177679704})
-        self.assertRaises(KeyError, self.service.predict_from_row,
+        self.assertRaises(KeyError, self.service._predict_from_row,
                           incomplete_model_input)
 
     def test_model_and_scalers_loaded(self):
-        predictions = self.service._predict_from_row(self.x)
+        predictions = self.service._call_predictor(self.x)
         self.assert_correct_metrics(*self.service.get_metrics(predictions, self.y))
         unscaled_y = self.result_scaler.unscale_dataframe(self.y)
         unscaled_predictions = self.result_scaler.unscale_dataframe(predictions)
