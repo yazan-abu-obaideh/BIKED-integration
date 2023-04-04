@@ -12,7 +12,7 @@ MILLIMETERS_TO_METERS_FACTOR = 1000
 class FramedMapper:
     """Maps a dictionary representing
     a subset of bike properties into a dictionary representing
-    a datapoint that belongs to the FRAMED dataset.
+    a datapoint that wouldn't be out of place in the FRAMED dataset.
     If a value is not present the associated key will not be present in
     the returned dictionary. If a value X needed for
     the calculation of another value Y is not present, value Y and its
@@ -46,9 +46,13 @@ class FramedMapper:
     def _one_hot_encode(self, result_dict: dict) -> dict:
         material_value = result_dict.get("MATERIAL", None)
         accepted_values = ["STEEL", "ALUMINUM", "TITANIUM"]
+        result_dict = self._add_if_valid(accepted_values, material_value, result_dict)
+        return result_dict
+
+    def _add_if_valid(self, accepted_values: list, material_value: str, result_dict: dict) -> dict:
         if material_value in accepted_values:
             result_dict[f"Material={material_value.lower().title()}"] = 1
-            result_dict = self._set_other_values(result_dict, accepted_values, material_value)
+        result_dict = self._set_other_values(accepted_values, material_value, result_dict)
         return result_dict
 
     def _handle_keys_whose_presence_indicates_their_value(self, result_dict):
@@ -71,13 +75,13 @@ class FramedMapper:
         return (key for key in self.settings.millimeters_to_meters() if key in _dict.keys())
 
     def _get_sum(self, my_dict, entries) -> Optional[float]:
-        if self._any_missing(my_dict, entries):
+        if self._any_key_missing(my_dict, entries):
             return None
         entries_values = [my_dict.get(entry, 0) for entry in entries]
         return sum(entries_values)
 
     def _get_average(self, my_dict, entries) -> Optional[float]:
-        if self._any_missing(my_dict, entries):
+        if self._any_key_missing(my_dict, entries):
             return None
         return self._get_sum(my_dict, entries) / len(entries)
 
@@ -105,13 +109,13 @@ class FramedMapper:
         bikeCad_file_entries['Wall thickness Head tube'] = 1.1
         return bikeCad_file_entries
 
-    def _any_missing(self, dictionary, keys) -> bool:
+    def _any_key_missing(self, dictionary, keys) -> bool:
         return not all([(key in dictionary) for key in keys])
 
     def _calculate_dt_length(self, bikeCad_file_entries) -> Optional[float]:
         required_keys = ['BB textfield', 'FCD textfield', 'FORKOR', 'FORK0L',
                          'Head tube lower extension2', 'lower stack height', 'Head angle']
-        if self._any_missing(bikeCad_file_entries, required_keys):
+        if self._any_key_missing(bikeCad_file_entries, required_keys):
             return None
 
         def geometric_average(entries):
@@ -130,7 +134,7 @@ class FramedMapper:
         dty = fty + y * np.sin(ha) + x * np.cos(ha)
         return np.sqrt(dtx ** 2 + dty ** 2)
 
-    def _set_other_values(self, result_dict, accepted_values, material_value):
+    def _set_other_values(self, accepted_values: list, material_value: str, result_dict: dict) -> dict:
         for value in accepted_values:
             if value != material_value:
                 result_dict[f"Material={value.lower().title()}"] = 0

@@ -48,8 +48,8 @@ class EvaluationService:
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml_user_request)
         user_request = xml_handler.get_parsable_entries_(self.parser.attempt_parse,
-                                                         key_filter=self.__key_filter,
-                                                         parsed_value_filter=self.__value_filter)
+                                                         key_filter=self._key_filter,
+                                                         parsed_value_filter=self._value_filter)
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
         return self.predict_from_dict(self.framed_mapper.map_dict(user_request))
 
@@ -96,8 +96,8 @@ class EvaluationService:
     def get_data(self):
         return load_augmented_framed_dataset()
 
-    def __key_filter(self, key):
+    def _key_filter(self, key):
         return key in self.framed_mapper.settings.get_expected_xml_keys()
 
-    def __value_filter(self, parsed_value):
+    def _value_filter(self, parsed_value):
         return parsed_value is not None

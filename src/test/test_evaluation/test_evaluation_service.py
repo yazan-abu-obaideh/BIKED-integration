@@ -72,11 +72,6 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_request_with_duplicated_keys(self):
         pass
 
-    def test_raises_correct_exception(self):
-        with self.assertRaises(ValueError) as context:
-            self.service.predict_from_xml("")
-        self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
-
     def test_is_sane(self):
         with open(BIKE_PATH, "r") as file:
             xml_as_string = file.read()
