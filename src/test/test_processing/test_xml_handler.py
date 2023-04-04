@@ -15,6 +15,19 @@ class XmlHandlerTest(unittest.TestCase):
         self.ENTRY_KEY = self.xml_handler.ATTRIBUTE
         self.PARENT_TAG = self.xml_handler.PARENT_TAG
 
+    def test_duplicate_keys(self):
+        xml_handler = BikeXmlHandler()
+        xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+        <properties>
+        <comment> Made with care! </comment>
+        <entry key="first">1</entry>
+        <entry key="first">2</entry>
+        </properties>""")
+        entries = xml_handler.get_entries_dict()
+        self.assertEqual(1, len(entries))
+        self.assertEqual("2", entries["first"])
+
     def test_parse_xml_with_key_filter(self):
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>

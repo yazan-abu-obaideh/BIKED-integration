@@ -7,6 +7,9 @@ class AlgebraicParserTest(unittest.TestCase):
     def setUp(self) -> None:
         self.parser = AlgebraicParser()
 
+    def test_parse_none(self):
+        self.assertEqual("", self.parser.attempt_parse(None))
+
     def test_parse_valid_booleans(self):
         parsed = self.parser.attempt_parse("tRue")
         self.assertEqual(1, parsed)
@@ -25,3 +28,5 @@ class AlgebraicParserTest(unittest.TestCase):
 
     def test_parse_non_algebraic_value(self):
         self.assertEqual("VALUE", self.parser.attempt_parse("   VALUE   "))
+        self.assertEqual("", self.parser.attempt_parse("     "))
+        self.assertEqual("", self.parser.attempt_parse(""))

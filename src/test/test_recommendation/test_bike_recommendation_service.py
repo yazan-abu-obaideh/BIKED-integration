@@ -11,21 +11,19 @@ class RecommendationServiceTest(unittest.TestCase):
         self.service = BikeRecommendationService()
         self.xml_handler = BikeXmlHandler()
 
-    @unittest.skip
-    def test_request_with_bad_datatypes(self):
-        pass
+    def test_key_filter(self):
+        self.assertFalse(self.service._key_filter("SHOULD_BE_REJECTED"))
+        self.assertTrue(self.service._key_filter("BB textfield"))
 
-    @unittest.skip
-    def test_request_with_extreme_values(self):
-        pass
+    def test_value_filter(self):
+        self.assertFalse(self.service._value_filter(None))
+        self.assertFalse(self.service._value_filter("NOT_FLOAT_OR_INT"))
+        self.assertFalse(self.service._value_filter(float("inf")))
+        self.assertFalse(self.service._value_filter(float("-inf")))
 
-    @unittest.skip
-    def test_request_with_none_values(self):
-        pass
-
-    @unittest.skip
-    def test_request_with_duplicated_keys(self):
-        pass
+        self.assertTrue(self.service._value_filter(0))
+        self.assertTrue(self.service._value_filter(1))
+        self.assertTrue(self.service._value_filter(1.15))
 
     def test_get_closest_to(self):
         bike_in_request = self.__grab_bike_xml()

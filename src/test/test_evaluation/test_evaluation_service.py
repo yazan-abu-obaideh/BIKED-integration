@@ -41,26 +41,24 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_default_material_values(self):
         assert False
 
-    @unittest.skip
-    def test_request_with_bad_datatypes(self):
-        pass
+    def test_value_filter(self):
+        self.assertFalse(self.service._value_filter(None))
+        self.assertFalse(self.service._value_filter(float("inf")))
+        self.assertFalse(self.service._value_filter(float("-inf")))
+
+        self.assertTrue(self.service._value_filter("STEEL"))
+        self.assertTrue(self.service._value_filter(1))
+        self.assertTrue(self.service._value_filter(1.15))
+
+    def test_key_filter(self):
+        self.assertFalse(self.service._key_filter(None))
+        self.assertTrue(self.service._key_filter('BB textfield'))
+        self.assertFalse(self.service._key_filter("SHOULD_BE_REJECTED"))
 
     def test_empty_request(self):
         with self.assertRaises(ValueError) as context:
             self.service.evaluate_xml("")
         self.assertEqual("Invalid BikeCAD file", context.exception.args[0])
-
-    @unittest.skip
-    def test_request_with_extreme_values(self):
-        pass
-
-    @unittest.skip
-    def test_request_with_none_values(self):
-        pass
-
-    @unittest.skip
-    def test_request_with_duplicated_keys(self):
-        pass
 
     def test_is_sane(self):
         with open(BIKE_PATH, "r") as file:

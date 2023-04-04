@@ -6,8 +6,10 @@ class AlgebraicParser:
 
     def attempt_parse(self, value) -> Union[float, str]:
         """Attempts to parse a string value (converts the value to string defensively). Returns
-        the string value stripped in case it fails to parse it.
+        the string value stripped in case it fails to parse it. None values map to an empty string.
         """
+        if value is None:
+            return ""
         return self._parse_value(str(value))
 
     def _parse_value(self, value: str) -> Union[float, str]:

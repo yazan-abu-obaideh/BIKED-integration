@@ -50,7 +50,7 @@ class BikeRecommendationService:
     def recommend_bike_from_xml(self, xml_request: str):
         return self._recommend_bike_from_parsed_dict(self._parse_to_dict(xml_request))
 
-    def _parse_to_dict(self, xml: str):
+    def _parse_to_dict(self, xml: str) -> dict:
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml)
         user_entry_dict = xml_handler.get_parsable_entries_(
@@ -81,4 +81,7 @@ class BikeRecommendationService:
         return key in self.engine.get_settings().include()
 
     def _value_filter(self, value):
-        return (value is not None) and (type(value) in [float, int])
+        return value is not None and self._valid_numeric(value)
+
+    def _valid_numeric(self, value):
+        return (type(value) in [float, int]) and (value not in [float("-inf"), float("inf")])

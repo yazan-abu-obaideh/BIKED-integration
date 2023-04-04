@@ -101,4 +101,9 @@ class EvaluationService:
         return key in self.framed_mapper.settings.get_expected_xml_keys()
 
     def _value_filter(self, parsed_value):
-        return parsed_value is not None
+        return parsed_value is not None and self._valid_if_numeric(parsed_value)
+
+    def _valid_if_numeric(self, parsed_value):
+        if type(parsed_value) in [float, int]:
+            return parsed_value not in [float("-inf"), float("inf")]
+        return True
