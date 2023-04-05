@@ -29,7 +29,6 @@ class EvaluationRequestProcessor:
         self.request_validator = RequestValidator()
         self.parser = AlgebraicParser()
         self._dict_to_model_input_pipeline = ProcessingPipeline(steps=[
-            self._parse_and_filter,
             self._perform_preliminary_validations,
             self._one_hot_encode,
             self._validate_datatypes,
@@ -40,13 +39,16 @@ class EvaluationRequestProcessor:
             self.request_scaler.scale,
             self._default_none_to_mean,
         ])
-        self._xml_to_model_input_pipeline = ProcessingPipeline(steps=self._dict_to_model_input_pipeline.steps[1:])
+        self._xml_to_model_input_pipeline = ProcessingPipeline(steps=[
+            self._parse_and_filter,
+            self._dict_to_model_input_pipeline.process
+        ])
 
     def map_to_validated_model_input(self, xml: str) -> dict:
-        return self._dict_to_model_input_pipeline.process(xml)
+        return self._xml_to_model_input_pipeline.process(xml)
 
     def map_dict_to_validated_model_input(self, dictionary: dict) -> dict:
-        return self._xml_to_model_input_pipeline.process(dictionary)
+        return self._dict_to_model_input_pipeline.process(dictionary)
 
     def _parse_and_filter(self, xml_user_request):
         xml_handler = BikeXmlHandler()
