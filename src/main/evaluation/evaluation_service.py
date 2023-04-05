@@ -73,15 +73,8 @@ class EvaluationService:
     def _predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         predictions_row = self._call_predictor(pd_row)
         scaled_result = pd_util.get_dict_from_first_row(predictions_row)
-        scaled_result = self.replace_labels(scaled_result)
         unscaled_result = self.response_scaler.unscale(scaled_result)
         return self.ensure_magnitude(unscaled_result)
-
-    def replace_labels(self, scaled_result):
-        scaled_result = {self.framed_mapper.settings.get_label_replacements().get(key, key): value
-                         for key, value in
-                         scaled_result.items()}
-        return scaled_result
 
     def _call_predictor(self, pd_row: pd.DataFrame) -> pd.DataFrame:
         return self.predictor.predict(pd_row)
