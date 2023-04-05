@@ -1,13 +1,8 @@
-from typing import List, Callable, TypeVar
-
-T = TypeVar('T')
-
-
 class ProcessingPipeline:
-    def __init__(self, pipeline: List[Callable[[T], T]]):
+    def __init__(self, pipeline):
         self.pipeline = pipeline
 
-    def process(self, request: T) -> T:
+    def process(self, request):
         for function in self.pipeline:
             request = function(request)
         return request
