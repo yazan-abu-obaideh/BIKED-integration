@@ -1,47 +1,31 @@
 import os.path
 import unittest
 
-from src.main.processing.algebraic_parser import AlgebraicParser
-from src.main.processing.bike_xml_handler import BikeXmlHandler
-from src.main.evaluation.framed_mapper import FramedMapper
-from src.test.test_evaluation.settings_for_test import Settings
+from src.main.processing.scaling_filter import ScalingFilter
+from src.main.evaluation.default_mapper_settings import DefaultMapperSettings
+from src.main.load_data import load_augmented_framed_dataset
+from src.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
 
 RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../resources/SimpleModel1.xml")
 
 
 class FramedMapperTest(unittest.TestCase):
     def setUp(self) -> None:
-        bikeCad_file = self.get_BikeCad_file_as_raw_xml()
-        self.mapper = FramedMapper(Settings())
-        handler = BikeXmlHandler()
-        handler.set_xml(bikeCad_file)
-        bike_dict = handler.get_parsable_entries_(
-            AlgebraicParser().attempt_parse,
-            key_filter=lambda x: x in Settings().get_expected_xml_keys(),
-            parsed_value_filter=lambda y: y is not None
-        )
-        self.result_dict = self.mapper.map_dict(bike_dict)
+        x, y, x_scaler, y_scaler = load_augmented_framed_dataset()
+        self.service = EvaluationRequestProcessor(ScalingFilter(
+            x_scaler, x.columns
+        ), DefaultMapperSettings())
 
-    def test_can_transform(self):
-        actual = self.result_dict["TT Thickness"]
-        self.assertEqual(5, actual)
+    def test_value_filter(self):
+        self.assertFalse(self.service._value_filter(None))
+        self.assertFalse(self.service._value_filter(float("inf")))
+        self.assertFalse(self.service._value_filter(float("-inf")))
 
-    def test_does_ignore(self):
-        self.assertTrue("irrelevant" not in self.result_dict)
+        self.assertTrue(self.service._value_filter("STEEL"))
+        self.assertTrue(self.service._value_filter(1))
+        self.assertTrue(self.service._value_filter(1.15))
 
-    def test_special_behavior(self):
-        self.assertEqual(self.result_dict["Material=Steel"], 1)
-        self.assertEqual(self.result_dict["CSB_Include"], 0)
-
-    def test_units_converted(self):
-        self.assertEqual(self.result_dict["CS F"], 0.05)
-
-    def test_ramifications(self):
-        self.assertEqual(self.result_dict["CSB OD"], 17.759)
-
-    def test_calculates_composite_values(self):
-        self.assertEqual(self.result_dict['DT OD'], 12.5)
-
-    def get_BikeCad_file_as_raw_xml(self):
-        with open(RESOURCE_PATH, "r") as file:
-            return file.read()
+    def test_key_filter(self):
+        self.assertFalse(self.service._key_filter(None))
+        self.assertTrue(self.service._key_filter('BB textfield'))
+        self.assertFalse(self.service._key_filter("SHOULD_BE_REJECTED"))

@@ -2,14 +2,18 @@ from typing import Optional
 
 import numpy as np
 
+from src.main.processing.algebraic_parser import AlgebraicParser
+from src.main.processing.request_validator import RequestValidator
+from src.main.processing.scaling_filter import ScalingFilter
 from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
 from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.processing.processing_pipeline import ProcessingPipeline
 
 MILLIMETERS_TO_METERS_FACTOR = 1000
+SCALED_MEAN = 0
 
 
-class FramedMapper:
+class EvaluationRequestProcessor:
     """Maps a dictionary representing
     a subset of bike properties into a dictionary representing
     a datapoint that wouldn't be out of place in the FRAMED dataset.
@@ -18,19 +22,50 @@ class FramedMapper:
     the calculation of another value Y is not present, value Y and its
     associated key will not be present in the returned dictionary."""
 
-    def __init__(self, settings: FramedMapperSettings):
+    def __init__(self, request_scaler: ScalingFilter, settings: FramedMapperSettings):
         self.xml_handler = BikeXmlHandler()
         self.settings = settings
-        # TODO: ensure adherence to T -> T
-        self._mapping_pipeline = ProcessingPipeline([self._one_hot_encode,
-                                                     self._validate_datatypes,
-                                                     self._calculate_composite_values,
-                                                     self._map_to_model_input,
-                                                     self._handle_special_behavior,
-                                                     self._convert_millimeter_values_to_meters])
+        self.request_scaler = request_scaler
+        self.request_validator = RequestValidator()
+        self.parser = AlgebraicParser()
+        self._xml_to_model_input_pipeline = ProcessingPipeline(steps=[
+            self._parse_and_filter,
+            self._perform_preliminary_validations,
+            self._one_hot_encode,
+            self._validate_datatypes,
+            self._calculate_composite_values,
+            self._map_to_model_input,
+            self._handle_special_behavior,
+            self._convert_millimeter_values_to_meters,
+            self.request_scaler.scale,
+            self._default_none_to_mean,
+        ])
+        self._dict_to_model_input_pipeline = ProcessingPipeline(steps=self._xml_to_model_input_pipeline.pipeline[1:])
 
-    def map_dict(self, bikeCad_file_entries):
-        return self._mapping_pipeline.process(bikeCad_file_entries)
+    def map_to_validated_model_input(self, xml: str) -> dict:
+        return self._xml_to_model_input_pipeline.process(xml)
+
+    def map_dict_to_validated_model_input(self, dictionary: dict) -> dict:
+        return self._dict_to_model_input_pipeline.process(dictionary)
+
+    def _parse_and_filter(self, xml_user_request):
+        xml_handler = BikeXmlHandler()
+        xml_handler.set_xml(xml_user_request)
+        user_request = xml_handler.get_parsable_entries_(self.parser.attempt_parse,
+                                                         key_filter=self._key_filter,
+                                                         parsed_value_filter=self._value_filter)
+        return user_request
+
+    def _perform_preliminary_validations(self, user_request):
+        self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
+        self.request_validator.throw_if_does_not_contain(user_request, ["MATERIAL"])
+        return user_request
+
+    def _default_none_to_mean(self, bike_cad_dict):
+        defaulted_keys = self.get_empty_keys(bike_cad_dict)
+        for key in defaulted_keys:
+            bike_cad_dict[key] = SCALED_MEAN
+        return bike_cad_dict
 
     def _map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
         keys_map = self.settings.get_bikeCad_to_model_map()
@@ -54,6 +89,9 @@ class FramedMapper:
     def _validate_datatypes(self, result_dict: dict) -> dict:
         self._raise_if_invalid_types(result_dict)
         return result_dict
+
+    def get_empty_keys(self, bike_cad_dict):
+        return (key for key in self.settings.get_expected_input_keys() if key not in bike_cad_dict)
 
     def _raise_if_invalid_types(self, result_dict: dict):
         for key, value in result_dict.items():
@@ -150,3 +188,14 @@ class FramedMapper:
             if value != material_value:
                 result_dict[f"Material={value.lower().title()}"] = 0
         return result_dict
+
+    def _key_filter(self, key):
+        return key in self.settings.get_expected_xml_keys()
+
+    def _value_filter(self, parsed_value):
+        return parsed_value is not None and self._valid_if_numeric(parsed_value)
+
+    def _valid_if_numeric(self, parsed_value):
+        if type(parsed_value) in [float, int]:
+            return parsed_value not in [float("-inf"), float("inf")]
+        return True

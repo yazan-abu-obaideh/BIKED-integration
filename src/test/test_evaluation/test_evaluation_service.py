@@ -4,6 +4,8 @@ import unittest
 from sklearn.model_selection import train_test_split
 
 import src.main.processing.pandas_utility as pd_util
+from src.main.evaluation.default_mapper_settings import DefaultMapperSettings
+from src.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
 from src.main.evaluation.evaluation_service import EvaluationService
 from src.main.processing.scaling_filter import ScalingFilter
 
@@ -43,9 +45,9 @@ class EvaluationServiceTest(unittest.TestCase):
         assert False
 
     def test_uses_filters_and_produces_expected_response(self):
-        class TesterService(EvaluationService):
-            def __init__(self):
-                super().__init__()
+        class TesterProcessor(EvaluationRequestProcessor):
+            def __init__(self, request_scaler, settings):
+                super().__init__(request_scaler, settings)
                 self.value_filter_calls = 0
                 self.key_filter_calls = 0
 
@@ -57,13 +59,14 @@ class EvaluationServiceTest(unittest.TestCase):
                 self.value_filter_calls += 1
                 return super()._value_filter(parsed_value)
 
-        service = TesterService()
+        processor = TesterProcessor(self.request_scaler, DefaultMapperSettings())
+        self.service.request_processor = processor
 
         xml_as_string = self.get_xml()
 
-        service_response = service.evaluate_xml(xml_as_string)
-        self.assertEqual(6189, service.key_filter_calls)
-        self.assertEqual(43, service.value_filter_calls)
+        service_response = self.service.evaluate_xml(xml_as_string)
+        self.assertEqual(6189, processor.key_filter_calls)
+        self.assertEqual(43, processor.value_filter_calls)
         self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.038326118317548265,
                                     'Sim 1 Dropout Y Disp. Magnitude': 0.09414663183265932,
                                     'Sim 1 Bottom Bracket X Disp. Magnitude': 0.05474823933361474,
@@ -75,20 +78,6 @@ class EvaluationServiceTest(unittest.TestCase):
                                     'Sim 3 Safety Factor (Inverted)': 3.6281390549872006,
                                     'Model Mass Magnitude': 2.6662627465729853},
                                    service_response)
-
-    def test_value_filter(self):
-        self.assertFalse(self.service._value_filter(None))
-        self.assertFalse(self.service._value_filter(float("inf")))
-        self.assertFalse(self.service._value_filter(float("-inf")))
-
-        self.assertTrue(self.service._value_filter("STEEL"))
-        self.assertTrue(self.service._value_filter(1))
-        self.assertTrue(self.service._value_filter(1.15))
-
-    def test_key_filter(self):
-        self.assertFalse(self.service._key_filter(None))
-        self.assertTrue(self.service._key_filter('BB textfield'))
-        self.assertFalse(self.service._key_filter("SHOULD_BE_REJECTED"))
 
     def test_empty_request(self):
         with self.assertRaises(ValueError) as context:
