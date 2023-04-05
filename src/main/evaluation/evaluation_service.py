@@ -48,7 +48,7 @@ class EvaluationService:
         self.response_scaler = ScalingFilter(output_scaler, y.columns)
         self.request_validator = RequestValidator()
         self.parser = AlgebraicParser()
-        self.request_processing_pipeline = ProcessingPipeline(pipeline=[
+        self._xml_to_model_input_pipeline = ProcessingPipeline(steps=[
             self._parse_and_filter,
             self._perform_preliminary_validations,
             self._one_hot_encode,
@@ -59,15 +59,21 @@ class EvaluationService:
             self._convert_millimeter_values_to_meters,
             self.request_scaler.scale,
             self._default_none_to_mean,
-            pd_util.get_single_row_dataframe_from,
-            self._call_predictor,
-            pd_util.get_dict_from_first_row,
+        ])
+        self._dict_to_model_input_pipeline = ProcessingPipeline(steps=self._xml_to_model_input_pipeline.pipeline[1:])
+        self._model_input_to_validated_response_pipeline = ProcessingPipeline(steps=[
+            self._wrapped_call_predictor,
             self.response_scaler.unscale,
             self.ensure_magnitude
         ])
 
     def evaluate_xml(self, xml_user_request: str) -> dict:
-        return self.request_processing_pipeline.process(xml_user_request)
+        model_input = self._xml_to_model_input_pipeline.process(xml_user_request)
+        return self._model_input_to_validated_response_pipeline.process(model_input)
+
+    def _evaluate_parsed_dict(self, bike_cad_dict: dict) -> dict:
+        model_input = self._dict_to_model_input_pipeline.process(bike_cad_dict)
+        return self._model_input_to_validated_response_pipeline.process(model_input)
 
     def _perform_preliminary_validations(self, user_request):
         self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
@@ -82,13 +88,6 @@ class EvaluationService:
                                                          parsed_value_filter=self._value_filter)
         return user_request
 
-    def _evaluate_parsed_dict(self, bike_cad_dict: dict) -> dict:
-        framed_dict = self.framed_mapper.map_dict(bike_cad_dict)
-        scaled_dict = self.request_scaler.scale(framed_dict)
-        processed_dict = self._default_none_to_mean(scaled_dict)
-        one_row_dataframe = pd_util.get_single_row_dataframe_from(processed_dict)
-        return self._predict_from_row(one_row_dataframe)
-
     def _default_none_to_mean(self, bike_cad_dict):
         defaulted_keys = self.get_empty_keys(bike_cad_dict)
         for key in defaulted_keys:
@@ -96,13 +95,17 @@ class EvaluationService:
         return bike_cad_dict
 
     def get_empty_keys(self, bike_cad_dict):
-        return (key for key in self.framed_mapper.settings.get_expected_input_keys() if key not in bike_cad_dict)
+        return (key for key in self.settings.get_expected_input_keys() if key not in bike_cad_dict)
 
     def _predict_from_row(self, pd_row: pd.DataFrame) -> dict:
         predictions_row = self._call_predictor(pd_row)
         scaled_result = pd_util.get_dict_from_first_row(predictions_row)
         unscaled_result = self.response_scaler.unscale(scaled_result)
         return self.ensure_magnitude(unscaled_result)
+
+    def _wrapped_call_predictor(self, request: dict) -> dict:
+        predictions_dictionary = self._call_predictor(pd_util.get_single_row_dataframe_from(request))
+        return pd_util.get_dict_from_first_row(predictions_dictionary)
 
     def _call_predictor(self, pd_row: pd.DataFrame) -> pd.DataFrame:
         return self.predictor.predict(pd_row)
@@ -120,7 +123,7 @@ class EvaluationService:
         return load_augmented_framed_dataset()
 
     def _key_filter(self, key):
-        return key in self.framed_mapper.settings.get_expected_xml_keys()
+        return key in self.settings.get_expected_xml_keys()
 
     def _value_filter(self, parsed_value):
         return parsed_value is not None and self._valid_if_numeric(parsed_value)

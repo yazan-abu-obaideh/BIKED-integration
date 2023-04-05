@@ -17,26 +17,22 @@ class EvaluationServiceTest(unittest.TestCase):
         self.x, self.y, request_scaler, result_scaler = self.prepare_x_y()
         self.request_scaler = ScalingFilter(request_scaler, self.x.columns)
         self.result_scaler = ScalingFilter(result_scaler, self.y.columns)
-        self.sample_input = {'Material=Steel': 0.8271449363608141, 'Material=Aluminum': -0.46507861303022335,
-                             'Material=Titanium': -0.5440697275169644, 'SSB_Include': -0.9450147617557437,
-                             'CSB_Include': -0.9323228669601348, 'CS Length': -0.35028661439732467,
-                             'BB Drop': -0.1544953575549022, 'Stack': -0.0379252894111939,
-                             'SS E': -0.16383852546719213, 'ST Angle': 2.36455520534093,
-                             'BB OD': 1.2704546076501892, 'TT OD': -0.4170541293473518,
-                             'HT OD': 0.08942680459076938, 'DT OD': -0.4570870737439202,
-                             'CS OD': -0.24471155169908107, 'SS OD': -0.5298026020058619,
-                             'ST OD': 0.379568476070093, 'CS F': -0.05997101198707037,
-                             'HT LX': -0.22274090734521784, 'ST UX': -0.17859053297003494,
-                             'HT UX': 0.7198017671343204, 'HT Angle': 1.4719711522617185,
-                             'HT Length': 1.5354636604045708, 'ST Length': 0.4469654256518064,
-                             'BB Length': -0.461260613117197, 'Dropout Offset': -0.7032407703632412,
-                             'SSB OD': -0.26947988656276173, 'CSB OD': -0.279547847307574,
-                             'SSB Offset': -0.056997290322807315, 'CSB Offset': 0.22893254089370635,
-                             'SS Z': -0.46204285917458726, 'SS Thickness': 0.9214403976762411,
-                             'CS Thickness': 0.2509374633376663, 'TT Thickness': -0.15479200809276833,
-                             'BB Thickness': 0.49282141277749913, 'HT Thickness': 2.9026934109858655,
-                             'ST Thickness': 0.23272460681845872, 'DT Thickness': 1.7696907824504056,
-                             'DT Length': -0.1689535437867544}
+        self.sample_input = {'Down tube front diameter': 29.0, 'Seat tube length': 570.0, 'Seat tube extension2': 14.3,
+                             'Seat tube diameter': 29.0, 'Chain stay back diameter': 17.0, 'SSTopZOFFSET': 9.0,
+                             'Head tube upper extension2': 23.3, 'CHAINSTAYbrdgshift': 350.0,
+                             'Head tube length textfield': 157.3, 'Top tube front dia2': 25.4,
+                             'Head angle': 73.49999999999999, 'CHAINSTAYbrdgCheck': 1.0,
+                             'Wall thickness Seat tube': 0.9, 'Top tube rear dia2': 31.8,
+                             'Chain stay position on BB': 15.0, 'Chain stay vertical diameter': 29.7,
+                             'Head tube diameter': 32.0, 'Wall thickness Chain stay': 1.2, 'MATERIAL': 'STEEL',
+                             'BB diameter': 40.0, 'Dropout spacing': 130.0, 'Stack': 565.6, 'Down tube rear dia2': 29.0,
+                             'Seat angle': 73.49999999999999, 'FCD textfield': 570.0, 'CS textfield': 440.0,
+                             'CHAINSTAYbrdgdia1': 18.0, 'BB length': 68.0, 'Seat stay bottom diameter': 13.0,
+                             'BB textfield': 280.0, 'SEATSTAYbrdgshift': 330.0, 'Wall thickness Top tube': 0.9,
+                             'SEATSTAYbrdgdia1': 16.0, 'Down tube rear diameter': 29.0, 'Top tube front diameter': 25.4,
+                             'Wall thickness Seat stay': 1.0, 'SEATSTAYbrdgCheck': 1.0, 'Down tube front dia2': 29.0,
+                             'Wall thickness Down tube': 0.9, 'FORK0L': 380.0, 'Head tube lower extension2': 39.5,
+                             'SEATSTAY_HR': 13.0, 'Top tube rear diameter': 31.8}
 
     @unittest.skip
     def test_default_material_values(self):
@@ -104,9 +100,7 @@ class EvaluationServiceTest(unittest.TestCase):
             return file.read()
 
     def test_can_predict_from_partial_dict(self):
-        partial_request = {'Material=Titanium': 1.8379997074342262, 'SSB_Include': 1.0581845284004865,
-                           'CSB_Include': -0.9323228669601348, 'CS Length': -0.4947762070020683,
-                           'BB Drop': 0.19327064177679704}
+        partial_request = {'MATERIAL': "TITANIUM"}
         self.assertIsNotNone(self.service._evaluate_parsed_dict(partial_request))
 
     def test_cannot_predict_from_partial_row(self):

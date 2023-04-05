@@ -1,6 +1,6 @@
 class ProcessingPipeline:
-    def __init__(self, pipeline):
-        self.pipeline = pipeline
+    def __init__(self, steps):
+        self.pipeline = steps
 
     def process(self, request):
         for function in self.pipeline:
