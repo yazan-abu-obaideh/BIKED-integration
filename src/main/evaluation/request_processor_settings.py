@@ -1,7 +1,7 @@
 from abc import abstractmethod, ABCMeta
 
 
-class FramedMapperSettings(metaclass=ABCMeta):
+class RequestProcessorSettings(metaclass=ABCMeta):
 
     @abstractmethod
     def get_expected_xml_keys(self):

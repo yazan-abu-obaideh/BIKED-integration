@@ -1,9 +1,9 @@
 from typing import List
 
-from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
+from src.main.evaluation.request_processor_settings import RequestProcessorSettings
 
 
-class DefaultMapperSettings(FramedMapperSettings):
+class DefaultMapperSettings(RequestProcessorSettings):
 
     def get_expected_xml_keys(self):
         return list(self.get_bikeCad_to_model_map().keys()) + ["MATERIAL"] \

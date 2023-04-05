@@ -2,7 +2,7 @@ import os.path
 import unittest
 
 from src.main.processing.scaling_filter import ScalingFilter
-from src.main.evaluation.default_mapper_settings import DefaultMapperSettings
+from src.main.evaluation.default_processor_settings import DefaultMapperSettings
 from src.main.load_data import load_augmented_framed_dataset
 from src.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
 

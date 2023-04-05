@@ -1,7 +1,7 @@
-from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
+from src.main.evaluation.request_processor_settings import RequestProcessorSettings
 
 
-class Settings(FramedMapperSettings):
+class Settings(RequestProcessorSettings):
     """THIS IS NOT DUPLICATION. The test settings just so happen to match the real settings because we have not done the
     requisite work on the real settings just yet."""
 

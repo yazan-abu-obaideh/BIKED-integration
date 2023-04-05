@@ -7,17 +7,14 @@ import src.main.processing.pandas_utility as pd_util
 from service_resources.resource_paths import MODEL_PATH
 from src.main.evaluation.MultilabelPredictor import MultilabelPredictor
 from src.main.evaluation.Predictor import Predictor
-from src.main.evaluation.default_mapper_settings import DefaultMapperSettings
+from src.main.evaluation.default_processor_settings import DefaultMapperSettings
 from src.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
-from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
+from src.main.evaluation.request_processor_settings import RequestProcessorSettings
 from src.main.load_data import load_augmented_framed_dataset
 from src.main.processing.algebraic_parser import AlgebraicParser
 from src.main.processing.processing_pipeline import ProcessingPipeline
 from src.main.processing.request_validator import RequestValidator
 from src.main.processing.scaling_filter import ScalingFilter
-
-SCALED_MEAN = 0
-MILLIMETERS_TO_METERS_FACTOR = 1000
 
 
 def prepare_pickle():
@@ -36,7 +33,7 @@ DEFAULT_PREDICTOR = load_pickled_predictor()
 class EvaluationService:
 
     def __init__(self, predictor: Predictor = DEFAULT_PREDICTOR,
-                 settings: FramedMapperSettings = DefaultMapperSettings()):
+                 settings: RequestProcessorSettings = DefaultMapperSettings()):
         self.predictor = predictor
         self.settings = settings
         x, y, input_scaler, output_scaler = self.get_data()

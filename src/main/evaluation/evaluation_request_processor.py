@@ -5,7 +5,7 @@ import numpy as np
 from src.main.processing.algebraic_parser import AlgebraicParser
 from src.main.processing.request_validator import RequestValidator
 from src.main.processing.scaling_filter import ScalingFilter
-from src.main.evaluation.framed_mapper_settings import FramedMapperSettings
+from src.main.evaluation.request_processor_settings import RequestProcessorSettings
 from src.main.processing.bike_xml_handler import BikeXmlHandler
 from src.main.processing.processing_pipeline import ProcessingPipeline
 
@@ -22,7 +22,7 @@ class EvaluationRequestProcessor:
     the calculation of another value Y is not present, value Y and its
     associated key will not be present in the returned dictionary."""
 
-    def __init__(self, request_scaler: ScalingFilter, settings: FramedMapperSettings):
+    def __init__(self, request_scaler: ScalingFilter, settings: RequestProcessorSettings):
         self.xml_handler = BikeXmlHandler()
         self.settings = settings
         self.request_scaler = request_scaler

@@ -4,7 +4,7 @@ import unittest
 from sklearn.model_selection import train_test_split
 
 import src.main.processing.pandas_utility as pd_util
-from src.main.evaluation.default_mapper_settings import DefaultMapperSettings
+from src.main.evaluation.default_processor_settings import DefaultMapperSettings
 from src.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
 from src.main.evaluation.evaluation_service import EvaluationService
 from src.main.processing.scaling_filter import ScalingFilter
