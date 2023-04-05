@@ -59,7 +59,7 @@ class BikeRecommendationService:
         return user_entry_dict
 
     def _recommend_bike_from_parsed_dict(self, user_entry: dict):
-        self.request_validator.throw_if_empty(user_entry, "Invalid BikeCAD file")
+        self.request_validator.raise_if_empty(user_entry, "Invalid BikeCAD file")
         scaled_user_entry = self._pre_process_request(user_entry)
         closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)
         return self._build_link(closest_bike_entry)

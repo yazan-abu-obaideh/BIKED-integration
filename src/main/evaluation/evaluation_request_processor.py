@@ -14,14 +14,6 @@ SCALED_MEAN = 0
 
 
 class EvaluationRequestProcessor:
-    """Maps a dictionary representing
-    a subset of bike properties into a dictionary representing
-    a datapoint that wouldn't be out of place in the FRAMED dataset.
-    If a value is not present the associated key will not be present in
-    the returned dictionary. If a value X needed for
-    the calculation of another value Y is not present, value Y and its
-    associated key will not be present in the returned dictionary."""
-
     def __init__(self, request_scaler: ScalingFilter, settings: RequestProcessorSettings):
         self.xml_handler = BikeXmlHandler()
         self.settings = settings
@@ -59,8 +51,8 @@ class EvaluationRequestProcessor:
         return user_request
 
     def _perform_preliminary_validations(self, user_request):
-        self.request_validator.throw_if_empty(user_request, 'Invalid BikeCAD file')
-        self.request_validator.throw_if_does_not_contain(user_request, ["MATERIAL"])
+        self.request_validator.raise_if_empty(user_request, 'Invalid BikeCAD file')
+        self.request_validator.raise_if_does_not_contain(user_request, ["MATERIAL"])
         return user_request
 
     def _default_none_to_mean(self, bike_cad_dict):
