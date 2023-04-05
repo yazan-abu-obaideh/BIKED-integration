@@ -40,7 +40,7 @@ class EvaluationRequestProcessor:
             self.request_scaler.scale,
             self._default_none_to_mean,
         ])
-        self._dict_to_model_input_pipeline = ProcessingPipeline(steps=self._xml_to_model_input_pipeline.pipeline[1:])
+        self._dict_to_model_input_pipeline = ProcessingPipeline(steps=self._xml_to_model_input_pipeline.steps[1:])
 
     def map_to_validated_model_input(self, xml: str) -> dict:
         return self._xml_to_model_input_pipeline.process(xml)
