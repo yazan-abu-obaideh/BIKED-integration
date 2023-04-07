@@ -1,6 +1,6 @@
-from src.main.processing.bike_xml_handler import BikeXmlHandler
-from src.main.recommendation.default_engine_settings import DefaultBikeSettings
-import src.main.processing.pandas_utility as pd_util
+from service.main.processing.bike_xml_handler import BikeXmlHandler
+from service.main.recommendation.default_engine_settings import DefaultBikeSettings
+import service.main.processing.pandas_utility as pd_util
 import pandas as pd
 import os
 

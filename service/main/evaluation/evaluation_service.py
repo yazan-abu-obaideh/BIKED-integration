@@ -3,17 +3,17 @@ import __main__
 import pandas as pd
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
-import src.main.processing.pandas_utility as pd_util
+import service.main.processing.pandas_utility as pd_util
 from service_resources.resource_paths import MODEL_PATH
-from src.main.evaluation.MultilabelPredictor import MultilabelPredictor
-from src.main.evaluation.Predictor import Predictor
-from src.main.evaluation.default_processor_settings import DefaultMapperSettings
-from src.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
-from src.main.evaluation.request_processor_settings import RequestProcessorSettings
-from src.main.load_data import load_augmented_framed_dataset
-from src.main.processing.processing_pipeline import ProcessingPipeline
-from src.main.processing.request_validator import RequestValidator
-from src.main.processing.scaling_filter import ScalingFilter
+from service.main.evaluation.MultilabelPredictor import MultilabelPredictor
+from service.main.evaluation.Predictor import Predictor
+from service.main.evaluation.default_processor_settings import DefaultMapperSettings
+from service.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
+from service.main.evaluation.request_processor_settings import RequestProcessorSettings
+from service.main.load_data import load_augmented_framed_dataset
+from service.main.processing.processing_pipeline import ProcessingPipeline
+from service.main.processing.request_validator import RequestValidator
+from service.main.processing.scaling_filter import ScalingFilter
 
 
 def prepare_pickle():

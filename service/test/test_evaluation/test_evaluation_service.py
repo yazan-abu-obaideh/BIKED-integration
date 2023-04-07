@@ -3,11 +3,11 @@ import unittest
 
 from sklearn.model_selection import train_test_split
 
-import src.main.processing.pandas_utility as pd_util
-from src.main.evaluation.default_processor_settings import DefaultMapperSettings
-from src.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
-from src.main.evaluation.evaluation_service import EvaluationService
-from src.main.processing.scaling_filter import ScalingFilter
+import service.main.processing.pandas_utility as pd_util
+from service.main.evaluation.default_processor_settings import DefaultMapperSettings
+from service.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
+from service.main.evaluation.evaluation_service import EvaluationService
+from service.main.processing.scaling_filter import ScalingFilter
 
 BIKE_PATH = os.path.join(os.path.dirname(__file__), "../resources/bikes/(4800).xml")
 

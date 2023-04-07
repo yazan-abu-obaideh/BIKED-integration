@@ -1,13 +1,13 @@
 import pandas as pd
 
-from src.main.processing.dictionary_handler import DictionaryHandler
-from src.main.processing.algebraic_parser import AlgebraicParser
-from src.main.processing.request_validator import RequestValidator
+from service.main.processing.dictionary_handler import DictionaryHandler
+from service.main.processing.algebraic_parser import AlgebraicParser
+from service.main.processing.request_validator import RequestValidator
 from service_resources.resource_paths import RECOMMENDATION_DATASET_PATH
-from src.main.processing.bike_xml_handler import BikeXmlHandler
-from src.main.processing.scaling_filter import ScalingFilter
-from src.main.recommendation.default_engine_settings import DefaultBikeSettings
-from src.main.recommendation.similarity_engine import SimilarityEngine, EuclideanSimilarityEngine
+from service.main.processing.bike_xml_handler import BikeXmlHandler
+from service.main.processing.scaling_filter import ScalingFilter
+from service.main.recommendation.default_engine_settings import DefaultBikeSettings
+from service.main.recommendation.similarity_engine import SimilarityEngine, EuclideanSimilarityEngine
 
 SET_INVALID_TO_NAN = 'coerce'
 

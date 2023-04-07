@@ -1,10 +1,10 @@
 import os.path
 import unittest
 
-from src.main.processing.scaling_filter import ScalingFilter
-from src.main.evaluation.default_processor_settings import DefaultMapperSettings
-from src.main.load_data import load_augmented_framed_dataset
-from src.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
+from service.main.processing.scaling_filter import ScalingFilter
+from service.main.evaluation.default_processor_settings import DefaultMapperSettings
+from service.main.load_data import load_augmented_framed_dataset
+from service.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
 
 RESOURCE_PATH = os.path.join(os.path.dirname(__file__), "../resources/SimpleModel1.xml")
 

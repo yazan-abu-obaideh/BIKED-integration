@@ -2,10 +2,10 @@ import unittest
 
 import pandas as pd
 
-import src.main.processing.pandas_utility as pd_util
+import service.main.processing.pandas_utility as pd_util
 from service_resources.resource_paths import ALL_STRUCTURAL_DATASET
-from src.main.load_data import load_augmented_framed_dataset, one_hot_encode_material
-from src.main.processing.scaling_filter import ScalingFilter
+from service.main.load_data import load_augmented_framed_dataset, one_hot_encode_material
+from service.main.processing.scaling_filter import ScalingFilter
 
 
 class TestScalerWrapper(unittest.TestCase):

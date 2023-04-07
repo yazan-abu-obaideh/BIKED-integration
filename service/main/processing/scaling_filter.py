@@ -1,5 +1,5 @@
 from sklearn.preprocessing import StandardScaler
-import src.main.processing.pandas_utility as pd_util
+import service.main.processing.pandas_utility as pd_util
 import pandas as pd
 
 

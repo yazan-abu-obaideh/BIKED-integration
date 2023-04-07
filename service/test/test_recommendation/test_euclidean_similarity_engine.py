@@ -1,6 +1,6 @@
-from src.main.recommendation.similarity_engine_settings import EngineSettings
-from src.main.recommendation.similarity_engine import EuclideanSimilarityEngine, DISTANCE
-import src.main.processing.pandas_utility as pd_util
+from service.main.recommendation.similarity_engine_settings import EngineSettings
+from service.main.recommendation.similarity_engine import EuclideanSimilarityEngine, DISTANCE
+import service.main.processing.pandas_utility as pd_util
 import pandas as pd
 import unittest
 import os

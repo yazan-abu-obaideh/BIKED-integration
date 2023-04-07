@@ -2,7 +2,7 @@ import multiprocessing
 import os.path
 import unittest
 
-from src.app import app
+from service.app import app
 from requests import request as send_request
 from time import sleep, time
 

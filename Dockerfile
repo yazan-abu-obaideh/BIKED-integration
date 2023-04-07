@@ -4,7 +4,7 @@ FROM jyguru/biked-integration-resources-image:2023mar24
 RUN apt install curl -y
 
 WORKDIR /app
-COPY src/ src/
+COPY service/ service/
 COPY test.sh test.sh
 COPY run.sh run.sh
 

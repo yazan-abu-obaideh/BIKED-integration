@@ -1,5 +1,5 @@
-from src.main.recommendation.bike_recommendation_service import BikeRecommendationService
-from src.main.processing.bike_xml_handler import BikeXmlHandler
+from service.main.recommendation.bike_recommendation_service import BikeRecommendationService
+from service.main.processing.bike_xml_handler import BikeXmlHandler
 import unittest
 import os
 

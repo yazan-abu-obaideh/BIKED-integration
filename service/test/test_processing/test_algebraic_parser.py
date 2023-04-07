@@ -1,6 +1,6 @@
 import unittest
 
-from src.main.processing.algebraic_parser import AlgebraicParser
+from service.main.processing.algebraic_parser import AlgebraicParser
 
 
 class AlgebraicParserTest(unittest.TestCase):

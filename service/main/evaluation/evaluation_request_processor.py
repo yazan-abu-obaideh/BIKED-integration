@@ -2,13 +2,13 @@ from typing import Optional
 
 import numpy as np
 
-from src.main.processing.dictionary_handler import DictionaryHandler
-from src.main.processing.algebraic_parser import AlgebraicParser
-from src.main.processing.request_validator import RequestValidator
-from src.main.processing.scaling_filter import ScalingFilter
-from src.main.evaluation.request_processor_settings import RequestProcessorSettings
-from src.main.processing.bike_xml_handler import BikeXmlHandler
-from src.main.processing.processing_pipeline import ProcessingPipeline
+from service.main.processing.dictionary_handler import DictionaryHandler
+from service.main.processing.algebraic_parser import AlgebraicParser
+from service.main.processing.request_validator import RequestValidator
+from service.main.processing.scaling_filter import ScalingFilter
+from service.main.evaluation.request_processor_settings import RequestProcessorSettings
+from service.main.processing.bike_xml_handler import BikeXmlHandler
+from service.main.processing.processing_pipeline import ProcessingPipeline
 
 MILLIMETERS_TO_METERS_FACTOR = 1000
 SCALED_MEAN = 0

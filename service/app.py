@@ -1,5 +1,5 @@
-from src.main.recommendation.bike_recommendation_service import BikeRecommendationService
-from src.main.evaluation.evaluation_service import EvaluationService
+from service.main.recommendation.bike_recommendation_service import BikeRecommendationService
+from service.main.evaluation.evaluation_service import EvaluationService
 from flask import Flask, request, make_response
 
 BAD_REQUEST = 400

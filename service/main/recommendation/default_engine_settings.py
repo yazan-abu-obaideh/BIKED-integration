@@ -1,4 +1,4 @@
-from src.main.recommendation.similarity_engine_settings import EngineSettings
+from service.main.recommendation.similarity_engine_settings import EngineSettings
 
 
 class DefaultBikeSettings(EngineSettings):

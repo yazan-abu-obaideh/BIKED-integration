@@ -1,6 +1,6 @@
 import unittest
 
-from src.main.processing.request_validator import RequestValidator
+from service.main.processing.request_validator import RequestValidator
 
 
 class RequestValidatorTest(unittest.TestCase):
