@@ -15,7 +15,6 @@ SCALED_MEAN = 0
 
 class EvaluationRequestProcessor:
     def __init__(self, request_scaler: ScalingFilter, settings: RequestProcessorSettings):
-        self.xml_handler = BikeXmlHandler()
         self.settings = settings
         self.request_scaler = request_scaler
         self.request_validator = RequestValidator()
