@@ -2,6 +2,7 @@ from typing import Optional
 
 import numpy as np
 
+from src.main.processing.dictionary_handler import DictionaryHandler
 from src.main.processing.algebraic_parser import AlgebraicParser
 from src.main.processing.request_validator import RequestValidator
 from src.main.processing.scaling_filter import ScalingFilter
@@ -19,7 +20,11 @@ class EvaluationRequestProcessor:
         self.request_scaler = request_scaler
         self.request_validator = RequestValidator()
         self.parser = AlgebraicParser()
+        self.dict_handler = DictionaryHandler()
         self._dict_to_model_input_pipeline = ProcessingPipeline(steps=[
+            self._filter_keys,
+            self._parse_values,
+            self._filter_values,
             self._perform_preliminary_validations,
             self._one_hot_encode,
             self._validate_datatypes,
@@ -31,7 +36,7 @@ class EvaluationRequestProcessor:
             self._default_none_to_mean,
         ])
         self._xml_to_model_input_pipeline = ProcessingPipeline(steps=[
-            self._parse_and_filter,
+            self._xml_to_dict,
             self._dict_to_model_input_pipeline.process
         ])
 
@@ -41,13 +46,10 @@ class EvaluationRequestProcessor:
     def map_dict_to_validated_model_input(self, dictionary: dict) -> dict:
         return self._dict_to_model_input_pipeline.process(dictionary)
 
-    def _parse_and_filter(self, xml_user_request):
+    def _xml_to_dict(self, xml_user_request):
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml_user_request)
-        user_request = xml_handler.get_parsable_entries_(self.parser.attempt_parse,
-                                                         key_filter=self._key_filter,
-                                                         parsed_value_filter=self._value_filter)
-        return user_request
+        return xml_handler.get_entries_dict()
 
     def _perform_preliminary_validations(self, user_request):
         self.request_validator.raise_if_empty(user_request, 'Invalid BikeCAD file')
@@ -181,6 +183,15 @@ class EvaluationRequestProcessor:
             if value != material_value:
                 result_dict[f"Material={value.lower().title()}"] = 0
         return result_dict
+
+    def _parse_values(self, dictionary: dict):
+        return self.dict_handler.parse_values(dictionary, self.parser.attempt_parse)
+
+    def _filter_keys(self, dictionary: dict):
+        return self.dict_handler.filter_keys(dictionary, self._key_filter)
+
+    def _filter_values(self, dictionary: dict):
+        return self.dict_handler.filter_values(dictionary, self._value_filter)
 
     def _key_filter(self, key):
         return key in self.settings.get_expected_xml_keys()

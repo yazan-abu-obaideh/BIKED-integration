@@ -30,7 +30,7 @@ class BikeXmlHandler:
     def get_content_string(self):
         return self.xml_tree.__str__()
 
-    def get_all_entries(self):
+    def get_all_entries(self) -> dict:
         return self.xml_tree.find_all(self.XML_TAG)
 
     def copy_first_entry(self):
@@ -103,21 +103,5 @@ class BikeXmlHandler:
     def get_all_keys(self):
         return [entry[self.ATTRIBUTE] for entry in self.get_all_entries()]
 
-    def get_parsable_entries_(self,
-                              value_parser: Callable,
-                              key_filter: Callable,
-                              parsed_value_filter: Callable):
-        all_entries = self.get_entries_dict()
-        filtered_by_key = self._filter_by_key(all_entries, key_filter)
-        return self._parse_and_filter(filtered_by_key, value_parser, parsed_value_filter)
-
-    def _parse_and_filter(self, entries: dict, value_parser, parsed_value_filter):
-        result = {}
-        for key, value in entries.items():
-            parsed_value = value_parser(value)
-            if parsed_value_filter(parsed_value):
-                result[key] = parsed_value
-        return result
-
-    def _filter_by_key(self, all_entries, key_filter):
-        return {key: value for key, value in all_entries.items() if key_filter(key)}
+    def get_parsed_entries(self, value_parser: Callable) -> dict:
+        return {key: value_parser(value) for key, value in self.get_entries_dict().items()}

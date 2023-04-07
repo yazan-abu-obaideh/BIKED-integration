@@ -1,5 +1,6 @@
 import pandas as pd
 
+from src.main.processing.dictionary_handler import DictionaryHandler
 from src.main.processing.algebraic_parser import AlgebraicParser
 from src.main.processing.request_validator import RequestValidator
 from service_resources.resource_paths import RECOMMENDATION_DATASET_PATH
@@ -46,6 +47,7 @@ class BikeRecommendationService:
         self.engine = engine
         self.request_validator = RequestValidator()
         self.parser = AlgebraicParser()
+        self.dict_handler = DictionaryHandler()
 
     def recommend_bike_from_xml(self, xml_request: str):
         return self._recommend_bike_from_parsed_dict(self._parse_to_dict(xml_request))
@@ -53,10 +55,11 @@ class BikeRecommendationService:
     def _parse_to_dict(self, xml: str) -> dict:
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml)
-        user_entry_dict = xml_handler.get_parsable_entries_(
-            self.parser.attempt_parse, self._key_filter, self._value_filter
-        )
-        return user_entry_dict
+        all_entries = xml_handler.get_entries_dict()
+        filtered_by_keys = self.dict_handler.filter_keys(all_entries, self._key_filter)
+        parsed = self.dict_handler.parse_values(filtered_by_keys, self.parser.attempt_parse)
+        filtered_by_values = self.dict_handler.filter_values(parsed, self._value_filter)
+        return filtered_by_values
 
     def _recommend_bike_from_parsed_dict(self, user_entry: dict):
         self.request_validator.raise_if_empty(user_entry, "Invalid BikeCAD file")

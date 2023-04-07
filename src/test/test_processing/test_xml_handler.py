@@ -28,36 +28,6 @@ class XmlHandlerTest(unittest.TestCase):
         self.assertEqual(1, len(entries))
         self.assertEqual("2", entries["first"])
 
-    def test_parse_xml_with_key_filter(self):
-        xml_handler = BikeXmlHandler()
-        xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-        <properties>
-        <comment> Made with care! </comment>
-        <entry key="first">TRUE</entry>
-        <entry key="second">tRue</entry>
-        </properties>""")
-        parsed = xml_handler.get_parsable_entries_(
-            AlgebraicParser().attempt_parse, lambda x: x == "first", lambda y: True
-        )
-        self.assertTrue("second" not in parsed.keys())
-        self.assertEqual(1, len(parsed))
-        self.assertEqual(1, parsed["first"])
-
-    def test_parse_xml_with_value_filter(self):
-        xml_handler = BikeXmlHandler()
-        xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-        <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-        <properties>
-        <comment> Made with care! </comment>
-        <entry key="first">NEITHER_FLOAT_NOR_BOOLEAN</entry>
-        <entry key="second">5</entry>
-        </properties>""")
-        parsed_entries = xml_handler.get_parsable_entries_(
-            AlgebraicParser().attempt_parse, lambda x: True, lambda y: type(y) != str
-        )
-        self.assertEqual(1, len(parsed_entries))
-
     def test_parse_xml(self):
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml("""<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -67,9 +37,7 @@ class XmlHandlerTest(unittest.TestCase):
 <entry key="first">12.5</entry>
 <entry key="second">TRUE</entry>
 </properties>""")
-        parsed_entries = xml_handler.get_parsable_entries_(
-            AlgebraicParser().attempt_parse, lambda x: True, lambda y: True
-        )
+        parsed_entries = xml_handler.get_parsed_entries(AlgebraicParser().attempt_parse)
         self.assertEqual(2, len(parsed_entries))
         self.assertEqual(12.5, parsed_entries["first"])
         self.assertIs(float, type(parsed_entries["first"]))
