@@ -14,7 +14,7 @@ class AlgebraicParser:
 
     def _parse_value(self, value: str) -> Union[float, str]:
         if self._is_bool(value):
-            return float(value.lower() == "true")
+            return float(value.strip().lower() == "true")
         if self._is_float(value):
             return float(value)
         return value.strip()
