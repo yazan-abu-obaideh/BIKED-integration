@@ -60,7 +60,7 @@ class EvaluationServiceTest(unittest.TestCase):
                 return super()._value_filter(parsed_value)
 
         processor = TesterProcessor(self.request_scaler, DefaultMapperSettings())
-        self.service.request_processor = processor
+        self.service._request_processor = processor
 
         xml_as_string = self.get_xml()
 
@@ -132,7 +132,7 @@ class EvaluationServiceTest(unittest.TestCase):
         return dataframe[dataframe.index == self.first_row_index(dataframe)]
 
     def prepare_x_y(self):
-        x_scaled, y_scaled, x_scaler, y_scaler = self.service.get_data()
+        x_scaled, y_scaled, x_scaler, y_scaler = self.service._get_data()
         x_test, y_test = self.standard_split(x_scaled, y_scaled)
         return x_test, y_test, x_scaler, y_scaler
 

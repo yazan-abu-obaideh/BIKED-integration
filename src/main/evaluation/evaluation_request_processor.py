@@ -16,11 +16,11 @@ SCALED_MEAN = 0
 
 class EvaluationRequestProcessor:
     def __init__(self, request_scaler: ScalingFilter, settings: RequestProcessorSettings):
-        self.settings = settings
-        self.request_scaler = request_scaler
-        self.request_validator = RequestValidator()
-        self.parser = AlgebraicParser()
-        self.dict_handler = DictionaryHandler()
+        self._settings = settings
+        self._request_scaler = request_scaler
+        self._request_validator = RequestValidator()
+        self._parser = AlgebraicParser()
+        self._dict_handler = DictionaryHandler()
         self._dict_to_model_input_pipeline = ProcessingPipeline(steps=[
             self._filter_keys,
             self._parse_values,
@@ -32,7 +32,7 @@ class EvaluationRequestProcessor:
             self._map_to_model_input,
             self._handle_special_behavior,
             self._convert_millimeter_values_to_meters,
-            self.request_scaler.scale,
+            self._request_scaler.scale,
             self._default_none_to_mean,
         ])
         self._xml_to_model_input_pipeline = ProcessingPipeline(steps=[
@@ -52,19 +52,19 @@ class EvaluationRequestProcessor:
         return xml_handler.get_entries_dict()
 
     def _perform_preliminary_validations(self, user_request):
-        self.request_validator.raise_if_empty(user_request, 'Invalid BikeCAD file')
-        self.request_validator.raise_if_does_not_contain(user_request, ["MATERIAL"])
+        self._request_validator.raise_if_empty(user_request, 'Invalid BikeCAD file')
+        self._request_validator.raise_if_does_not_contain(user_request, ["MATERIAL"])
         return user_request
 
     def _default_none_to_mean(self, bike_cad_dict):
-        defaulted_keys = self.get_empty_keys(bike_cad_dict)
+        defaulted_keys = self._get_empty_keys(bike_cad_dict)
         for key in defaulted_keys:
             bike_cad_dict[key] = SCALED_MEAN
         return bike_cad_dict
 
     def _map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
-        keys_map = self.settings.get_bikeCad_to_model_map()
-        valid_keys = list(self.settings.get_expected_input_keys())
+        keys_map = self._settings.get_bikeCad_to_model_map()
+        valid_keys = list(self._settings.get_expected_input_keys())
         return {keys_map.get(key, key): value
                 for key, value in bikeCad_file_entries.items()
                 if keys_map.get(key, key) in valid_keys}
@@ -85,8 +85,8 @@ class EvaluationRequestProcessor:
         self._raise_if_invalid_types(result_dict)
         return result_dict
 
-    def get_empty_keys(self, bike_cad_dict):
-        return (key for key in self.settings.get_expected_input_keys() if key not in bike_cad_dict)
+    def _get_empty_keys(self, bike_cad_dict):
+        return (key for key in self._settings.get_expected_input_keys() if key not in bike_cad_dict)
 
     def _raise_if_invalid_types(self, result_dict: dict):
         for key, value in result_dict.items():
@@ -100,7 +100,7 @@ class EvaluationRequestProcessor:
         return result_dict
 
     def _handle_keys_whose_presence_indicates_their_value(self, result_dict):
-        for key in self.settings.keys_whose_presence_indicates_their_value():
+        for key in self._settings.keys_whose_presence_indicates_their_value():
             result_dict[key] = int(key in result_dict)
 
     def _handle_ramifications(self, result_dict):
@@ -116,7 +116,7 @@ class EvaluationRequestProcessor:
         return result_dict
 
     def _should_be_converted(self, _dict):
-        return (key for key in self.settings.millimeters_to_meters() if key in _dict.keys())
+        return (key for key in self._settings.millimeters_to_meters() if key in _dict.keys())
 
     def _get_sum(self, my_dict, entries) -> Optional[float]:
         if self._any_key_missing(my_dict, entries):
@@ -185,16 +185,16 @@ class EvaluationRequestProcessor:
         return result_dict
 
     def _parse_values(self, dictionary: dict):
-        return self.dict_handler.parse_values(dictionary, self.parser.attempt_parse)
+        return self._dict_handler.parse_values(dictionary, self._parser.attempt_parse)
 
     def _filter_keys(self, dictionary: dict):
-        return self.dict_handler.filter_keys(dictionary, self._key_filter)
+        return self._dict_handler.filter_keys(dictionary, self._key_filter)
 
     def _filter_values(self, dictionary: dict):
-        return self.dict_handler.filter_values(dictionary, self._value_filter)
+        return self._dict_handler.filter_values(dictionary, self._value_filter)
 
     def _key_filter(self, key):
-        return key in self.settings.get_expected_xml_keys()
+        return key in self._settings.get_expected_xml_keys()
 
     def _value_filter(self, parsed_value):
         return parsed_value is not None and self._valid_if_numeric(parsed_value)
