@@ -9,7 +9,7 @@ TEST_DISTANCE_DATASET_PATH = os.path.join(os.path.dirname(__file__),
                                           "../resources/simple_distance_set.csv")
 
 
-class SimilarityEngineTest(unittest.TestCase):
+class EuclideanSimilarityEngineTest(unittest.TestCase):
     def setUp(self) -> None:
         self.dataset = pd.read_csv(TEST_DISTANCE_DATASET_PATH)
         self.engine = EuclideanSimilarityEngine(self.dataset, TestSettings())
