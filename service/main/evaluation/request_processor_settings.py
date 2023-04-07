@@ -4,23 +4,23 @@ from abc import abstractmethod, ABCMeta
 class RequestProcessorSettings(metaclass=ABCMeta):
 
     @abstractmethod
-    def get_expected_xml_keys(self):
+    def expected_xml_keys(self):
         pass
 
     @abstractmethod
-    def get_expected_input_keys(self) -> list:
+    def expected_input_keys(self) -> list:
         pass
 
     @abstractmethod
-    def get_required_parameters(self) -> list:
+    def required_parameters(self) -> list:
         pass
 
     @abstractmethod
-    def get_bikeCad_to_model_map(self) -> dict:
+    def bikeCad_to_model_map(self) -> dict:
         pass
 
     @abstractmethod
-    def get_label_replacements(self):
+    def label_replacements(self):
         pass
 
     @abstractmethod

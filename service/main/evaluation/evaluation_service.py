@@ -4,7 +4,7 @@ import pandas as pd
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
 import service.main.processing.pandas_utility as pd_util
-from evaluation.model_response_processor import ModelResponseProcessor
+from service.main.evaluation.model_response_processor import ModelResponseProcessor
 from service.main.evaluation.MultilabelPredictor import MultilabelPredictor
 from service.main.evaluation.Predictor import Predictor
 from service.main.evaluation.default_processor_settings import DefaultMapperSettings

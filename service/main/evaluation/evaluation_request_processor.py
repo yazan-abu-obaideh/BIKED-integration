@@ -63,8 +63,8 @@ class EvaluationRequestProcessor:
         return bike_cad_dict
 
     def _map_to_model_input(self, bikeCad_file_entries: dict) -> dict:
-        keys_map = self._settings.get_bikeCad_to_model_map()
-        valid_keys = list(self._settings.get_expected_input_keys())
+        keys_map = self._settings.bikeCad_to_model_map()
+        valid_keys = list(self._settings.expected_input_keys())
         return {keys_map.get(key, key): value
                 for key, value in bikeCad_file_entries.items()
                 if keys_map.get(key, key) in valid_keys}
@@ -86,7 +86,7 @@ class EvaluationRequestProcessor:
         return result_dict
 
     def _get_empty_keys(self, bike_cad_dict):
-        return (key for key in self._settings.get_expected_input_keys() if key not in bike_cad_dict)
+        return (key for key in self._settings.expected_input_keys() if key not in bike_cad_dict)
 
     def _raise_if_invalid_types(self, result_dict: dict):
         for key, value in result_dict.items():
@@ -194,7 +194,7 @@ class EvaluationRequestProcessor:
         return self._dict_handler.filter_values(dictionary, self._value_filter)
 
     def _key_filter(self, key):
-        return key in self._settings.get_expected_xml_keys()
+        return key in self._settings.expected_xml_keys()
 
     def _value_filter(self, parsed_value):
         return parsed_value is not None and self._valid_if_numeric(parsed_value)

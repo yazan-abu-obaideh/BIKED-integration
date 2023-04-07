@@ -5,21 +5,21 @@ class Settings(RequestProcessorSettings):
     """THIS IS NOT DUPLICATION. The test settings just so happen to match the real settings because we have not done the
     requisite work on the real settings just yet."""
 
-    def get_expected_xml_keys(self):
-        return list(self.get_bikeCad_to_model_map().keys()) + ["MATERIAL"] \
+    def expected_xml_keys(self):
+        return list(self.bikeCad_to_model_map().keys()) + ["MATERIAL"] \
             + ['BB textfield', 'FCD textfield', 'FORKOR', 'FORK0L', 'Head tube lower extension2', 'lower stack height',
                'Head angle', 'Chain stay back diameter', 'Chain stay vertical diameter',
                'Seat stay bottom diameter', 'SEATSTAY_HR', 'Top tube rear diameter', 'Top tube rear dia2',
                'Top tube front diameter', 'Top tube front dia2', 'Down tube rear diameter', 'Down tube rear dia2',
                'Down tube front dia2', 'Down tube front diameter']
 
-    def get_label_replacements(self):
+    def label_replacements(self):
         pass
 
     def millimeters_to_meters(self):
         return ['CS F']
 
-    def get_expected_input_keys(self) -> list:
+    def expected_input_keys(self) -> list:
         return ['Material=Steel', 'Material=Aluminum', 'Material=Titanium',
                 'SSB_Include', 'CSB_Include', 'CS Length', 'BB Drop', 'Stack',
                 'SS E', 'ST Angle', 'BB OD', 'TT OD', 'HT OD', 'DT OD', 'CS OD',
@@ -29,7 +29,7 @@ class Settings(RequestProcessorSettings):
                 'CS Thickness', 'TT Thickness', 'BB Thickness', 'HT Thickness',
                 'ST Thickness', 'DT Thickness', 'DT Length']
 
-    def get_bikeCad_to_model_map(self) -> dict:
+    def bikeCad_to_model_map(self) -> dict:
         # noinspection SpellCheckingInspection
         return {'CS textfield': 'CS Length', 'BB textfield': 'BB Drop', 'Stack': 'Stack',
                 'Head angle': 'HT Angle', 'Head tube length textfield': 'HT Length',
@@ -54,5 +54,5 @@ class Settings(RequestProcessorSettings):
     def keys_whose_presence_indicates_their_value(self) -> list:
         return ["CSB_Include", "SSB_Include"]
 
-    def get_required_parameters(self) -> list:
+    def required_parameters(self) -> list:
         return []

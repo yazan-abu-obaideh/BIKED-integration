@@ -5,15 +5,15 @@ from service.main.evaluation.request_processor_settings import RequestProcessorS
 
 class DefaultMapperSettings(RequestProcessorSettings):
 
-    def get_expected_xml_keys(self):
-        return list(self.get_bikeCad_to_model_map().keys()) + ["MATERIAL"] \
+    def expected_xml_keys(self):
+        return list(self.bikeCad_to_model_map().keys()) + ["MATERIAL"] \
             + ['BB textfield', 'FCD textfield', 'FORKOR', 'FORK0L', 'Head tube lower extension2', 'lower stack height',
                'Head angle', 'Chain stay back diameter', 'Chain stay vertical diameter',
                'Seat stay bottom diameter', 'SEATSTAY_HR', 'Top tube rear diameter', 'Top tube rear dia2',
                'Top tube front diameter', 'Top tube front dia2', 'Down tube rear diameter', 'Down tube rear dia2',
                'Down tube front dia2', 'Down tube front diameter']
 
-    def get_label_replacements(self):
+    def label_replacements(self):
         labels_inverted = ["Sim 1 Safety Factor",
                            "Sim 3 Safety Factor"]
         labels_magnitude = ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
@@ -24,7 +24,7 @@ class DefaultMapperSettings(RequestProcessorSettings):
         label_replacements.update({label: label + " Magnitude" for label in labels_magnitude})
         return label_replacements
 
-    def get_expected_input_keys(self) -> list:
+    def expected_input_keys(self) -> list:
         # warn users when the supplied bikecad file has no materials field OR whenever the material value is not
         # in steel, alum, titanium
         return ['Material=Steel', 'Material=Aluminum', 'Material=Titanium',
@@ -36,7 +36,7 @@ class DefaultMapperSettings(RequestProcessorSettings):
                 'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness', 'BB Thickness',
                 'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
 
-    def get_bikeCad_to_model_map(self) -> dict:
+    def bikeCad_to_model_map(self) -> dict:
         # noinspection SpellCheckingInspection
         return {'CS textfield': 'CS Length', 'BB textfield': 'BB Drop', 'Stack': 'Stack',
                 'Head angle': 'HT Angle', 'Head tube length textfield': 'HT Length',
@@ -61,7 +61,7 @@ class DefaultMapperSettings(RequestProcessorSettings):
     def keys_whose_presence_indicates_their_value(self) -> List[str]:
         return ["CSB_Include", "SSB_Include"]
 
-    def get_required_parameters(self) -> List[str]:
+    def required_parameters(self) -> List[str]:
         return []
 
     def millimeters_to_meters(self):
