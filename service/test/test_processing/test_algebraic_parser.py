@@ -11,7 +11,7 @@ class AlgebraicParserTest(unittest.TestCase):
         self.assertEqual("", self.parser.attempt_parse(None))
 
     def test_parse_valid_case_insensitive_booleans(self):
-        parsed = self.parser.attempt_parse("tRue")
+        parsed = self.parser.attempt_parse("    tRue    ")
         self.assertEqual(1, parsed)
         self.assertIs(float, type(parsed))
         self.assertEqual(0, self.parser.attempt_parse("fAlsE"))

@@ -10,11 +10,11 @@ class AlgebraicParser:
         """
         if value is None:
             return ""
-        return self._parse_value(str(value))
+        return self._parse_value(str(value).strip())
 
     def _parse_value(self, value: str) -> Union[float, str]:
-        if self._is_bool(value):
-            return float(value.strip().lower() == "true")
+        if self._is_bool(value.lower()):
+            return float(value.lower() == "true")
         if self._is_float(value):
             return float(value)
         return value.strip()
@@ -27,4 +27,4 @@ class AlgebraicParser:
             return False
 
     def _is_bool(self, value: str) -> bool:
-        return value.lower() in ["true", "false"]
+        return value in ["true", "false"]
