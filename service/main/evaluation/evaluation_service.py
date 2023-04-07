@@ -4,16 +4,15 @@ import pandas as pd
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
 
 import service.main.processing.pandas_utility as pd_util
-from service_resources.resource_paths import MODEL_PATH
+from evaluation.model_response_processor import ModelResponseProcessor
 from service.main.evaluation.MultilabelPredictor import MultilabelPredictor
 from service.main.evaluation.Predictor import Predictor
 from service.main.evaluation.default_processor_settings import DefaultMapperSettings
 from service.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
 from service.main.evaluation.request_processor_settings import RequestProcessorSettings
 from service.main.load_data import load_augmented_framed_dataset
-from service.main.processing.processing_pipeline import ProcessingPipeline
-from service.main.processing.request_validator import RequestValidator
 from service.main.processing.scaling_filter import ScalingFilter
+from service_resources.resource_paths import MODEL_PATH
 
 
 def prepare_pickle():
@@ -35,29 +34,22 @@ class EvaluationService:
                  settings: RequestProcessorSettings = DefaultMapperSettings()):
         self._predictor = predictor
         x, y, input_scaler, output_scaler = self._get_data()
-        _request_scaler = ScalingFilter(input_scaler, x.columns)
-        self._response_scaler = ScalingFilter(output_scaler, y.columns)
-        self._request_processor = EvaluationRequestProcessor(_request_scaler, settings)
-        self._request_validator = RequestValidator()
-        self._model_input_to_validated_response_pipeline = ProcessingPipeline(steps=[
-            self._wrapped_call_predictor,
-            self._response_scaler.unscale,
-            self._ensure_magnitude
-        ])
+        request_scaler = ScalingFilter(input_scaler, x.columns)
+        response_scaler = ScalingFilter(output_scaler, y.columns)
+        self._request_processor = EvaluationRequestProcessor(request_scaler, settings)
+        self._response_processor = ModelResponseProcessor(response_scaler)
 
     def evaluate_xml(self, xml_user_request: str) -> dict:
         model_input = self._request_processor.map_to_validated_model_input(xml_user_request)
-        return self._model_input_to_validated_response_pipeline.process(model_input)
+        return self._evaluate(model_input)
 
     def _evaluate_parsed_dict(self, bike_cad_dict: dict) -> dict:
         model_input = self._request_processor.map_dict_to_validated_model_input(bike_cad_dict)
-        return self._model_input_to_validated_response_pipeline.process(model_input)
+        return self._evaluate(model_input)
 
-    def _predict_from_row(self, pd_row: pd.DataFrame) -> dict:
-        predictions_row = self._call_predictor(pd_row)
-        scaled_result = pd_util.get_dict_from_first_row(predictions_row)
-        unscaled_result = self._response_scaler.unscale(scaled_result)
-        return self._ensure_magnitude(unscaled_result)
+    def _evaluate(self, model_input):
+        model_output = self._wrapped_call_predictor(model_input)
+        return self._response_processor.map_to_validated_response(model_output)
 
     def _wrapped_call_predictor(self, request: dict) -> dict:
         predictions_dictionary = self._call_predictor(pd_util.get_single_row_dataframe_from(request))
@@ -65,9 +57,6 @@ class EvaluationService:
 
     def _call_predictor(self, pd_row: pd.DataFrame) -> pd.DataFrame:
         return self._predictor.predict(pd_row)
-
-    def _ensure_magnitude(self, scaled_result):
-        return {key: abs(value) for key, value in scaled_result.items()}
 
     def get_metrics(self, predictions, y_test):
         r2 = r2_score(y_test, predictions)

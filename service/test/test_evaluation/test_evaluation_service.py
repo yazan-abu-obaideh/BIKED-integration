@@ -93,12 +93,11 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertIsNotNone(self.service._evaluate_parsed_dict(partial_request))
 
     def test_cannot_predict_from_partial_row(self):
-        incomplete_model_input = pd_util.get_single_row_dataframe_from(
-            {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
-             "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
-             "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
-             "BB Drop": 0.19327064177679704})
-        self.assertRaises(KeyError, self.service._predict_from_row,
+        incomplete_model_input = {"Material=Steel": -1.2089779626768866, "Material=Aluminum": -0.46507861303022335,
+                                  "Material=Titanium": 1.8379997074342262, "SSB_Include": 1.0581845284004865,
+                                  "CSB_Include": -0.9323228669601348, "CS Length": -0.4947762070020683,
+                                  "BB Drop": 0.19327064177679704}
+        self.assertRaises(KeyError, self.service._wrapped_call_predictor,
                           incomplete_model_input)
 
     def test_model_and_scalers_loaded(self):
