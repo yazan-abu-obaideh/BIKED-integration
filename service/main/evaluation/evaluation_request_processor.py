@@ -193,7 +193,7 @@ class EvaluationRequestProcessor:
     def _filter_values(self, dictionary: dict):
         return self._dict_handler.filter_values(dictionary, self._value_filter)
 
-    def _key_filter(self, key):
+    def _key_filter(self, key: str):
         return key in self._settings.expected_xml_keys()
 
     def _value_filter(self, parsed_value):

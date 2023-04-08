@@ -5,7 +5,7 @@ from service.main.evaluation.request_processor_settings import RequestProcessorS
 
 class DefaultMapperSettings(RequestProcessorSettings):
 
-    def expected_xml_keys(self):
+    def expected_xml_keys(self) -> list:
         return list(self.bikeCad_to_model_map().keys()) + ["MATERIAL"] \
             + ['BB textfield', 'FCD textfield', 'FORKOR', 'FORK0L', 'Head tube lower extension2', 'lower stack height',
                'Head angle', 'Chain stay back diameter', 'Chain stay vertical diameter',
@@ -13,7 +13,7 @@ class DefaultMapperSettings(RequestProcessorSettings):
                'Top tube front diameter', 'Top tube front dia2', 'Down tube rear diameter', 'Down tube rear dia2',
                'Down tube front dia2', 'Down tube front diameter']
 
-    def label_replacements(self):
+    def label_replacements(self) -> dict:
         labels_inverted = ["Sim 1 Safety Factor",
                            "Sim 3 Safety Factor"]
         labels_magnitude = ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
@@ -64,7 +64,7 @@ class DefaultMapperSettings(RequestProcessorSettings):
     def required_parameters(self) -> List[str]:
         return []
 
-    def millimeters_to_meters(self):
+    def millimeters_to_meters(self) -> list:
         return ['CS Length', 'BB Drop', 'Stack', 'SS E', 'BB OD', 'TT OD', 'HT OD', 'DT OD',
                 'CS OD', 'SS OD', 'ST OD', 'CS F', 'HT LX', 'ST UX', 'HT UX', 'HT Length',
                 'ST Length', 'BB Length', 'Dropout Offset', 'SSB OD', 'CSB OD', 'SSB Offset',

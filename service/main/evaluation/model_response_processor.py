@@ -10,8 +10,8 @@ class ModelResponseProcessor:
             self._ensure_magnitude
         ])
 
-    def map_to_validated_response(self, model_output):
+    def map_to_validated_response(self, model_output: dict) -> dict:
         return self._model_input_to_validated_response_pipeline.process(model_output)
 
-    def _ensure_magnitude(self, scaled_result):
+    def _ensure_magnitude(self, scaled_result: dict) -> dict:
         return {key: abs(value) for key, value in scaled_result.items()}

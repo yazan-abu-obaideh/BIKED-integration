@@ -6,8 +6,8 @@ def get_single_row_dataframe_from(dictionary: dict) -> pd.DataFrame:
 
 
 def get_dict_from_first_row(dataframe: pd.DataFrame) -> dict:
-    return dataframe.loc[__first_row_index(dataframe)].to_dict()
+    return dataframe.loc[_first_row_index(dataframe)].to_dict()
 
 
-def __first_row_index(dataframe) -> int:
+def _first_row_index(dataframe) -> int:
     return dataframe.index.values[0]

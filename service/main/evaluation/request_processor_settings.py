@@ -4,7 +4,7 @@ from abc import abstractmethod, ABCMeta
 class RequestProcessorSettings(metaclass=ABCMeta):
 
     @abstractmethod
-    def expected_xml_keys(self):
+    def expected_xml_keys(self) -> list:
         pass
 
     @abstractmethod
@@ -20,7 +20,7 @@ class RequestProcessorSettings(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def label_replacements(self):
+    def label_replacements(self) -> dict:
         pass
 
     @abstractmethod
