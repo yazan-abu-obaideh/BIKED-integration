@@ -13,9 +13,6 @@ class Settings(RequestProcessorSettings):
                'Top tube front diameter', 'Top tube front dia2', 'Down tube rear diameter', 'Down tube rear dia2',
                'Down tube front dia2', 'Down tube front diameter']
 
-    def label_replacements(self):
-        pass
-
     def millimeters_to_meters(self):
         return ['CS F']
 

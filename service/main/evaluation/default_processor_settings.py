@@ -6,23 +6,19 @@ from service.main.evaluation.request_processor_settings import RequestProcessorS
 class DefaultMapperSettings(RequestProcessorSettings):
 
     def expected_xml_keys(self) -> list:
-        return list(self.bikeCad_to_model_map().keys()) + ["MATERIAL"] \
-            + ['BB textfield', 'FCD textfield', 'FORKOR', 'FORK0L', 'Head tube lower extension2', 'lower stack height',
-               'Head angle', 'Chain stay back diameter', 'Chain stay vertical diameter',
-               'Seat stay bottom diameter', 'SEATSTAY_HR', 'Top tube rear diameter', 'Top tube rear dia2',
-               'Top tube front diameter', 'Top tube front dia2', 'Down tube rear diameter', 'Down tube rear dia2',
-               'Down tube front dia2', 'Down tube front diameter']
-
-    def label_replacements(self) -> dict:
-        labels_inverted = ["Sim 1 Safety Factor",
-                           "Sim 3 Safety Factor"]
-        labels_magnitude = ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
-                            'Sim 1 Bottom Bracket Y Disp.', 'Sim 2 Bottom Bracket Z Disp.',
-                            'Sim 3 Bottom Bracket Y Disp.',
-                            'Sim 3 Bottom Bracket X Rot.', 'Model Mass']
-        label_replacements = {label: label + " (Inverted)" for label in labels_inverted}
-        label_replacements.update({label: label + " Magnitude" for label in labels_magnitude})
-        return label_replacements
+        return ['FORKOR', 'dtd', 'Top tube front diameter', 'Top tube front dia2',
+                'Down tube rear diameter', 'Dropout spacing', 'Down tube front dia2',
+                'CHAINSTAYbrdgCheck', 'Wall thickness Head tube', 'FCD textfield',
+                'Down tube rear dia2', 'Chain stay position on BB', 'ttd',
+                'SEATSTAYbrdgshift', 'BB diameter', 'CHAINSTAYbrdgshift', 'Chain stay vertical diameter',
+                'Seat tube extension2', 'Wall thickness Chain stay', 'DT Length', 'Seat stay bottom diameter',
+                'Head tube lower extension2', 'MATERIAL', 'Seat stay junction', 'SEATSTAYbrdgdia1', 'CS textfield',
+                'Seat tube length', 'Down tube front diameter', 'SSTopZOFFSET', 'FORK0L', 'CHAINSTAYbrdgdia1',
+                'csd', 'Head tube diameter', 'Wall thickness Top tube', 'lower stack height', 'SEATSTAY_HR',
+                'ssd', 'Top tube rear dia2', 'Head tube upper extension2', 'Wall thickness Down tube', 'Seat angle',
+                'Head tube length textfield', 'Head angle', 'Wall thickness Seat stay', 'Wall thickness Seat tube',
+                'Seat tube diameter', 'BB length', 'Wall thickness Bottom Bracket', 'Chain stay back diameter',
+                'SEATSTAYbrdgCheck', 'Top tube rear diameter', 'Stack', 'BB textfield']
 
     def expected_input_keys(self) -> list:
         # warn users when the supplied bikecad file has no materials field OR whenever the material value is not

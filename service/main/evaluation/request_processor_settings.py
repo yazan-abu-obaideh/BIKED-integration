@@ -20,10 +20,6 @@ class RequestProcessorSettings(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def label_replacements(self) -> dict:
-        pass
-
-    @abstractmethod
     def keys_whose_presence_indicates_their_value(self) -> list:
         pass
 
