@@ -41,7 +41,7 @@ class EvaluationService:
 
     def evaluate_xml(self, xml_user_request: str) -> dict:
         model_input = self._request_processor.map_to_validated_model_input(xml_user_request)
-        return self._evaluate(model_input)
+        return {"evaluationScores": self._evaluate(model_input), "warnings": []}
 
     def _evaluate_parsed_dict(self, bike_cad_dict: dict) -> dict:
         model_input = self._request_processor.map_dict_to_validated_model_input(bike_cad_dict)

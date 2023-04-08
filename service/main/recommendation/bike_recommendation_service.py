@@ -50,7 +50,8 @@ class BikeRecommendationService:
         self.dict_handler = DictionaryHandler()
 
     def recommend_bike_from_xml(self, xml_request: str):
-        return self._recommend_bike_from_parsed_dict(self._parse_to_dict(xml_request))
+        return {"similarBikes": [self._recommend_bike_from_parsed_dict(self._parse_to_dict(xml_request))],
+                "warnings": []}
 
     def _parse_to_dict(self, xml: str) -> dict:
         xml_handler = BikeXmlHandler()

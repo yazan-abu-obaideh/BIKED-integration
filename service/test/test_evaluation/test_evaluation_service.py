@@ -64,7 +64,7 @@ class EvaluationServiceTest(unittest.TestCase):
 
         xml_as_string = self.get_xml()
 
-        service_response = self.service.evaluate_xml(xml_as_string)
+        service_response = self.service.evaluate_xml(xml_as_string).get("evaluationScores")
         self.assertEqual(6189, processor.key_filter_calls)
         self.assertEqual(43, processor.value_filter_calls)
         self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.038326118317548265,

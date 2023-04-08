@@ -29,12 +29,15 @@ class AppTest(unittest.TestCase):
             response = send_request(GET, self.get_feature_url('evaluate'), data=file)
         self.assertIsNotNone(response.json())
         self.assertIs(type(response.json()), dict)
+        self.assertTrue("evaluationScores" in response.json())
+        self.assertTrue("warnings" in response.json())
         self.assertEqual(OK, response.status_code)
 
     def test_valid_recommendation_request(self):
         with open(VALID_MODEL_PATH, 'r') as file:
             response = send_request(GET, self.get_feature_url('recommend'), data=file)
-        self.assertIsNotNone(response.text)
+        self.assertTrue("similarBikes" in response.json())
+        self.assertTrue("warnings" in response.json())
         self.assertEqual(OK, response.status_code)
 
     def get_feature_url(self, feature):
