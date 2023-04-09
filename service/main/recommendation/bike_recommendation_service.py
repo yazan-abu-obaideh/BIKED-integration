@@ -1,5 +1,6 @@
 import pandas as pd
 
+from service.main.processing.processing_pipeline import ProcessingPipeline
 from service.main.processing.dictionary_handler import DictionaryHandler
 from service.main.processing.algebraic_parser import AlgebraicParser
 from service.main.processing.request_validator import RequestValidator
@@ -43,37 +44,38 @@ class BikeRecommendationService:
     def __init__(self,
                  engine: SimilarityEngine = DEFAULT_ENGINE,
                  scaler: ScalingFilter = DEFAULT_SCALER):
-        self.scaler = scaler
-        self.engine = engine
-        self.request_validator = RequestValidator()
-        self.parser = AlgebraicParser()
-        self.dict_handler = DictionaryHandler()
+        self._scaler = scaler
+        self._engine = engine
+        self._request_validator = RequestValidator()
+        self._parser = AlgebraicParser()
+        self._dict_handler = DictionaryHandler()
+        self._processing_pipeline = ProcessingPipeline(steps=[
+            self._parse_to_dict,
+            self._validate,
+            self._pre_process_request,
+            self._engine.get_closest_index_to,
+            self._build_link
+        ])
 
     def recommend_bike_from_xml(self, xml_request: str):
-        return {"similarBikes": [self._recommend_bike_from_parsed_dict(self._parse_to_dict(xml_request))],
+        return {"similarBikes": [self._processing_pipeline.process(xml_request)],
                 "warnings": []}
 
     def _parse_to_dict(self, xml: str) -> dict:
         xml_handler = BikeXmlHandler()
         xml_handler.set_xml(xml)
         all_entries = xml_handler.get_entries_dict()
-        filtered_by_keys = self.dict_handler.filter_keys(all_entries, self._key_filter)
-        parsed = self.dict_handler.parse_values(filtered_by_keys, self.parser.attempt_parse)
-        filtered_by_values = self.dict_handler.filter_values(parsed, self._value_filter)
+        filtered_by_keys = self._dict_handler.filter_keys(all_entries, self._key_filter)
+        parsed = self._dict_handler.parse_values(filtered_by_keys, self._parser.attempt_parse)
+        filtered_by_values = self._dict_handler.filter_values(parsed, self._value_filter)
         return filtered_by_values
 
-    def _recommend_bike_from_parsed_dict(self, user_entry: dict):
-        self.request_validator.raise_if_empty(user_entry, "Invalid BikeCAD file")
-        scaled_user_entry = self._pre_process_request(user_entry)
-        closest_bike_entry = self.engine.get_closest_index_to(scaled_user_entry)
-        return self._build_link(closest_bike_entry)
-
     def _pre_process_request(self, request: dict):
-        scaled = self.scaler.scale(request)
+        scaled = self._scaler.scale(request)
         return self._default_to_mean(scaled)
 
     def _default_to_mean(self, scaled_user_entry):
-        for key in self.engine.get_settings().include():
+        for key in self._engine.get_settings().include():
             if key not in scaled_user_entry:
                 scaled_user_entry[key] = SCALED_MEAN
         return scaled_user_entry
@@ -82,10 +84,14 @@ class BikeRecommendationService:
         return f"http://bcd.bikecad.ca/{bike_filename}"
 
     def _key_filter(self, key):
-        return key in self.engine.get_settings().include()
+        return key in self._engine.get_settings().include()
 
     def _value_filter(self, value):
         return value is not None and self._valid_numeric(value)
+
+    def _validate(self, request: dict):
+        self._request_validator.raise_if_empty(request, "Invalid BikeCAD file")
+        return request
 
     def _valid_numeric(self, value):
         return (type(value) in [float, int]) and (value not in [float("-inf"), float("inf")])

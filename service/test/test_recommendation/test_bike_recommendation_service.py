@@ -12,6 +12,7 @@ class RecommendationServiceTest(unittest.TestCase):
         self.xml_handler = BikeXmlHandler()
 
     def test_key_filter(self):
+        self.assertFalse(self.service._key_filter(None))
         self.assertFalse(self.service._key_filter("SHOULD_BE_REJECTED"))
         self.assertTrue(self.service._key_filter("BB textfield"))
 
