@@ -90,8 +90,11 @@ class EvaluationRequestProcessor:
 
     def _raise_if_invalid_types(self, result_dict: dict):
         for key, value in result_dict.items():
-            if type(value) not in [float, int]:
-                raise ValueError(f"Failed to parse value: [{value}] - value was associated with key: [{key}]")
+            self._raise_if_invalid_type(key, value)
+
+    def _raise_if_invalid_type(self, key, value):
+        if type(value) not in [float, int]:
+            raise ValueError(f"Failed to parse value: [{value}] - value was associated with key: [{key}]")
 
     def _add_if_valid(self, accepted_values: list, material_value: str, result_dict: dict) -> dict:
         if material_value in accepted_values:
