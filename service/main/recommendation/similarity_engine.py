@@ -1,8 +1,8 @@
-import numpy as np
-import pandas as pd
 from abc import abstractmethod, ABCMeta
 
-import service.main.processing.pandas_utility as pd_util
+import numpy as np
+import pandas as pd
+
 from service.main.recommendation.similarity_engine_settings import EngineSettings
 
 DISTANCE = 'distance_from_user_entry'
