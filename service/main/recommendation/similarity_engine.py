@@ -3,6 +3,7 @@ from abc import abstractmethod, ABCMeta
 import numpy as np
 import pandas as pd
 
+from service.main.processing.processing_pipeline import ProcessingPipeline
 from service.main.recommendation.similarity_engine_settings import EngineSettings
 
 DISTANCE = 'distance_from_user_entry'
@@ -30,11 +31,30 @@ class SimilarityEngine(metaclass=ABCMeta):
         pass
 
 
+class SimilarityRequest:
+    def __init__(self, n: int, request: dict):
+        self.n = n
+        self.request = request
+
+
 class EuclideanSimilarityEngine(SimilarityEngine):
     def __init__(self, data, settings: EngineSettings):
         self.data = data
         self.settings = settings
         self.raise_if_invalid_configuration()
+        _processing_pipeline = ProcessingPipeline(steps=[
+            self._validate,
+            self._calculate_distances,
+            self._get_closest_n
+        ])
+        self._get_closest_pipeline = ProcessingPipeline(steps=[
+            _processing_pipeline.process,
+            self._build_response
+        ])
+        self._get_closest_indexes_pipeline = ProcessingPipeline(steps=[
+            _processing_pipeline.process,
+            self._build_index_response
+        ])
 
     def raise_if_invalid_configuration(self):
         desired = self.get_settings().include()
@@ -55,24 +75,32 @@ class EuclideanSimilarityEngine(SimilarityEngine):
     def get_closest_n(self, user_entry: dict, n: int):
         return self._get_closest(user_entry,
                                  n,
-                                 lambda closest_n_rows: [self._build_from(row) for row in closest_n_rows.items()])
+                                 lambda closest_n_rows: [self._build_response(row) for row in closest_n_rows.items()])
 
     def get_closest_n_indexes(self, user_entry: dict, n: int):
         return self._get_closest(user_entry,
                                  n,
-                                 lambda closest_n_rows: [closest_n_rows.index[i] for i in range(n)])
+                                 lambda closest_n_rows: [self._build_index_response(row) for row in
+                                                         closest_n_rows.items()])
 
-    def _build_from(self, row):
+    def _build_response(self, row):
         response = self.data.loc[row[0]].to_dict()
         response.update({"distance_from_user_entry": row[1]})
         return response
 
+    def _build_index_response(self, row):
+        return row[0]
+
     def _get_closest(self, user_entry: dict, n: int, response_builder: callable):
         self._validate(n, user_entry)
         distances = self._calculate_distances(user_entry)
-        closest_n = distances.sort_values()[:n]
+        closest_n = self._get_closest_n(distances, n)
         responses = response_builder(closest_n)
         return responses
+
+    def _get_closest_n(self, distances, n):
+        closest_n = distances.sort_values()[:n]
+        return closest_n
 
     def _validate(self, n, user_entry):
         self._raise_if_invalid_number(n)
