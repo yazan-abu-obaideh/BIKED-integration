@@ -40,8 +40,8 @@ class EuclideanSimilarityEngine(SimilarityEngine):
         desired = self.get_settings().include()
         actual = self.data.columns.values
         if not set(desired).issubset(set(actual)):
-            raise SystemError("Similarity engine configured incorrectly. "
-                              "Columns included in the settings do not match dataset columns.")
+            raise ValueError("Similarity engine configured incorrectly. "
+                             "Columns included in the settings do not match dataset columns.")
 
     def get_settings(self) -> EngineSettings:
         return self.settings
@@ -55,8 +55,12 @@ class EuclideanSimilarityEngine(SimilarityEngine):
     def get_closest_n(self, user_entry: dict, n: int):
         return self.__get_closest(user_entry,
                                   n,
-                                  lambda closest_n_rows: [pd_util.get_dict_from_first_row(closest_n_rows.iloc[i: i + 1])
-                                                          for i in range(n)])
+                                  lambda closest_n_rows: [self._build_from(row) for row in closest_n_rows.items()])
+
+    def _build_from(self, row):
+        response = self.data.loc[row[0]].to_dict()
+        response.update({"distance_from_user_entry": row[1]})
+        return response
 
     def get_closest_n_indexes(self, user_entry: dict, n: int):
         return self.__get_closest(user_entry,
@@ -65,24 +69,23 @@ class EuclideanSimilarityEngine(SimilarityEngine):
 
     def __get_closest(self, user_entry: dict, n: int, response_builder: callable):
         self.validate(n, user_entry)
-        self.calculate_distances(user_entry)
-        closest_n = self.data.sort_values(by=DISTANCE)[:n]
+        distances = self.calculate_distances(user_entry)
+        closest_n = distances.sort_values()[:n]
         responses = response_builder(closest_n)
-        self.remove_distance_column()
         return responses
 
     def validate(self, n, user_entry):
         self.raise_if_invalid_number(n)
         self.raise_if_invalid_entry(user_entry)
 
-    def calculate_distances(self, user_entry_dict: dict):
+    def calculate_distances(self, user_entry_dict: dict) -> pd.Series:
         self.data: pd.DataFrame
         filtered_user_entry = self.get_wanted_entries(user_entry_dict)
 
         def distance_from_user_entry(row):
             return self.get_distance_between(filtered_user_entry, row)
 
-        self.data[DISTANCE] = self.data.apply(distance_from_user_entry, axis=1)
+        return self.data.apply(distance_from_user_entry, axis=1)
 
     def get_wanted_entries(self, user_entry_dict):
         return {key: value for key, value in user_entry_dict.items() if key in self.settings.include()}
