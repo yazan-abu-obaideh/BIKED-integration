@@ -53,87 +53,84 @@ class EuclideanSimilarityEngine(SimilarityEngine):
         return self.get_closest_n_indexes(user_entry_dict, 1)[0]
 
     def get_closest_n(self, user_entry: dict, n: int):
-        return self.__get_closest(user_entry,
-                                  n,
-                                  lambda closest_n_rows: [self._build_from(row) for row in closest_n_rows.items()])
+        return self._get_closest(user_entry,
+                                 n,
+                                 lambda closest_n_rows: [self._build_from(row) for row in closest_n_rows.items()])
+
+    def get_closest_n_indexes(self, user_entry: dict, n: int):
+        return self._get_closest(user_entry,
+                                 n,
+                                 lambda closest_n_rows: [closest_n_rows.index[i] for i in range(n)])
 
     def _build_from(self, row):
         response = self.data.loc[row[0]].to_dict()
         response.update({"distance_from_user_entry": row[1]})
         return response
 
-    def get_closest_n_indexes(self, user_entry: dict, n: int):
-        return self.__get_closest(user_entry,
-                                  n,
-                                  lambda closest_n_rows: [closest_n_rows.index[i] for i in range(n)])
-
-    def __get_closest(self, user_entry: dict, n: int, response_builder: callable):
-        self.validate(n, user_entry)
-        distances = self.calculate_distances(user_entry)
+    def _get_closest(self, user_entry: dict, n: int, response_builder: callable):
+        self._validate(n, user_entry)
+        distances = self._calculate_distances(user_entry)
         closest_n = distances.sort_values()[:n]
         responses = response_builder(closest_n)
         return responses
 
-    def validate(self, n, user_entry):
-        self.raise_if_invalid_number(n)
-        self.raise_if_invalid_entry(user_entry)
+    def _validate(self, n, user_entry):
+        self._raise_if_invalid_number(n)
+        self._raise_if_invalid_entry(user_entry)
 
-    def calculate_distances(self, user_entry_dict: dict) -> pd.Series:
+    def _calculate_distances(self, user_entry_dict: dict) -> pd.Series:
         self.data: pd.DataFrame
-        filtered_user_entry = self.get_wanted_entries(user_entry_dict)
+        filtered_user_entry = self._get_wanted_entries(user_entry_dict)
 
         def distance_from_user_entry(row):
-            return self.get_distance_between(filtered_user_entry, row)
+            return self._get_distance_between(filtered_user_entry, row)
 
         return self.data.apply(distance_from_user_entry, axis=1)
 
-    def get_wanted_entries(self, user_entry_dict):
+    def _get_wanted_entries(self, user_entry_dict):
         return {key: value for key, value in user_entry_dict.items() if key in self.settings.include()}
 
-    def get_distance_between(self, reference_entry, second_entry):
+    def _get_distance_between(self, reference_entry, second_entry):
         try:
-            deltas = self.get_deltas(reference_entry, second_entry)
-            return self.normalize(deltas)
+            deltas = self._get_deltas(reference_entry, second_entry)
+            return self._normalize(deltas)
         except KeyError:
             raise ValueError
 
-    def normalize(self, deltas):
+    def _normalize(self, deltas):
         return np.linalg.norm(deltas)
 
-    def get_deltas(self, reference_entry, second_entry):
-        reference_entry, second_entry = self.reorder_entries(reference_entry, second_entry)
-        return self.calculate_deltas(reference_entry, second_entry)
+    def _get_deltas(self, reference_entry, second_entry):
+        reference_entry, second_entry = self._reorder_entries(reference_entry, second_entry)
+        return self._calculate_deltas(reference_entry, second_entry)
 
-    def calculate_deltas(self, first_entry, second_entry):
+    def _calculate_deltas(self, first_entry, second_entry):
         deltas = []
         for (key, first_value), (_, second_value) in zip(first_entry.items(), second_entry.items()):
-            deltas.append(self.weigh_delta((first_value - second_value), key))
+            deltas.append(self._weigh_delta((first_value - second_value), key))
         return deltas
 
-    def weigh_delta(self, delta, key):
-        return delta * (self.pre_normalize_weight(key))
+    def _weigh_delta(self, delta, key):
+        return delta * (self._pre_normalize_weight(key))
 
-    def pre_normalize_weight(self, key):
+    def _pre_normalize_weight(self, key):
         # sqrt(weight * delta**2) --> sqrt(((weight ** 0.5) * delta)**2)
-        return self.weight_or_default(key) ** 0.5
+        return self._weight_or_default(key) ** 0.5
 
-    def weight_or_default(self, key):
+    def _weight_or_default(self, key):
         return self.settings.weights().get(key, 1)
 
-    def reorder_entries(self, reference_entry, second_entry):
+    def _reorder_entries(self, reference_entry, second_entry):
         sorted_keys = sorted([key for key in reference_entry.keys() if key in self.settings.include()])
         reference_entry = {key: reference_entry[key] for key in sorted_keys}
         second_entry = {key: second_entry[key] for key in sorted_keys}
         return reference_entry, second_entry
 
-    def remove_distance_column(self):
-        self.data.drop(columns=DISTANCE, axis=1, inplace=True)
-
-    def raise_if_invalid_number(self, n: int):
+    def _raise_if_invalid_number(self, n: int):
         if n > self.settings.max_n():
             raise ValueError(f"Cannot get more matches than {self.settings.max_n()}")
 
-    def raise_if_invalid_entry(self, user_entry: dict):
+    def _raise_if_invalid_entry(self, user_entry: dict):
         truth_list = [key in self.settings.include() for key in user_entry.keys()]
         if not any(truth_list):
             raise ValueError("Cannot provide similar entry.")

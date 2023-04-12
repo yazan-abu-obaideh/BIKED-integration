@@ -20,7 +20,7 @@ class EuclideanSimilarityEngineTest(unittest.TestCase):
         assert context.exception.args[0] == f"Cannot provide similar entry."
 
     def test_distance_with_boolean_values(self):
-        actual_distance = self.engine.get_distance_between({"x": 1}, {"x": True})
+        actual_distance = self.engine._get_distance_between({"x": 1}, {"x": True})
         self.assertEqual(0, actual_distance)
 
     def test_incomplete_input(self):
@@ -34,7 +34,7 @@ class EuclideanSimilarityEngineTest(unittest.TestCase):
         assert context.exception.args[0] == f"Cannot get more matches than {TestSettings().max_n()}"
 
     def test_order_does_not_matter(self):
-        self.assertEqual(self.engine.get_distance_between({"x": 1, "y": 0}, {"y": 0, "x": 1}), 0)
+        self.assertEqual(self.engine._get_distance_between({"x": 1, "y": 0}, {"y": 0, "x": 1}), 0)
 
     def test_get_closest_indexes(self):
         user_entry = {"x": 1, "y": 1, "z": 1}
@@ -55,12 +55,12 @@ class EuclideanSimilarityEngineTest(unittest.TestCase):
                                 second_response, expected_distance=0)
 
     def test_get_distance_between(self):
-        self.assertEqual(5, self.engine.get_distance_between({"x": 0, "y": 0}, {"x": 3, "y": 4}))
+        self.assertEqual(5, self.engine._get_distance_between({"x": 0, "y": 0}, {"x": 3, "y": 4}))
 
     def test_get_weighted_distance_between(self):
         self.engine.settings.WEIGHTS = {"x": 10}
         expected_distance = 7.0
-        actual_distance = self.engine.get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4})
+        actual_distance = self.engine._get_distance_between({"x": 1, "y": 1}, {"x": 3, "y": 4})
         self.assertAlmostEqual(first=expected_distance,
                                second=actual_distance,
                                places=14)
