@@ -6,7 +6,7 @@ TEMPLATE_ENTRY = "<entry key='k'>1</entry>"
 
 
 class BikeXmlHandler:
-    """Stateful xml handler. Parses values using a supplied functional parser and
+    """Stateful (AND NOT THREAD-SAFE) xml handler. Parses values using a supplied functional parser and
      alternatively converts an xml string into a string -> string dictionary"""
     XML_TAG = "entry"
     ATTRIBUTE = "key"

@@ -9,8 +9,5 @@ class RequestValidator:
             raise ValueError(f"Required parameters {missing_parameters} missing")
 
     def _find_missing_parameters(self, request: dict, required_parameters: list) -> list:
-        missing_parameters = []
-        for parameter in required_parameters:
-            if parameter not in request.keys():
-                missing_parameters.append(parameter)
-        return missing_parameters
+        actual_params = request.keys()
+        return [param for param in required_parameters if param not in actual_params]
