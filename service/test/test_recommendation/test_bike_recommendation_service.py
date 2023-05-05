@@ -44,7 +44,7 @@ class RecommendationServiceTest(unittest.TestCase):
         bike_in_request = self.grab_bike_xml()
         service = TesterService()
         recommended_bike = service.recommend_bike_from_xml(bike_in_request).get("similarBikes")[0]
-        self.assertEqual("http://bcd.bikecad.ca/1310591065335.bcad", recommended_bike)
+        self.assertEqual("1310591065335", recommended_bike)
         self.assertEqual(3563, service.key_filter_calls)
         self.assertEqual(31, service.value_filter_calls)
 
@@ -56,6 +56,3 @@ class RecommendationServiceTest(unittest.TestCase):
     def grab_bike_xml(self):
         with open(VALID_MODEL_PATH, 'r') as file:
             return file.read()
-
-    def test_buildlink(self):
-        self.assertEqual("http://bcd.bikecad.ca/1.bcad", self.service._build_link("1.bcad"))

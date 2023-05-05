@@ -12,7 +12,7 @@ from service.main.recommendation.similarity_engine import SimilarityEngine, Eucl
 
 SET_INVALID_TO_NAN = 'coerce'
 
-FILENAME = 'filename'
+BIKE_ID = 'bike-id'
 
 SCALED_MEAN = 0
 
@@ -21,14 +21,14 @@ DEFAULT_SETTINGS = DefaultBikeSettings()
 
 def to_numeric_except_index(dataframe):
     for column in dataframe.columns.values:
-        if column != FILENAME:
+        if column != BIKE_ID:
             dataframe[column] = pd.to_numeric(dataframe[column], errors=SET_INVALID_TO_NAN)
 
 
 def prepare_dataframe_and_scaler(data_file_path, settings):
     dataframe = pd.read_csv(data_file_path)
-    dataframe.set_index(FILENAME, inplace=True)
-    dataframe.drop(columns=dataframe.columns.difference(settings.include() + [FILENAME]), inplace=True)
+    dataframe.set_index(BIKE_ID, inplace=True)
+    dataframe.drop(columns=dataframe.columns.difference(settings.include() + [BIKE_ID]), inplace=True)
     to_numeric_except_index(dataframe)
     scaler = ScalingFilter.build_from_dataframe(dataframe)
     scaled_dataframe = scaler.scale_dataframe(dataframe).fillna(value=SCALED_MEAN)
@@ -54,7 +54,7 @@ class BikeRecommendationService:
             self._validate,
             self._pre_process_request,
             self._engine.get_closest_index_to,
-            self._build_link
+            lambda x: str(x)
         ])
 
     def recommend_bike_from_xml(self, xml_request: str):
@@ -79,9 +79,6 @@ class BikeRecommendationService:
             if key not in scaled_user_entry:
                 scaled_user_entry[key] = SCALED_MEAN
         return scaled_user_entry
-
-    def _build_link(self, bike_filename):
-        return f"http://bcd.bikecad.ca/{bike_filename}"
 
     def _key_filter(self, key):
         return key in self._engine.get_settings().include()
