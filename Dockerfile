@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM jyguru/biked-integration-resources-image:2023mar24
+FROM jyguru/biked-integration-resources-image:2023may05
 
 RUN apt install curl -y
 
