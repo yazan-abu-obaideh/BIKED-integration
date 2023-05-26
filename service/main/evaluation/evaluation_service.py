@@ -58,7 +58,7 @@ class EvaluationService:
     def _call_predictor(self, pd_row: pd.DataFrame) -> pd.DataFrame:
         return self._predictor.predict(pd_row)
 
-    def get_metrics(self, predictions, y_test):
+    def get_metrics(self, y_test, predictions):
         r2 = r2_score(y_test, predictions)
         mse = mean_squared_error(y_test, predictions)
         mae = mean_absolute_error(y_test, predictions)

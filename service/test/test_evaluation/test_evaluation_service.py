@@ -102,11 +102,11 @@ class EvaluationServiceTest(unittest.TestCase):
 
     def test_model_and_scalers_loaded(self):
         predictions = self.service._call_predictor(self.x)
-        self.assert_correct_metrics(*self.service.get_metrics(predictions, self.y))
+        self.assert_correct_metrics(*self.service.get_metrics(self.y, predictions))
         unscaled_y = self.result_scaler.unscale_dataframe(self.y)
         unscaled_predictions = self.result_scaler.unscale_dataframe(predictions)
-        r2 = self.service.get_metrics(predictions, self.y)[0]
-        r2_after_scaling = self.service.get_metrics(unscaled_predictions, unscaled_y)[0]
+        r2 = self.service.get_metrics(self.y, predictions)[0]
+        r2_after_scaling = self.service.get_metrics(unscaled_y, unscaled_predictions)[0]
         self.assertAlmostEqual(
             r2,
             r2_after_scaling,
