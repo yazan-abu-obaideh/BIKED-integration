@@ -1,6 +1,6 @@
+from concurrent.futures import ThreadPoolExecutor
+
 import requests
-import os
-from time import sleep
 
 
 def grab_and_save_bike(bike_index):
@@ -11,17 +11,11 @@ def grab_and_save_bike(bike_index):
     print(f"Saved bike {bike_index}")
 
 
-def get_all_saved_bikes():
-    return set([file.split('.')[0] for file in os.listdir("bikecad_files_gen")])
-
-
 def get_all_bikes():
     with open("Every BCAD file in archive.txt", "r") as file:
         return set([file.strip() for file in file.readlines()[4000:]])
 
 
-while get_all_bikes() != get_all_saved_bikes():
+with ThreadPoolExecutor(max_workers=5) as executor:
     for bike in get_all_bikes():
-        if bike not in get_all_saved_bikes():
-            grab_and_save_bike(bike)
-            sleep(0.1)
+        executor.submit(grab_and_save_bike, bike)
