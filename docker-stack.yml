@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  gateway:
+    deploy:
+      restart_policy:
+        condition: any
+        delay: 10s
+    image: jyguru/biked-integration-gateway:25aug2023
+    ports:
+      - "8000:443"
+      - "8080:80"
+  integration-service:
+    hostname: integration-service
+    entrypoint: sh ./run.sh
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+    healthcheck:
+      test: curl --fail integration-service:80/health || exit 1
+      interval: 10s
+    image: jyguru/biked-integration-beta:25aug2023
