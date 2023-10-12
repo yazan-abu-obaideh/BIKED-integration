@@ -183,6 +183,7 @@ typing_extensions==4.8.0
 ujson==5.8.0
 urllib3==1.26.17
 virtualenv==20.24.5
+waitress==2.1.2
 wasabi==1.1.2
 wcwidth==0.2.8
 weasel==0.3.2
