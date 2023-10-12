@@ -3,7 +3,6 @@ import unittest
 
 from sklearn.model_selection import train_test_split
 
-import service.main.processing.pandas_utility as pd_util
 from service.main.evaluation.default_processor_settings import DefaultMapperSettings
 from service.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
 from service.main.evaluation.evaluation_service import EvaluationService
@@ -40,10 +39,6 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_default_material_values(self):
         assert False
 
-    @unittest.skip
-    def test_ensure_magnitude_raises(self):
-        assert False
-
     def test_uses_filters_and_produces_expected_response(self):
         class TesterProcessor(EvaluationRequestProcessor):
             def __init__(self, request_scaler, settings):
@@ -67,17 +62,18 @@ class EvaluationServiceTest(unittest.TestCase):
         service_response = self.service.evaluate_xml(xml_as_string).get("evaluationScores")
         self.assertEqual(6189, processor.key_filter_calls)
         self.assertEqual(43, processor.value_filter_calls)
-        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.038326118317548265,
-                                    'Sim 1 Dropout Y Disp. Magnitude': 0.09414663183265932,
-                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.05474823933361474,
-                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.05830368655186024,
-                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0024333662165477855,
-                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.019052710337140566,
-                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.006138438802087421,
-                                    'Sim 1 Safety Factor (Inverted)': 12.041694474674063,
-                                    'Sim 3 Safety Factor (Inverted)': 3.6281390549872006,
-                                    'Model Mass Magnitude': 2.6662627465729853},
-                                   service_response)
+        self.assertDictAlmostEqual(
+            {'Sim 1 Dropout X Disp.': 0.031814449415045645,
+             'Sim 1 Dropout Y Disp.': -0.1257087466553779,
+             'Sim 1 Bottom Bracket X Disp.': 0.053000191341085384,
+             'Sim 1 Bottom Bracket Y Disp.': -0.07953299955543938,
+             'Sim 2 Bottom Bracket Z Disp.': 0.0030267511210360426,
+             'Sim 3 Bottom Bracket Y Disp.': -0.027633177828896488,
+             'Sim 3 Bottom Bracket X Rot.': 0.007383957579232525,
+             'Sim 1 Safety Factor (Inverted)': 10.734273327539107,
+             'Sim 3 Safety Factor (Inverted)': 3.9056226586652665,
+             'Model Mass': 2.4028393386736413},
+            service_response)
 
     def test_empty_request(self):
         with self.assertRaises(ValueError) as context:
@@ -120,8 +116,8 @@ class EvaluationServiceTest(unittest.TestCase):
                          self.service._evaluate_parsed_dict(input_in_different_order))
 
     def assert_correct_metrics(self, r2, mean_square_error, mean_absolute_error):
-        self.assertGreater(r2, 0.72)
-        self.assertLess(mean_square_error, 0.65)
+        self.assertGreater(r2, 0.73)
+        self.assertLess(mean_square_error, 0.64)
         self.assertLess(mean_absolute_error, 0.12)
 
     def first_row_index(self, dataframe):
