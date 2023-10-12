@@ -5,7 +5,7 @@ services:
       restart_policy:
         condition: any
         delay: 10s
-    image: jyguru/biked-integration-gateway:25aug2023
+    image: jyguru/biked-integration-gateway:12oct2023
     ports:
       - "8000:443"
       - "8080:80"
@@ -20,4 +20,4 @@ services:
     healthcheck:
       test: curl --fail integration-service:80/health || exit 1
       interval: 10s
-    image: jyguru/biked-integration-beta:25aug2023
+    image: jyguru/biked-integration-beta:12oct2023
