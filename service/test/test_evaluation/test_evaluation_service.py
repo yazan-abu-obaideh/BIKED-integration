@@ -72,7 +72,7 @@ class EvaluationServiceTest(unittest.TestCase):
              'Sim 3 Bottom Bracket X Rot.': 0.007383957579232525,
              'Sim 1 Safety Factor (Inverted)': 10.734273327539107,
              'Sim 3 Safety Factor (Inverted)': 3.9056226586652665,
-             'Model Mass': 2.4028393386736413},
+             'Model Mass Magnitude': 2.4028393386736413},
             service_response)
 
     def test_empty_request(self):
