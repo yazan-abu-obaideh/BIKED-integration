@@ -4,9 +4,9 @@ services:
     image: jyguru/biked-integration-gateway:${RELEASE_TAG}
     build:
       context: ./
-      dockerfile: gateway.dockerfile
+      dockerfile: deployment/gateway.dockerfile
   service:
     image: jyguru/biked-integration-beta:${RELEASE_TAG}
     build:
       context: ./
-      dockerfile: service.dockerfile
+      dockerfile: deployment/service.dockerfile

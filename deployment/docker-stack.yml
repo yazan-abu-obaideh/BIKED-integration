@@ -1,25 +1,26 @@
 version: "3.8"
 services:
   gateway:
-    deploy:
-      restart_policy:
-        condition: any
-        delay: 10s
-    volumes:
-      - gateway/secrets/:secrets/
     image: jyguru/biked-integration-gateway:v1.0.0
+    volumes:
+      - ../gateway/secrets/:secrets/nginx/
     ports:
       - "8000:443"
       - "8080:80"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 10s
   integration-service:
+    image: jyguru/biked-integration-beta:v1.0.0
     hostname: integration-service
     entrypoint: sh ./run.sh
+    healthcheck:
+      test: curl --fail integration-service:80/health || exit 1
+      interval: 10s
     deploy:
       replicas: 1
       restart_policy:
         condition: on-failure
         delay: 10s
-    healthcheck:
-      test: curl --fail integration-service:80/health || exit 1
-      interval: 10s
-    image: jyguru/biked-integration-beta:12oct2023
