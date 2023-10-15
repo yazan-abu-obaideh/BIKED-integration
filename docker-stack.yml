@@ -5,7 +5,9 @@ services:
       restart_policy:
         condition: any
         delay: 10s
-    image: jyguru/biked-integration-gateway:12oct2023
+    volumes:
+      - gateway/secrets/:secrets/
+    image: jyguru/biked-integration-gateway:v1.0.0
     ports:
       - "8000:443"
       - "8080:80"

@@ -8,11 +8,9 @@ aliyun-python-sdk-kms==2.16.2
 antlr4-python3-runtime==4.9.3
 async-timeout==4.0.3
 attrs==23.1.0
-autogluon==0.8.2
 autogluon.common==0.8.2
 autogluon.core==0.8.2
 autogluon.features==0.8.2
-autogluon.multimodal==0.8.2
 autogluon.tabular==0.8.2
 autogluon.timeseries==0.8.2
 beautifulsoup4==4.12.2
