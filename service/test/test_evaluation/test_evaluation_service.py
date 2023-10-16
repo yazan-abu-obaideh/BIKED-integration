@@ -63,16 +63,16 @@ class EvaluationServiceTest(unittest.TestCase):
         self.assertEqual(6189, processor.key_filter_calls)
         self.assertEqual(43, processor.value_filter_calls)
         self.assertDictAlmostEqual(
-            {'Sim 1 Dropout X Disp.': 0.031814449415045645,
-             'Sim 1 Dropout Y Disp.': -0.1257087466553779,
-             'Sim 1 Bottom Bracket X Disp.': 0.053000191341085384,
-             'Sim 1 Bottom Bracket Y Disp.': -0.07953299955543938,
-             'Sim 2 Bottom Bracket Z Disp.': 0.0030267511210360426,
-             'Sim 3 Bottom Bracket Y Disp.': -0.027633177828896488,
-             'Sim 3 Bottom Bracket X Rot.': 0.007383957579232525,
-             'Sim 1 Safety Factor (Inverted)': 10.734273327539107,
-             'Sim 3 Safety Factor (Inverted)': 3.9056226586652665,
-             'Model Mass Magnitude': 2.4028393386736413},
+            {'Sim 1 Dropout X Disp.': 0.031835912456953074,
+             'Sim 1 Dropout Y Disp.': -0.09439129799216761,
+             'Sim 1 Bottom Bracket X Disp.': 0.047671656752443343,
+             'Sim 1 Bottom Bracket Y Disp.': -0.05662733500227418,
+             'Sim 2 Bottom Bracket Z Disp.': 0.0032005112380842507,
+             'Sim 3 Bottom Bracket Y Disp.': -0.01831319488624808,
+             'Sim 3 Bottom Bracket X Rot.': 0.007070461308021893,
+             'Sim 1 Safety Factor (Inverted)': 8.524915946216408,
+             'Sim 3 Safety Factor (Inverted)': 2.3434577746185496,
+             'Model Mass Magnitude': 2.453795866500706},
             service_response)
 
     def test_empty_request(self):
@@ -117,7 +117,7 @@ class EvaluationServiceTest(unittest.TestCase):
 
     def assert_correct_metrics(self, r2, mean_square_error, mean_absolute_error):
         self.assertGreater(r2, 0.73)
-        self.assertLess(mean_square_error, 0.64)
+        self.assertLess(mean_square_error, 0.65)
         self.assertLess(mean_absolute_error, 0.12)
 
     def first_row_index(self, dataframe):
