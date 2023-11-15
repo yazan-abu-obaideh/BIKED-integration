@@ -8099,7 +8099,7 @@
 <entry key="SEATTUBE2SnSdia2 offset">0.0</entry>
 <entry key="ClmpYfromBB"></entry>
 <entry key="SADDLE_TO_REAR_CONTACT_PATCH show">false</entry>
-<entry key="BUTTEDBB0">false</entry>
+<entry key="BUTTEDBB0">true</entry>
 <entry key="nSSSIDE1_MM_RATIO">1</entry>
 <entry key="Name"></entry>
 <entry key="CUTC dash">false</entry>

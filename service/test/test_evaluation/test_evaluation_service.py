@@ -84,6 +84,21 @@ class EvaluationServiceTest(unittest.TestCase):
         with open(BIKE_PATH, "r") as file:
             return file.read()
 
+    def test_can_handle_post_version20point1_files(self):
+        class TesterProcessor(EvaluationRequestProcessor):
+
+            def _convert_to_legacy_format(self, result_dict: dict):
+                legacy_format = super()._convert_to_legacy_format(result_dict)
+                print(f"{legacy_format['Wall thickness Top tube']=}")
+                print(f"{legacy_format['Wall thickness Bottom Bracket']=}=")
+                return legacy_format
+
+        processor = TesterProcessor(self.request_scaler, DefaultMapperSettings())
+        self.service._request_processor = processor
+        with open(os.path.join(os.path.dirname(__file__), "../resources/bikes/butted(1).bcad")) as butted_file:
+            result = self.service.evaluate_xml(butted_file.read())
+        print(f"{result=}")
+
     def test_can_predict_from_partial_dict(self):
         partial_request = {'MATERIAL': "TITANIUM"}
         self.assertIsNotNone(self.service._evaluate_parsed_dict(partial_request))
