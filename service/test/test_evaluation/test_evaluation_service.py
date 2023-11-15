@@ -87,10 +87,10 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_can_handle_post_version20point1_files(self):
         class TesterProcessor(EvaluationRequestProcessor):
 
-            def _convert_to_legacy_format(self, result_dict: dict):
+            def _convert_to_legacy_format(processor_self, result_dict: dict):
                 legacy_format = super()._convert_to_legacy_format(result_dict)
-                print(f"{legacy_format['Wall thickness Top tube']=}")
-                print(f"{legacy_format['Wall thickness Bottom Bracket']=}=")
+                self.assertEqual("0.8", legacy_format["Wall thickness Top tube"])
+                self.assertEqual("1.4", legacy_format["Wall thickness Bottom Bracket"])
                 return legacy_format
 
         processor = TesterProcessor(self.request_scaler, DefaultMapperSettings())
