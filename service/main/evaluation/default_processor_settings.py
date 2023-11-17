@@ -62,10 +62,10 @@ class DefaultMapperSettings(RequestProcessorSettings):
 
     __BUTTED_WALL_MAP = {"BB0": "Wall thickness Bottom Bracket",  # bottom bracket?
                          "TOPTUBE": "Wall thickness Top tube",
-                         # "", head tube 0 or 1?
+                         "HEADTUBE0": "Wall thickness Head tube",
                          "DOWNTUBE": "Wall thickness Down tube",
-                         # "",  Chain stay
-                         # "", Seat stay
+                         "CSSIDE": "Wall thickness Chain stay",
+                         "SSSIDE": "Wall thickness Seat stay",
                          "SEATTUBE": "Wall thickness Seat tube"}
 
     __IS_BUTTED_TEMPLATE = "BUTTED{wall_key}"
