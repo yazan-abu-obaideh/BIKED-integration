@@ -1,11 +1,8 @@
 version: "3.8"
 services:
   gateway:
-    image: jyguru/biked-integration-gateway:v1.0.0
-    volumes:
-      - ../gateway/secrets/:secrets/nginx/
+    image: jyguru/biked-integration-gateway:03jan2024
     ports:
-      - "8000:443"
       - "8080:80"
     deploy:
       replicas: 1
@@ -13,7 +10,7 @@ services:
         condition: any
         delay: 10s
   integration-service:
-    image: jyguru/biked-integration-beta:v1.0.0
+    image: jyguru/biked-integration-beta:17nov2023
     hostname: integration-service
     entrypoint: sh ./run.sh
     healthcheck:
