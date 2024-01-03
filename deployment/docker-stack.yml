@@ -3,7 +3,7 @@ services:
   gateway:
     image: jyguru/biked-integration-gateway:03jan2024
     ports:
-      - "8080:80"
+      - "80:80"
     deploy:
       replicas: 1
       restart_policy:
