@@ -22,6 +22,7 @@ class EvaluationRequestProcessor:
         self._parser = AlgebraicParser()
         self._dict_handler = DictionaryHandler()
         self._dict_to_model_input_pipeline = ProcessingPipeline(steps=[
+            self._convert_to_legacy_format,
             self._filter_keys,
             self._parse_values,
             self._filter_values,
@@ -80,6 +81,25 @@ class EvaluationRequestProcessor:
         result_dict = self._add_if_valid(accepted_values, material_value, result_dict)
         result_dict.pop("MATERIAL", None)
         return result_dict
+
+    def _convert_to_legacy_format(self, result_dict: dict):
+        for butted_key, legacy_key in self._settings.butted_wall_map().items():
+            is_post_version20point1 = self._is_post_version20point1(butted_key, result_dict)
+            if is_post_version20point1 is not None:
+                self._to_legacy(butted_key, legacy_key, is_post_version20point1, result_dict)
+        return result_dict
+
+    def _is_post_version20point1(self, butted_key, result_dict):
+        is_post_version20point1 = result_dict.get(self._settings.is_butted_template(butted_key))
+        return is_post_version20point1
+
+    def _to_legacy(self, butted_key, default_key, is_post_version20point1, result_dict):
+        is_butted_parsed = self._parser.attempt_parse(is_post_version20point1)
+        wall_pair = self._settings.wall_pair_templates(butted_key)
+        if is_butted_parsed:
+            result_dict[default_key] = result_dict[wall_pair[1]]
+        else:
+            result_dict[default_key] = result_dict[wall_pair[0]]
 
     def _validate_datatypes(self, result_dict: dict) -> dict:
         self._raise_if_invalid_types(result_dict)

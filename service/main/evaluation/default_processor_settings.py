@@ -36,7 +36,8 @@ class DefaultMapperSettings(RequestProcessorSettings):
                               'Seat stay junction': 'SS E', 'Seat angle': 'ST Angle', 'DT Length': 'DT Length',
                               'Seat tube length': 'ST Length', 'BB diameter': 'BB OD', 'ttd': 'TT OD',
                               'Head tube diameter': 'HT OD', 'dtd': 'DT OD', 'csd': 'CS OD', 'ssd': 'SS OD',
-                              'Seat tube diameter': 'ST OD', 'Wall thickness Bottom Bracket': 'BB Thickness',
+                              'Seat tube diameter': 'ST OD',
+                              'Wall thickness Bottom Bracket': 'BB Thickness',
                               'Wall thickness Top tube': 'TT Thickness',
                               'Wall thickness Head tube': 'HT Thickness',
                               'Wall thickness Down tube': 'DT Thickness',
@@ -58,6 +59,27 @@ class DefaultMapperSettings(RequestProcessorSettings):
                                'ST Length', 'BB Length', 'Dropout Offset', 'SSB OD', 'CSB OD', 'SSB Offset',
                                'CSB Offset', 'SS Z', 'SS Thickness', 'CS Thickness', 'TT Thickness',
                                'BB Thickness', 'HT Thickness', 'ST Thickness', 'DT Thickness', 'DT Length']
+
+    __BUTTED_WALL_MAP = {"BB0": "Wall thickness Bottom Bracket",  # bottom bracket?
+                         "TOPTUBE": "Wall thickness Top tube",
+                         "HEADTUBE0": "Wall thickness Head tube",
+                         "DOWNTUBE": "Wall thickness Down tube",
+                         "CSSIDE": "Wall thickness Chain stay",
+                         "SSSIDE": "Wall thickness Seat stay",
+                         "SEATTUBE": "Wall thickness Seat tube"}
+
+    __IS_BUTTED_TEMPLATE = "BUTTED{wall_key}"
+    __BUTTED_WALL1 = "W1{wall_key}"
+    __BUTTED_WALL2 = "W2{wall_key}"
+
+    def butted_wall_map(self):
+        return self.__BUTTED_WALL_MAP
+
+    def is_butted_template(self, key):
+        return self.__IS_BUTTED_TEMPLATE.format(wall_key=key)
+
+    def wall_pair_templates(self, key):
+        return self.__BUTTED_WALL1.format(wall_key=key), self.__BUTTED_WALL2.format(wall_key=key)
 
     def expected_xml_keys(self) -> list:
         return self.__EXPECTED_XML_KEYS

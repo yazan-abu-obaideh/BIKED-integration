@@ -1,0 +1,12 @@
+version: "3.8"
+services:
+  gateway:
+    image: jyguru/biked-integration-gateway:${RELEASE_TAG}
+    build:
+      context: ./
+      dockerfile: deployment/gateway.dockerfile
+  service:
+    image: jyguru/biked-integration-beta:${RELEASE_TAG}
+    build:
+      context: ./
+      dockerfile: deployment/service.dockerfile

@@ -3,7 +3,6 @@ import unittest
 
 from sklearn.model_selection import train_test_split
 
-import service.main.processing.pandas_utility as pd_util
 from service.main.evaluation.default_processor_settings import DefaultMapperSettings
 from service.main.evaluation.evaluation_request_processor import EvaluationRequestProcessor
 from service.main.evaluation.evaluation_service import EvaluationService
@@ -40,10 +39,6 @@ class EvaluationServiceTest(unittest.TestCase):
     def test_default_material_values(self):
         assert False
 
-    @unittest.skip
-    def test_ensure_magnitude_raises(self):
-        assert False
-
     def test_uses_filters_and_produces_expected_response(self):
         class TesterProcessor(EvaluationRequestProcessor):
             def __init__(self, request_scaler, settings):
@@ -67,17 +62,18 @@ class EvaluationServiceTest(unittest.TestCase):
         service_response = self.service.evaluate_xml(xml_as_string).get("evaluationScores")
         self.assertEqual(6189, processor.key_filter_calls)
         self.assertEqual(43, processor.value_filter_calls)
-        self.assertDictAlmostEqual({'Sim 1 Dropout X Disp. Magnitude': 0.038326118317548265,
-                                    'Sim 1 Dropout Y Disp. Magnitude': 0.09414663183265932,
-                                    'Sim 1 Bottom Bracket X Disp. Magnitude': 0.05474823933361474,
-                                    'Sim 1 Bottom Bracket Y Disp. Magnitude': 0.05830368655186024,
-                                    'Sim 2 Bottom Bracket Z Disp. Magnitude': 0.0024333662165477855,
-                                    'Sim 3 Bottom Bracket Y Disp. Magnitude': 0.019052710337140566,
-                                    'Sim 3 Bottom Bracket X Rot. Magnitude': 0.006138438802087421,
-                                    'Sim 1 Safety Factor (Inverted)': 12.041694474674063,
-                                    'Sim 3 Safety Factor (Inverted)': 3.6281390549872006,
-                                    'Model Mass Magnitude': 2.6662627465729853},
-                                   service_response)
+        self.assertDictAlmostEqual(
+            {'Sim 1 Dropout X Disp.': 0.031835912456953074,
+             'Sim 1 Dropout Y Disp.': -0.09439129799216761,
+             'Sim 1 Bottom Bracket X Disp.': 0.047671656752443343,
+             'Sim 1 Bottom Bracket Y Disp.': -0.05662733500227418,
+             'Sim 2 Bottom Bracket Z Disp.': 0.0032005112380842507,
+             'Sim 3 Bottom Bracket Y Disp.': -0.01831319488624808,
+             'Sim 3 Bottom Bracket X Rot.': 0.007070461308021893,
+             'Sim 1 Safety Factor (Inverted)': 8.524915946216408,
+             'Sim 3 Safety Factor (Inverted)': 2.3434577746185496,
+             'Model Mass Magnitude': 2.453795866500706},
+            service_response)
 
     def test_empty_request(self):
         with self.assertRaises(ValueError) as context:
@@ -87,6 +83,21 @@ class EvaluationServiceTest(unittest.TestCase):
     def get_xml(self):
         with open(BIKE_PATH, "r") as file:
             return file.read()
+
+    def test_can_handle_post_version20point1_files(self):
+        class TesterProcessor(EvaluationRequestProcessor):
+
+            def _convert_to_legacy_format(processor_self, result_dict: dict):
+                legacy_format = super()._convert_to_legacy_format(result_dict)
+                self.assertEqual("0.8", legacy_format["Wall thickness Top tube"])
+                self.assertEqual("1.4", legacy_format["Wall thickness Bottom Bracket"])
+                return legacy_format
+
+        processor = TesterProcessor(self.request_scaler, DefaultMapperSettings())
+        self.service._request_processor = processor
+        with open(os.path.join(os.path.dirname(__file__), "../resources/bikes/butted(1).bcad")) as butted_file:
+            result = self.service.evaluate_xml(butted_file.read())
+        print(f"{result=}")
 
     def test_can_predict_from_partial_dict(self):
         partial_request = {'MATERIAL': "TITANIUM"}
@@ -120,7 +131,7 @@ class EvaluationServiceTest(unittest.TestCase):
                          self.service._evaluate_parsed_dict(input_in_different_order))
 
     def assert_correct_metrics(self, r2, mean_square_error, mean_absolute_error):
-        self.assertGreater(r2, 0.72)
+        self.assertGreater(r2, 0.73)
         self.assertLess(mean_square_error, 0.65)
         self.assertLess(mean_absolute_error, 0.12)
 

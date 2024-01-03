@@ -22,7 +22,8 @@ def one_hot_encode_material(data):
     return data
 
 
-def load_augmented_framed_dataset() -> tuple[pd.DataFrame, pd.DataFrame, StandardScaler, StandardScaler]:
+def load_augmented_framed_dataset(to_magnitudes=False) -> (
+        tuple)[pd.DataFrame, pd.DataFrame, StandardScaler, StandardScaler]:
     reg_data = pd.read_csv(ALL_STRUCTURAL_DATASET, index_col=0)
 
     x = reg_data.iloc[:, :-11]
@@ -35,15 +36,21 @@ def load_augmented_framed_dataset() -> tuple[pd.DataFrame, pd.DataFrame, Standar
     for col in ['Sim 1 Safety Factor', 'Sim 3 Safety Factor']:
         y[col] = 1 / y[col]
         y.rename(columns={col: col + " (Inverted)"}, inplace=True)
-    for col in ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
-                'Sim 1 Bottom Bracket Y Disp.', 'Sim 2 Bottom Bracket Z Disp.', 'Sim 3 Bottom Bracket Y Disp.',
-                'Sim 3 Bottom Bracket X Rot.', 'Model Mass']:
-        y[col] = [np.abs(val) for val in y[col].values]
-        y.rename(columns={col: col + " Magnitude"}, inplace=True)
+
+    convert_to_magnitudes(y, to_magnitudes)
 
     y, y_scaler = scale(y)
 
     return x, y, x_scaler, y_scaler
+
+
+def convert_to_magnitudes(y, to_magnitudes):
+    if to_magnitudes:
+        for col in ['Sim 1 Dropout X Disp.', 'Sim 1 Dropout Y Disp.', 'Sim 1 Bottom Bracket X Disp.',
+                    'Sim 1 Bottom Bracket Y Disp.', 'Sim 2 Bottom Bracket Z Disp.', 'Sim 3 Bottom Bracket Y Disp.',
+                    'Sim 3 Bottom Bracket X Rot.', 'Model Mass']:
+            y[col] = [np.abs(val) for val in y[col].values]
+            y.rename(columns={col: col + " Magnitude"}, inplace=True)
 
 
 def scale(v):

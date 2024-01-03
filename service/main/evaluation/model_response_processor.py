@@ -7,11 +7,13 @@ class ModelResponseProcessor:
         self._response_scaler = response_scaler
         self._model_input_to_validated_response_pipeline = ProcessingPipeline(steps=[
             self._response_scaler.unscale,
-            self._ensure_magnitude
+            self._rename_mass
         ])
 
     def map_to_validated_response(self, model_output: dict) -> dict:
         return self._model_input_to_validated_response_pipeline.process(model_output)
 
-    def _ensure_magnitude(self, scaled_result: dict) -> dict:
-        return {key: abs(value) for key, value in scaled_result.items()}
+    def _rename_mass(self, model_output: dict) -> dict:
+        model_output["Model Mass Magnitude"] = model_output["Model Mass"]
+        del model_output["Model Mass"]
+        return model_output
