@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'test'
 jobs:
   verify_code:
     name: Verify

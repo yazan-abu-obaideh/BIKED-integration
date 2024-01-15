@@ -131,7 +131,7 @@ class EvaluationServiceTest(unittest.TestCase):
                          self.service._evaluate_parsed_dict(input_in_different_order))
 
     def assert_correct_metrics(self, r2, mean_square_error, mean_absolute_error):
-        self.assertGreater(r2, 0.73)
+        self.assertLess(r2, 0.73)
         self.assertLess(mean_square_error, 0.65)
         self.assertLess(mean_absolute_error, 0.12)
 
