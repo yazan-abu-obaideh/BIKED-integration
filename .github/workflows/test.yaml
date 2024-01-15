@@ -1,0 +1,22 @@
+name: Verify Code
+on:
+  pull_request:
+    branches:
+      - 'main'
+  push:
+    branches:
+      - 'main'
+jobs:
+  verify_code:
+    name: Verify
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: SNAPSHOT
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Docker Compose
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: KengoTODA/actions-setup-docker-compose@v1
+      - run: docker-compose build service && docker run --entrypoint './test.sh' jyguru/biked-integration-beta:$RELEASE_TAG -itd
