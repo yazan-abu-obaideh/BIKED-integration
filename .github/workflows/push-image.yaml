@@ -10,7 +10,7 @@ jobs:
     name: Push Docker image
     runs-on: ubuntu-latest
     env:
-      RELEASE_TAG: ${ { github.event.inputs.RELEASE_TAG } }
+      RELEASE_TAG: "${{ github.event.inputs.RELEASE_TAG }}"
     steps:
       - uses: actions/checkout@v4
       - name: Set up Docker Compose
