@@ -19,4 +19,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: KengoTODA/actions-setup-docker-compose@v1
-      - run: docker-compose build service && docker run --entrypoint './test.sh' jyguru/biked-integration-beta:$RELEASE_TAG -itd
+      - name: build image
+        run: docker-compose build service
+      - name: run tests
+        run: docker run --entrypoint './test.sh' jyguru/biked-integration-beta:$RELEASE_TAG -itd
