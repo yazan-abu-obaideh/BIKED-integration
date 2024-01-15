@@ -10,3 +10,8 @@ services:
     build:
       context: ./
       dockerfile: deployment/service.dockerfile
+  service-resources:
+    image: jyguru/biked-integration-service-resources:2023oct16
+    build:
+      context: ./
+      dockerfile: deployment/service-ml-resources.dockerfile
