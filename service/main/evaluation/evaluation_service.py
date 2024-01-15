@@ -40,7 +40,6 @@ class EvaluationService:
         self._response_processor = ModelResponseProcessor(response_scaler)
 
     def evaluate_xml(self, xml_user_request: str) -> dict:
-        raise Exception("Test failure!")
         model_input = self._request_processor.map_to_validated_model_input(xml_user_request)
         return {"evaluationScores": self._evaluate(model_input), "warnings": []}
 
