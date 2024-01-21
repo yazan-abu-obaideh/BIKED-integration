@@ -3,7 +3,7 @@ FROM jyguru/biked-integration-service-resources:2024jan21
 WORKDIR /app
 COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
-COPY service/ ./
+COPY service/ service/
 COPY test.sh .
 COPY run.sh .
 
